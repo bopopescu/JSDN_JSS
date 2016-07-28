@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace JSE
 {
     public partial class Additional : Form
     {
+        public int percents = 0;
         public Additional()
         {
             InitializeComponent();
@@ -44,10 +40,8 @@ namespace JSE
 
                 Debug.WriteLine("FTP Listing");
                 Debug.WriteLine(string.Join("\r\n", ftp.getFileList()));
-
                 long nFileSize = ftp.getFileSize("CentOS/7.2.1511/isos/x86_64/CentOS-7-x86_64-DVD-1511.iso");
                 Debug.WriteLine("FTP file size : " + GetFileSize(nFileSize));
-
                 label3.Invoke(() =>
                 {
                     label3.Text = "전체 사이즈 : " + GetFileSize(nFileSize);
@@ -59,44 +53,45 @@ namespace JSE
 
                 Debug.WriteLine("FTP move dir");
                 ftp.chdir("CentOS/7.2.1511/isos/x86_64/");
+                /* File Download Part */
 
                 bool isDownload = false;
                 long bakDownLoadSize = -1;
                 bool firstDownload = true;
-                isDownload = ftp.download("CentOS-7-x86_64-DVD-1511.iso", "CentOS-7-x86_64-DVD-1511.iso", false,
-                    (long fileSize, long sendSize, long perSecSize, WorkCancelEvent cancelEvent) =>
+                isDownload = ftp.download("CentOS-7-x86_64-DVD-1511.iso", "CentOS-7-x86_64-DVD-1511.iso", false, (long fileSize, long sendSize, long perSecSize,
+                WorkCancelEvent cancelEvent) =>
+                {
+                    if (worker.CancellationPending)
                     {
-                        if (worker.CancellationPending)
-                        {
-                            e.Cancel = true;
-                            cancelEvent.Cancel = true;
-                        }
-                        bakDownLoadSize = sendSize;
-                        worker.ReportProgress((int)(((double)sendSize / fileSize) * 10000), null);
+                        e.Cancel = true;
+                        cancelEvent.Cancel = true;
+                    }
+                    bakDownLoadSize = sendSize;
+                    worker.ReportProgress((int)(((double)sendSize / fileSize) * 10000), null);
 
-                        if (firstDownload == true)
+                    if (firstDownload == true)
+                    {
+                        firstDownload = false;
+                        Debug.Write("실제 용량 : " + GetFileSize(fileSize) + "\r\n");
+                    }
+                    else
+                    {
+                        label1.Invoke(() =>
                         {
-                            firstDownload = false;
-                            Debug.Write("실제 용량 : " + GetFileSize(fileSize) + "\r\n");
-                        }
-                        else
+                            label1.Text = "전체 사이즈 : " + GetFileSize(nFileSize) + ", 받은 용량 : " + GetFileSize(sendSize);
+                        });
+                        label2.Invoke(() =>
                         {
-                            label1.Invoke(() =>
-                            {
-                                label1.Text = "전체 사이즈 : " + GetFileSize(nFileSize) + ", 받은 용량 : " + GetFileSize(sendSize);
-                            });
-                            label2.Invoke(() =>
-                            {
-                                label2.Text = "남은 용량 : " + GetFileSize(fileSize - sendSize) + ", 속도 : " + GetFileSize(perSecSize) + "/s" +
-                                    ", 퍼센트 : " + ((int)(((double)sendSize / fileSize) * 10000) / 100) + "%";
-                            });
-                            Debug.Write("남은 용량 : " + GetFileSize(fileSize - sendSize) + ",\t속도 : " + GetFileSize(perSecSize) + "/s");
-                            Debug.Write(",\t퍼센트 : " + ((int)(((double)sendSize / fileSize) * 10000) / 100) + "%\r\n");
-                        }
-                    });
-
+                            label2.Text = "남은 용량 : " + GetFileSize(fileSize - sendSize) + ", 속도 : " + GetFileSize(perSecSize) + "/s" +
+                                ", 퍼센트 : " + ((int)(((double)sendSize / fileSize) * 10000) / 100) + "%";
+                        });
+                        Debug.Write("남은 용량 : " + GetFileSize(fileSize - sendSize) + ",\t속도 : " + GetFileSize(perSecSize) + "/s");
+                    }
+                    Debug.Write(",\t퍼센트 : " + ((int)(((double)sendSize / fileSize) * 10000) / 100) + "%\r\n");
+                    percents = ((int)(((double)sendSize / fileSize) * 10000) / 100);
+                });
+                //XXXX                
                 ftp.close();
-
                 if (isDownload)
                 {
                     worker.ReportProgress(10000, null);
@@ -108,6 +103,8 @@ namespace JSE
                 e.Result = ex;
             }
         }
+
+
         public string GetFileSize(long numBytes)
         {
             string fileSize = "";
@@ -120,7 +117,7 @@ namespace JSE
                 fileSize = String.Format("{0:0} KB", (double)numBytes / 1024);
 
             if (numBytes != 0 && fileSize == "0 KB")
-                fileSize = "1 KB";	// min.
+                fileSize = "1 KB";  // min.
 
             return fileSize;
         }
@@ -164,6 +161,7 @@ namespace JSE
                     {
                         button1.Text = "중지하는 중";
                         backgroundWorker1.CancelAsync();
+                        button1.Text = "다운로드";
                     }
                 }
             }
@@ -174,6 +172,11 @@ namespace JSE
                     File.Delete("CentOS-7-x86_64-DVD-1511.iso");
                 backgroundWorker1.RunWorkerAsync();
             }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            progressBar1.Value = percents;
         }
     }
     public static class ControlExtensions
