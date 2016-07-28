@@ -27,7 +27,8 @@ namespace JSE
             {
                 syntaxHighlighter1.Settings.Keywords.Add(commands[i]);
             }
-            
+            const int dist = 36;
+            syntaxHighlighter1.SetInnerMargins(dist, 0, 0, 0);
             syntaxHighlighter1.Settings.Comment = "//";
             syntaxHighlighter1.Settings.KeywordColor = Color.Blue;
             syntaxHighlighter1.Settings.CommentColor = Color.Green;
@@ -35,7 +36,8 @@ namespace JSE
             syntaxHighlighter1.Settings.EnableIntegers = false;
             syntaxHighlighter1.CompileKeywords();
             syntaxHighlighter1.ProcessAllLines();
-            syntaxHighlighter1.Text = "      ";
+            //syntaxHighlighter1.Text = "      ";
+            syntaxHighlighter1.ScrollToCaret();
         }
 
         private void syntaxHighlighter1_TextChanged(object sender, EventArgs e)

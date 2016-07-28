@@ -14,6 +14,7 @@ namespace JSE
 {
     public partial class SyntaxHighlighter : RichTextBox
     {
+
         #region 줄번호 표시용 선언부
         [StructLayout(LayoutKind.Sequential)]
         public class POINT
