@@ -33,12 +33,16 @@
             // 
             // syntaxHighlighter1
             // 
+            this.syntaxHighlighter1.AcceptsTab = true;
+            this.syntaxHighlighter1.AutoWordSelection = true;
             this.syntaxHighlighter1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.syntaxHighlighter1.HideSelection = false;
             this.syntaxHighlighter1.Location = new System.Drawing.Point(0, 0);
             this.syntaxHighlighter1.Name = "syntaxHighlighter1";
             this.syntaxHighlighter1.Size = new System.Drawing.Size(1044, 396);
             this.syntaxHighlighter1.TabIndex = 0;
             this.syntaxHighlighter1.Text = "";
+            this.syntaxHighlighter1.WordWrap = false;
             // 
             // EditorForm
             // 

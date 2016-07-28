@@ -8,14 +8,53 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
-
+using System.Runtime.InteropServices;
+using System.Drawing.Drawing2D;
 namespace JSE
 {
     public partial class SyntaxHighlighter : RichTextBox
     {
+        #region 줄번호 표시용 선언부
+        [StructLayout(LayoutKind.Sequential)]
+        public class POINT
+        {
+            public int x;
+            public int y;
+        }
+
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int IParam);
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr SendMessage(IntPtr hWnd, int msg, POINT wParam, int IParam);
+        private const int EC_LEFTMARGIN = 0x1;
+        private const int EM_SETMARGIN = 0xD3;
+        private const int WM_SIZE = 0x5;
+        private const int WM_PAINT = 0x000F;
+        private const int EM_GETFIRSTVISIBLELINE = 0xCE;
+        private const int EM_GETLINECOUNT = 0x00BA;
+        private const int EM_GETLINE = 0x00C4;
+        private const int EM_LINELENGTH = 0x00C1;
+        private const int EM_POSFROMCHAR = 0x00D6;
+
+        public Graphics g = null;
+        private SolidBrush txtBrush = null;
+        private SolidBrush marginBrush = null;
+        private Pen dotPen = null;
+        private Pen solidPen = null;
+        #endregion
         public SyntaxHighlighter()
         {
             InitializeComponent();
+
+            this.txtBrush = new SolidBrush(Color.Black);
+            this.marginBrush = new SolidBrush(Color.White);
+            this.dotPen = new Pen(new SolidBrush(Color.LightSeaGreen));
+            this.solidPen = new Pen(new SolidBrush(Color.Indigo));
+            this.dotPen.DashStyle = DashStyle.Dot;
+            this.solidPen.DashStyle = DashStyle.Solid;
+
+            SendMessage(this.Handle, EM_SETMARGIN, EC_LEFTMARGIN, 35 & 0xFFFF);
+
         }
 
         private void SyntaxHighlighter_Load(object sender, EventArgs e)
@@ -46,6 +85,7 @@ namespace JSE
         /// <param name="m"></param>
         protected override void WndProc(ref Message m)
         {
+            
             if (m.Msg == 0x00f)
             {
                 if (m_bPaint)
@@ -54,7 +94,55 @@ namespace JSE
                     m.Result = IntPtr.Zero;
             }
             else
+            {
                 base.WndProc(ref m);
+            }
+            #region 줄번호 그려주기
+            switch (m.Msg)
+            {
+                case WM_SIZE:
+                    //사이즈가바뀌면 재설정
+                    g = Graphics.FromHwnd(this.Handle);
+                    break;
+                case WM_PAINT:
+                    if(g == null)
+                    {
+                        g = Graphics.FromHwnd(this.Handle);
+                    }
+                    //줄번호가 출력될 영역을 정리한다
+                    g.FillRectangle(marginBrush, 0, 0, 30, this.Height);
+                    //줄번호와 텍스트 입력 영역 사이의 선?
+                    g.DrawLine(dotPen, 30, 0, 30, this.Height);
+                    g.DrawLine(solidPen, 32, 0, 32, this.Height);
+                    //현재 보이고 있는 줄의 실제 번호를 구함
+                    int firstVisibleLine = SendMessage(this.Handle, EM_GETFIRSTVISIBLELINE, 0, 0);
+                    //문서의 전체 줄     길이도 구해야 함
+                    int TotalLineCount = SendMessage(this.Handle, EM_GETLINECOUNT, 0, 0);
+                    if(TotalLineCount > 0)
+                    {
+                        //가장 윗쪽 라인
+                        int len = SendMessage(this.Handle, EM_LINELENGTH, 0, 0);
+                        int secondlineidx = len + 1;
+                        POINT point1 = new POINT();
+                        POINT point2 = new POINT();
+                        SendMessage(this.Handle, EM_POSFROMCHAR, point1, secondlineidx);
+                        SendMessage(this.Handle, EM_POSFROMCHAR, point2, 0);
+                        Point carePos1 = new Point(point1.x, point1.y);
+                        Point carePos2 = new Point(point2.x, point2.y);
+                        //Line Height = secondline.y - firstline.y
+                        int lineHeight = carePos1.Y - carePos2.Y;
+                        int VisibleLineCount = lineHeight == 0 ? 1 : (this.ClientRectangle.Height / lineHeight);
+                        for(int i = 0; i < VisibleLineCount && i < TotalLineCount; i++)
+                        {
+                            //문자열 출력으로 그려내기
+                            g.DrawString((firstVisibleLine + i).ToString(), this.Font, txtBrush, 0, 5 + (i * lineHeight));
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+            #endregion
         }
         /// <summary>
         /// OnTextChanged
