@@ -43,6 +43,8 @@
             this.syntaxHighlighter1.TabIndex = 0;
             this.syntaxHighlighter1.Text = "";
             this.syntaxHighlighter1.WordWrap = false;
+            this.syntaxHighlighter1.TextChanged += new System.EventHandler(this.syntaxHighlighter1_TextChanged);
+            this.syntaxHighlighter1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.syntaxHighlighter1_KeyDown);
             // 
             // EditorForm
             // 

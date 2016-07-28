@@ -53,8 +53,6 @@ namespace JSE
         }
         public void contribute()
         {
-            int a = 0;
-            
         }
         public string GetFileSize(long numBytes)
         {

@@ -27,7 +27,7 @@ namespace JSE
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern IntPtr SendMessage(IntPtr hWnd, int msg, POINT wParam, int IParam);
         private const int EC_LEFTMARGIN = 0x1;
-        private const int EM_SETMARGIN = 0xD3;
+        private const int EM_SETMARGINS = 0xD3;
         private const int WM_SIZE = 0x5;
         private const int WM_PAINT = 0x000F;
         private const int EM_GETFIRSTVISIBLELINE = 0xCE;
@@ -53,7 +53,7 @@ namespace JSE
             this.dotPen.DashStyle = DashStyle.Dot;
             this.solidPen.DashStyle = DashStyle.Solid;
 
-            SendMessage(this.Handle, EM_SETMARGIN, EC_LEFTMARGIN, 35 & 0xFFFF);
+            SendMessage(Handle, EM_SETMARGINS, EC_LEFTMARGIN, 35 & 0xFFFF);
 
         }
 
@@ -150,6 +150,7 @@ namespace JSE
         /// <param name="e"></param>
         protected override void OnTextChanged(EventArgs e)
         {
+            
             // Calculate shit here.
             m_nContentLength = this.TextLength;
 
@@ -175,6 +176,10 @@ namespace JSE
             ProcessLine();
 
             m_bPaint = true;
+        }
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+
         }
         /// <summary>
         /// Process a line.

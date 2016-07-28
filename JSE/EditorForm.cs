@@ -35,7 +35,20 @@ namespace JSE
             syntaxHighlighter1.Settings.EnableIntegers = false;
             syntaxHighlighter1.CompileKeywords();
             syntaxHighlighter1.ProcessAllLines();
-            
+            syntaxHighlighter1.Text = "      ";
+        }
+
+        private void syntaxHighlighter1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void syntaxHighlighter1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                this.Text += "      ";
+            }
         }
     }
 }
