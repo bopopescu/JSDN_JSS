@@ -34,7 +34,6 @@ namespace JSE
                 );
             Additional add = new Additional();
             add.Show();
-            
             string version = Application.ProductVersion;
             string appname = Application.ProductName;
             string company = Application.CompanyName;

@@ -14,12 +14,10 @@ namespace JSE
         {
             InitializeComponent();
         }
-
         private void Additional_Load(object sender, EventArgs e)
         {
 
         }
-
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
@@ -29,18 +27,17 @@ namespace JSE
 
             ftp.setDebug(true);
 
-            ftp.setRemoteHost("ftp.kaist.ac.kr");
+            ftp.setRemoteHost("hansung.info");
 
-            ftp.setRemoteUser("anonymous");
-            ftp.setRemotePass("");
+            ftp.setRemoteUser("jsdn");
+            ftp.setRemotePass("whstn");
 
             try
             {
                 ftp.login();
-
                 Debug.WriteLine("FTP Listing");
                 Debug.WriteLine(string.Join("\r\n", ftp.getFileList()));
-                long nFileSize = ftp.getFileSize("CentOS/7.2.1511/isos/x86_64/CentOS-7-x86_64-DVD-1511.iso");
+                long nFileSize = ftp.getFileSize("JSDN/test.mp4");
                 Debug.WriteLine("FTP file size : " + GetFileSize(nFileSize));
                 label3.Invoke(() =>
                 {
@@ -52,13 +49,13 @@ namespace JSE
                 });
 
                 Debug.WriteLine("FTP move dir");
-                ftp.chdir("CentOS/7.2.1511/isos/x86_64/");
+                ftp.chdir("JSDN/");
                 /* File Download Part */
 
                 bool isDownload = false;
                 long bakDownLoadSize = -1;
                 bool firstDownload = true;
-                isDownload = ftp.download("CentOS-7-x86_64-DVD-1511.iso", "CentOS-7-x86_64-DVD-1511.iso", false, (long fileSize, long sendSize, long perSecSize,
+                isDownload = ftp.download("test.mp4", "test.mp4", false, (long fileSize, long sendSize, long perSecSize,
                 WorkCancelEvent cancelEvent) =>
                 {
                     if (worker.CancellationPending)
@@ -168,8 +165,8 @@ namespace JSE
             else
             {
                 button1.Text = "중지";
-                if (File.Exists("CentOS-7-x86_64-DVD-1511.iso"))
-                    File.Delete("CentOS-7-x86_64-DVD-1511.iso");
+                if (File.Exists("test.mp4"))
+                    File.Delete("test.mp4");
                 backgroundWorker1.RunWorkerAsync();
             }
         }
