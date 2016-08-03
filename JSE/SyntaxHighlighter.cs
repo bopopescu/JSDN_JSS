@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
@@ -14,7 +9,6 @@ namespace JSE
 {
     public partial class SyntaxHighlighter : RichTextBox
     {
-
         #region 줄번호 표시용 선언부
         [StructLayout(LayoutKind.Sequential)]
         public class POINT
@@ -22,7 +16,6 @@ namespace JSE
             public int x;
             public int y;
         }
-
         [DllImport("user32.dll")]
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int IParam);
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
@@ -89,6 +82,7 @@ namespace JSE
             {
                 base.WndProc(ref m);
             }
+            
             #region 줄번호 그려주기
             switch (m.Msg)
             {
@@ -104,7 +98,7 @@ namespace JSE
                     //줄번호가 출력될 영역을 정리한다
                     g.FillRectangle(marginBrush, 0, 0, 30, this.Height);
                     //줄번호와 텍스트 입력 영역 사이의 선?
-                    g.DrawLine(dotPen, 30, 0, 30, this.Height);
+                    //g.DrawLine(dotPen, 30, 0, 30, this.Height);
                     g.DrawLine(solidPen, 32, 0, 32, this.Height);
                     //현재 보이고 있는 줄의 실제 번호를 구함
                     int firstVisibleLine = SendMessage(this.Handle, EM_GETFIRSTVISIBLELINE, 0, 0);
@@ -135,11 +129,8 @@ namespace JSE
                     break;
             }
             #endregion
+            
         }
-        /// <summary>
-        /// OnTextChanged 이벤트
-        /// </summary>
-        /// <param name="e"></param>
         protected override void OnTextChanged(EventArgs e)
         {
             m_nContentLength = this.TextLength;

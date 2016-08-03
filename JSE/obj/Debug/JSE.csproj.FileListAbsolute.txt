@@ -18,3 +18,4 @@ d:\documents\visual studio 2015\Projects\JSE\JSE\obj\Debug\JSE.EditorForm.resour
 d:\documents\visual studio 2015\Projects\JSE\JSE\obj\Debug\JSE.Additional.resources
 d:\documents\visual studio 2015\Projects\JSE\JSE\bin\Debug\Microsoft.WindowsAPICodePack.dll
 d:\documents\visual studio 2015\Projects\JSE\JSE\bin\Debug\Microsoft.WindowsAPICodePack.Shell.dll
+d:\documents\visual studio 2015\Projects\JSE\JSE\obj\Debug\JSE.StartScreen.resources
