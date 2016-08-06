@@ -70,7 +70,6 @@ namespace JSE
         /// <param name="m">메세지</param>
         protected override void WndProc(ref Message m)
         {
-            
             if (m.Msg == 0x00f)
             {
                 if (m_bPaint)
@@ -133,33 +132,36 @@ namespace JSE
         }
         protected override void OnTextChanged(EventArgs e)
         {
-            m_nContentLength = this.TextLength;
-            int nCurrentSelectionStart = SelectionStart;
-            int nCurrentSelectionLength = SelectionLength;
-
-            m_bPaint = false;
-
-            // 라인의 시작지점 찾아보기
-            m_nLineStart = nCurrentSelectionStart;
-            while ((m_nLineStart > 0) && (Text[m_nLineStart - 1] != '\n'))
-                m_nLineStart--;
-            // 현재 라인의 종결지점
-            m_nLineEnd = nCurrentSelectionStart;
-            while ((m_nLineEnd < Text.Length) && (Text[m_nLineEnd] != '\n'))
-                m_nLineEnd++;
-            // 줄의 길이 알아보기
-            m_nLineLength = m_nLineEnd - m_nLineStart;
-            // 현재 라인 가져오기
-            m_strLine = Text.Substring(m_nLineStart, m_nLineLength);
-
-            // 처리
-            ProcessLine();
-
-            m_bPaint = true;
+           
         }
         protected override void OnKeyDown(KeyEventArgs e)
         {
+            if(e.KeyCode == Keys.Enter || e.KeyCode == Keys.Space)
+            {
+                m_nContentLength = this.TextLength;
+                int nCurrentSelectionStart = SelectionStart;
+                int nCurrentSelectionLength = SelectionLength;
 
+                m_bPaint = false;
+
+                // 라인의 시작지점 찾아보기
+                m_nLineStart = nCurrentSelectionStart;
+                while ((m_nLineStart > 0) && (Text[m_nLineStart - 1] != '\n'))
+                    m_nLineStart--;
+                // 현재 라인의 종결지점
+                m_nLineEnd = nCurrentSelectionStart;
+                while ((m_nLineEnd < Text.Length) && (Text[m_nLineEnd] != '\n'))
+                    m_nLineEnd++;
+                // 줄의 길이 알아보기
+                m_nLineLength = m_nLineEnd - m_nLineStart;
+                // 현재 라인 가져오기
+                m_strLine = Text.Substring(m_nLineStart, m_nLineLength);
+
+                // 처리
+                ProcessLine();
+
+                m_bPaint = true;
+            }
         }
         /// <summary>
         /// 현재 줄을 처리
@@ -183,11 +185,11 @@ namespace JSE
             // 주석들 처리
             if (Settings.EnableComments && !string.IsNullOrEmpty(Settings.Comment))
                 ProcessRegex(Settings.Comment + ".*$", Settings.CommentColor);
-
+     
             SelectionStart = nPosition;
             SelectionLength = 0;
             SelectionColor = Color.Black;
-
+    
             m_nCurSelection = nPosition;
         }
         /// <summary>
@@ -240,10 +242,8 @@ namespace JSE
                 m_strLine = Lines[i];
                 m_nLineStart = nStartPos;
                 m_nLineEnd = m_nLineStart + m_strLine.Length;
-
                 ProcessLine();
                 i++;
-
                 nStartPos += m_strLine.Length + 1;
             }
 
