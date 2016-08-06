@@ -16,7 +16,7 @@ namespace JSE
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            EditorForm f = new EditorForm();
+            Form1 f = new Form1();
             Application.Run(f);
         }
     }

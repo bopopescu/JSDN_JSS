@@ -92,8 +92,8 @@ namespace JSE
             FTPFactory ftp = new FTPFactory();
             ftp.setDebug(true);
             ftp.setRemoteHost("ftp.kaist.ac.kr");
-            ftp.setRemoteUser("anonymous");
-            ftp.setRemotePass("");
+            ftp.setRemoteUser("update");
+            ftp.setRemotePass("update");
             try
             {
                 ftp.login();

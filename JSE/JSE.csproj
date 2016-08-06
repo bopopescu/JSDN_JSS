@@ -194,6 +194,7 @@
     <Compile Include="SyntaxHighlighter.Designer.cs">
       <DependentUpon>SyntaxHighlighter.cs</DependentUpon>
     </Compile>
+    <Compile Include="Translator.cs" />
     <Compile Include="Youtube_Lister.cs" />
     <EmbeddedResource Include="Additional.resx">
       <DependentUpon>Additional.cs</DependentUpon>

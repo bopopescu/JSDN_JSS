@@ -29,8 +29,8 @@ namespace JSE
 
             ftp.setRemoteHost("hansung.info");
 
-            ftp.setRemoteUser("jsdn");
-            ftp.setRemotePass("whstn");
+            ftp.setRemoteUser("update");
+            ftp.setRemotePass("update");
 
             try
             {

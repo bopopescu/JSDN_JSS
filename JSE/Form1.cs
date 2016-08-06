@@ -21,12 +21,13 @@ namespace JSE
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            const int dist = 36;
+            syntaxHighlighter1.SetInnerMargins(dist, 0, 0, 0);
             string[] commands = Regex.Split(keyWords.ToString(), " ");
             for (int i = 0; i < commands.Length; i++)
             {
-                //syntaxHighlighter1.Settings.Keywords.Add(commands[i]);
+                syntaxHighlighter1.Settings.Keywords.Add(commands[i]);
             }
-            /*
             syntaxHighlighter1.Settings.Comment = "//";
             syntaxHighlighter1.Settings.KeywordColor = Color.Blue;
             syntaxHighlighter1.Settings.CommentColor = Color.Green;
@@ -34,10 +35,10 @@ namespace JSE
             syntaxHighlighter1.Settings.EnableIntegers = false;
             syntaxHighlighter1.CompileKeywords();
             syntaxHighlighter1.ProcessAllLines();
-            */
             Console.Write("");
         }
-
+        #region 추후 MDI 구현시 사용
+        /*
         private void Form1_MdiChildActivate(object sender, EventArgs e)
         {
             if (this.ActiveMdiChild == null)
@@ -83,5 +84,7 @@ namespace JSE
             if ((tabForms.SelectedTab != null) && (tabForms.SelectedTab.Tag != null))
                 (tabForms.SelectedTab.Tag as Form).Select();
         }
+        */
+        #endregion
     }
 }
