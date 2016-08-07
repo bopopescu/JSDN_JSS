@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace JSE
@@ -36,6 +30,8 @@ namespace JSE
             syntaxHighlighter1.CompileKeywords();
             syntaxHighlighter1.ProcessAllLines();
             Console.Write("");
+            Translator.translate();
+            richTextBox1.Text = Translator.replace_word("정수형 i = 0", "");
         }
         #region 추후 MDI 구현시 사용
         /*

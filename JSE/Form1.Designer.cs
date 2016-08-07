@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Project");
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.파일FToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.새창ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -69,11 +70,12 @@
             this.옵션ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.창WToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.도움말HToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.syntaxHighlighter1 = new JSE.SyntaxHighlighter();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.treeView1 = new System.Windows.Forms.TreeView();
+            this.syntaxHighlighter1 = new JSE.SyntaxHighlighter();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -121,7 +123,7 @@
             // 
             this.새창ToolStripMenuItem.Name = "새창ToolStripMenuItem";
             this.새창ToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
-            this.새창ToolStripMenuItem.Text = "새 창";
+            this.새창ToolStripMenuItem.Text = "새 프로젝트";
             // 
             // 열기ToolStripMenuItem
             // 
@@ -375,15 +377,6 @@
             this.도움말HToolStripMenuItem.Size = new System.Drawing.Size(72, 20);
             this.도움말HToolStripMenuItem.Text = "도움말(&H)";
             // 
-            // syntaxHighlighter1
-            // 
-            this.syntaxHighlighter1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.syntaxHighlighter1.Location = new System.Drawing.Point(0, 0);
-            this.syntaxHighlighter1.Name = "syntaxHighlighter1";
-            this.syntaxHighlighter1.Size = new System.Drawing.Size(1043, 333);
-            this.syntaxHighlighter1.TabIndex = 3;
-            this.syntaxHighlighter1.Text = "";
-            // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -399,7 +392,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.richTextBox1);
-            this.splitContainer1.Size = new System.Drawing.Size(1043, 483);
+            this.splitContainer1.Size = new System.Drawing.Size(1060, 483);
             this.splitContainer1.SplitterDistance = 333;
             this.splitContainer1.TabIndex = 4;
             // 
@@ -408,9 +401,9 @@
             this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBox1.Location = new System.Drawing.Point(0, 0);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(1043, 146);
+            this.richTextBox1.Size = new System.Drawing.Size(1060, 146);
             this.richTextBox1.TabIndex = 0;
-            this.richTextBox1.Text = "";
+            this.richTextBox1.Text = "출력";
             // 
             // splitContainer2
             // 
@@ -426,7 +419,7 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.splitContainer1);
             this.splitContainer2.Size = new System.Drawing.Size(1221, 483);
-            this.splitContainer2.SplitterDistance = 174;
+            this.splitContainer2.SplitterDistance = 157;
             this.splitContainer2.TabIndex = 5;
             // 
             // treeView1
@@ -434,8 +427,25 @@
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(174, 483);
+            treeNode1.Name = "main_node";
+            treeNode1.Text = "Project";
+            this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
+            treeNode1});
+            this.treeView1.Size = new System.Drawing.Size(157, 483);
             this.treeView1.TabIndex = 0;
+            // 
+            // syntaxHighlighter1
+            // 
+            this.syntaxHighlighter1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.syntaxHighlighter1.Location = new System.Drawing.Point(0, 0);
+            this.syntaxHighlighter1.Name = "syntaxHighlighter1";
+            this.syntaxHighlighter1.Size = new System.Drawing.Size(1060, 333);
+            this.syntaxHighlighter1.TabIndex = 3;
+            this.syntaxHighlighter1.Text = "";
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
             // 
             // Form1
             // 
@@ -511,6 +521,7 @@
         private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
     }
 }
 
