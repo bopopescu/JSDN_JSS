@@ -27,17 +27,17 @@ namespace JSE
 
             ftp.setDebug(true);
 
-            ftp.setRemoteHost("hansung.info");
+            ftp.setRemoteHost("iwin247.net");
 
-            ftp.setRemoteUser("update");
-            ftp.setRemotePass("update");
+            ftp.setRemoteUser("jsdn");
+            ftp.setRemotePass("jsdn");
 
             try
             {
                 ftp.login();
                 Debug.WriteLine("FTP Listing");
                 Debug.WriteLine(string.Join("\r\n", ftp.getFileList()));
-                long nFileSize = ftp.getFileSize("JSDN/test.mp4");
+                long nFileSize = ftp.getFileSize("Data/jsdn/");
                 Debug.WriteLine("FTP file size : " + GetFileSize(nFileSize));
                 label3.Invoke(() =>
                 {
