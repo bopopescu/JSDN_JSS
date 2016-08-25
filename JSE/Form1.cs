@@ -94,12 +94,16 @@ namespace JSE
 
         private void 코드빌드ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            richTextBox1.Text = "";
             string org_word = syntaxHighlighter1.Text;
             string[] splitted = org_word.Split('\n');
             for (int i = 0; i < splitted.Length; i++)
             {
+                /*
                 richTextBox1.Text += Translator.replace_word(splitted[i]);
                 richTextBox1.Text += "\r\n";
+                */
+                richTextBox1.Text = Translator.Interpret_bf(syntaxHighlighter1.Text);
             }
         }
 

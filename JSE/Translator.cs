@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.IO;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace JSE
@@ -6,6 +8,114 @@ namespace JSE
     class Translator
     {
         public static Dictionary<string, string> dict = new Dictionary<string, string>();
+        private static readonly int BUFSIZE = 65535;
+        private static int[] buf = new int[BUFSIZE];
+        private static int ptr { get; set; }
+        private bool echo { get; set; }
+        public void Reset()
+        {
+            Array.Clear(buf, 0, buf.Length);
+        }
+        public static string Interpret_bf(string s)
+        {
+            
+            ptr = 0;
+            string translated = "";
+            int i = 0;
+            int right = s.Length;
+            while (i < right)
+            {
+                switch (s[i])
+                {
+                    case '>':
+                        {
+                            ptr++;
+                            if (ptr >= BUFSIZE)
+                            {
+                                ptr = 0;
+                            }
+                            break;
+                        }
+                    case '<':
+                        {
+                            ptr--;
+                            if (ptr < 0)
+                            {
+                                ptr = BUFSIZE - 1;
+                            }
+                            break;
+                        }
+                    case '.':
+                        {
+                            translated += ((char)buf[ptr]);
+                            break;
+                        }
+                    case '+':
+                        {
+                            buf[ptr]++;
+                            break;
+                        }
+                    case '-':
+                        {
+                            buf[ptr]--;
+                            break;
+                        }
+                    case '[':
+                        {
+                            if (buf[ptr] == 0)
+                            {
+                                int loop = 1;
+                                while (loop > 0)
+                                {
+                                    i++;
+                                    char c = s[i];
+                                    if (c == '[')
+                                    {
+                                        loop++;
+                                    }
+                                    else
+                                    if (c == ']')
+                                    {
+                                        loop--;
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    case ']':
+                        {
+                            int loop = 1;
+                            while (loop > 0)
+                            {
+                                i--;
+                                char c = s[i];
+                                if (c == '[')
+                                {
+                                    loop--;
+                                }
+                                else
+                                if (c == ']')
+                                {
+                                    loop++;
+                                }
+                            }
+                            i--;
+                            break;
+                        }/*
+                    case ',':
+                        {
+                            // read a key
+                            ConsoleKeyInfo key = Console.ReadKey(echo);
+                            buf[ptr] = (int)key.KeyChar;
+                            break;
+                        }*/
+                }
+                i++;
+            }
+            return translated;
+        }
+
+
         public static void translate()
         {
             dict.Add("엔터", "\n");
