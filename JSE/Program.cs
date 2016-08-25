@@ -15,9 +15,10 @@ namespace JSE
         static void Main()
         {
             Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Form1 f = new Form1();
-            Application.Run(f);
+            StartingForm f = new StartingForm();
+            f.ShowDialog();
+            Application.Run();
         }
     }
 }
+ 

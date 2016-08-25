@@ -16,9 +16,11 @@ namespace JSE
     public partial class StartingForm : Form
     {
         public int progressbar = 0;
+        public int cnt = 0;
         public StartingForm()
         {
             InitializeComponent();
+            timer1.Start();
         }
 
         private void StartingForm_Load(object sender, EventArgs e)
@@ -32,8 +34,8 @@ namespace JSE
                         m => (Convert.ToInt16(m.Value) + 1).ToString()
                     )
                 );
-            Additional add = new Additional();
-            add.Show();
+            //Additional add = new Additional();
+            //add.Show();
             string version = Application.ProductVersion;
             string appname = Application.ProductName;
             string company = Application.CompanyName;
@@ -45,7 +47,9 @@ namespace JSE
             //startuplabel.Text = startup;
             culturelabel.Text = culturename;
             //timer1.Start();
+
         }
+
         public void check_file()
         {
 
@@ -71,15 +75,15 @@ namespace JSE
         }
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (progressbar < 101)
+            if(cnt < 5)
             {
-                Random rnd = new Random(DateTime.Now.Millisecond);
-                timer1.Interval = rnd.Next(80, 420);
-                progressBar1.Value = progressbar;
-                progressbar++;
+                cnt++;
             }
             else
             {
+                Form1 f = new JSE.Form1();
+                f.Show();
+                this.Close();
                 timer1.Stop();
             }
         }
@@ -108,6 +112,11 @@ namespace JSE
             {
 
             }
+        }
+
+        private void StartingForm_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

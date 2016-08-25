@@ -59,5 +59,25 @@ namespace JSE.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   (아이콘)과(와) 유사한 System.Drawing.Icon 형식의 지역화된 리소스를 찾습니다.
+        /// </summary>
+        internal static System.Drawing.Icon 로고시안5 {
+            get {
+                object obj = ResourceManager.GetObject("로고시안5", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
+        /// </summary>
+        internal static System.Drawing.Bitmap 로고시안51 {
+            get {
+                object obj = ResourceManager.GetObject("로고시안51", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }
