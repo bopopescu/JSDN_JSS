@@ -48,6 +48,7 @@ namespace JSE
 
         private void CodeBlockManager_Paint(object sender, PaintEventArgs e)
         {
+            cnt = 0;
             StreamReader sr = new StreamReader(filename);
             try
             {
@@ -63,18 +64,18 @@ namespace JSE
                 throw new IOException();
             }
             sr.Close();
-            /*
+            
             string filename_code = Application.StartupPath + @"\codeblock\";
             int i = 0, j = 0;
             string f = filename_code + "";
             for (i = 1; i < cnt; i++)
             {
-                StreamReader sr_code = new StreamReader("");
+                StreamReader sr_code = new StreamReader(filename_code + i.ToString() + ".txt");
                 try
                 {
                     for (j = 0; sr_code.EndOfStream != true; j++)
                     {
-                        code[cnt] = sr_code.ReadToEnd();
+                        code[j] = sr_code.ReadToEnd();
                     }
                 }
                 catch (IOException)
@@ -83,7 +84,7 @@ namespace JSE
                 }
                 sr_code.Close();
             }
-            */
+            
         }
     }
 }
