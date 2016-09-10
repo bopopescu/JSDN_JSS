@@ -9,6 +9,7 @@ namespace JSE
 {
     public partial class SyntaxHighlighter : RichTextBox
     {
+        private static string inputcache = "";
         #region 줄번호 표시용 선언부
         [StructLayout(LayoutKind.Sequential)]
         public class POINT
@@ -136,6 +137,7 @@ namespace JSE
         }
         protected override void OnKeyDown(KeyEventArgs e)
         {
+
             if(e.KeyCode == Keys.Enter || e.KeyCode == Keys.Space)
             {
                 m_nContentLength = this.TextLength;

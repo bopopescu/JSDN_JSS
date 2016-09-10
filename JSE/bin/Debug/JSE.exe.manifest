@@ -4,7 +4,7 @@
   <description asmv2:iconFile="Resources\로고시안5.ico" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <application />
   <entryPoint>
-    <assemblyIdentity name="JSE" version="1.0.6081.25886" language="neutral" processorArchitecture="msil" />
+    <assemblyIdentity name="JSE" version="1.0.6093.34843" language="neutral" processorArchitecture="msil" />
     <commandLine file="JSE.exe" parameters="" />
   </entryPoint>
   <trustInfo>
@@ -151,14 +151,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="JSE.exe" size="1589168">
-      <assemblyIdentity name="JSE" version="1.0.6081.25886" language="neutral" processorArchitecture="msil" />
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="JSE.exe" size="1589680">
+      <assemblyIdentity name="JSE" version="1.0.6093.34843" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>HeWaEO71VmYnMb9MhaOfhIpiQB8=</dsig:DigestValue>
+        <dsig:DigestValue>EivFnEPFlPckgD41XQu9+unnYWU=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -354,15 +354,6 @@
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="FastColoredTextBox.dll" size="328704">
-    <hash>
-      <dsig:Transforms>
-        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
-      </dsig:Transforms>
-      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-      <dsig:DigestValue>e6KwwPjqubPM8LAZMbZ/YI+Kisg=</dsig:DigestValue>
-    </hash>
-  </file>
   <file name="JSE.exe.config" size="1284">
     <hash>
       <dsig:Transforms>
@@ -379,15 +370,6 @@
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
       <dsig:DigestValue>f606i8TBTRNasBXolFAYBb09xmo=</dsig:DigestValue>
-    </hash>
-  </file>
-  <file name="로고시안4.ico" size="370070">
-    <hash>
-      <dsig:Transforms>
-        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
-      </dsig:Transforms>
-      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-      <dsig:DigestValue>nhIQntCv2qLdScVNtCHl5dlafFs=</dsig:DigestValue>
     </hash>
   </file>
   <file name="로고시안5.ico" size="370070">

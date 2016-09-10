@@ -6,14 +6,34 @@ using System.Windows.Forms;
 
 namespace JSE
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         public Regex keyWords = new Regex("abstract as base bool break byte case catch char checked class const continue decimal default delegate do double else enum event explicit extern false finally fixed float for " + "foreach goto if implicit in int interface internal is lock long namespace new null object operator out override params private protected public readonly ref return sbyte sealed short sizeof stackalloc static " + "string struct switch this throw true try typeof uint ulong unchecked unsafe ushort using virtual volatile void while ");
         public string save_string = "";
-        public Form1()
+        public bool isfirst = false;
+        public int scrollTop;
+        public int[] div_list = new int[10000];
+        public MainForm()
+
         {
             InitializeComponent();
             openFileDialog1.Title = "열기";
+        }
+
+        public int getYoffset(HtmlElement el)
+        {
+            //get element pos
+            int yPos = el.OffsetRectangle.Top;
+
+            //get the parents pos
+            HtmlElement tempEl = el.OffsetParent;
+            while (tempEl != null)
+            {
+                yPos += tempEl.OffsetRectangle.Top;
+                tempEl = tempEl.OffsetParent;
+            }
+
+            return yPos;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -35,6 +55,7 @@ namespace JSE
             Console.Write("");
             richTextBox1.Text += "\r\n";
             Translator.translate();
+            webBrowser1.Navigate("http://m.post.naver.com/viewer/postView.nhn?volumeNo=4942170&memberNo=1991839");
             //richTextBox1.Text = Translator.replace_word("정수형 i = 0");
         }
         #region 추후 MDI 구현시 사용
@@ -86,12 +107,11 @@ namespace JSE
         }
         */
         #endregion
-
         private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)
         {
 
         }
-
+        #region 메뉴클릭 이벤트
         private void 코드빌드ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             richTextBox1.Text = "";
@@ -173,7 +193,7 @@ namespace JSE
 
         private void 전체화면ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.WindowState = FormWindowState.Maximized;
+            WindowState = FormWindowState.Maximized;
         }
 
         private void 새창ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -181,12 +201,7 @@ namespace JSE
             saveFileDialog1.Title = "새 파일";
         }
 
-        private void savefile(string savestring, string savepos)
-        {
-            StreamWriter sw = new StreamWriter(savepos);
-            sw.Write(savestring);
-            sw.Close();
-        }
+
 
         private void 제품등록ToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -243,13 +258,110 @@ namespace JSE
 
         private void 코드조각저장ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-        
-            if(syntaxHighlighter1.SelectedText!=""||syntaxHighlighter1.SelectedText != null)
+
+            if (syntaxHighlighter1.SelectedText != "" || syntaxHighlighter1.SelectedText != null)
             {
                 AddCode.selcode = syntaxHighlighter1.SelectedText;
             }
             AddCode f = new AddCode();
             f.ShowDialog();
+        }
+        private void mP3ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void 재생ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //WindowsMediaPlayer wmp = new WindowsMediaPlayer(file);
+
+        }
+        #endregion
+        private void savefile(string savestring, string savepos)
+        {
+            StreamWriter sw = new StreamWriter(savepos);
+            sw.Write(savestring);
+            sw.Close();
+        }
+
+        private void syntaxHighlighter1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        {
+            webBrowser1.Document.Window.AttachEventHandler("onscroll", OnScrollEventHandler);
+            /*
+            HtmlDocument doc = this.webBrowser1.Document;
+            int scrollTop = doc.GetElementsByTagName("HTML")[0].ScrollTop;
+            HtmlElement asd = doc.GetElementById("b");
+            int a = getYoffset(asd);
+            //MessageBox.Show(scrollTop.ToString());
+            //MessageBox.Show(a.ToString());
+            */
+
+        }
+
+        public void OnScrollEventHandler(object sender, EventArgs e)
+        {
+            HtmlDocument doc = webBrowser1.Document;
+            scrollTop = doc.GetElementsByTagName("HTML")[0].ScrollTop;
+            //MessageBox.Show(scrollTop.ToString());
+            if (!(isfirst))
+            {
+                getCode();
+            }
+            /*
+             * 현재 존재하는 Tag의 yOffset을 파악한다.(배열로)
+             * 현재 Scroll된 TopOver yOffset을 파악한다. (Onscroll)
+             * Toppos에서 일정 범위 내에 있는지를 검색한다.
+             * 비교해서 일정 범위 내에 해당하면 비교해서 자동으로 해당하는지 검사한다.
+             * 만약 해당한다면, 자동적으로 Overlay를 띄워주고 만약 아니라면 냅둔다
+             */
+        }
+        public void getCode()
+        {
+            int cnt = 0;
+            HtmlElementCollection theElementCollection = default(HtmlElementCollection);
+            theElementCollection = webBrowser1.Document.GetElementsByTagName("div");
+            int[] code_div = new int[theElementCollection.Count];
+            
+            foreach (HtmlElement curElement in theElementCollection)
+            {
+                Console.WriteLine(curElement.GetAttribute("classname").ToString());
+                if (curElement.GetAttribute("classname").ToString() == "__se_code_view se_textarea language-javascript")
+                {
+                    cnt++;
+                    int a = getYoffset(curElement); //현재 태그의 yoffset을 찾아낸다.
+                    div_list[cnt] = a;
+                    Console.WriteLine(curElement.GetAttribute("InnerText")); //InnerText만을 추출 가능하다.
+                   
+                }
+            }
+        }
+
+        public static void HighlightText(RichTextBox myRtb, string word, Color color)
+        {
+            if (word == "")
+            {
+                return;
+            }
+
+            int s_start = myRtb.SelectionStart, startIndex = 0, index;
+
+            while ((index = myRtb.Text.IndexOf(word, startIndex)) != -1)
+            {
+                myRtb.Select(index, word.Length);
+                myRtb.SelectionColor = color;
+
+                startIndex = index + word.Length;
+            }
+
+            myRtb.SelectionStart = s_start;
+            myRtb.SelectionLength = 0;
+            myRtb.SelectionColor = Color.Black;
         }
     }
 }

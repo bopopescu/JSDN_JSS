@@ -60,9 +60,7 @@ d:\documents\visual studio 2015\Projects\JSE\JSE\obj\Debug\JSE.EditorForm.resour
 d:\documents\visual studio 2015\Projects\JSE\JSE\obj\Debug\JSE.FindForm.resources
 d:\documents\visual studio 2015\Projects\JSE\JSE\obj\Debug\JSE.Form1.resources
 d:\documents\visual studio 2015\Projects\JSE\JSE\obj\Debug\JSE.Properties.Resources.resources
-d:\documents\visual studio 2015\Projects\JSE\JSE\obj\Debug\JSE.RibbonForm1.resources
 d:\documents\visual studio 2015\Projects\JSE\JSE\obj\Debug\JSE.StartingForm.resources
-d:\documents\visual studio 2015\Projects\JSE\JSE\obj\Debug\JSE.StartScreen.resources
 d:\documents\visual studio 2015\Projects\JSE\JSE\obj\Debug\JSE.SyntaxHighlighter.resources
 d:\documents\visual studio 2015\Projects\JSE\JSE\obj\Debug\JSE.csproj.GenerateResource.Cache
 d:\documents\visual studio 2015\Projects\JSE\JSE\obj\Debug\JSE.exe
@@ -75,3 +73,4 @@ d:\documents\visual studio 2015\Projects\JSE\JSE\obj\Debug\JSE.exe.manifest
 d:\documents\visual studio 2015\Projects\JSE\JSE\obj\Debug\JSE.application
 d:\documents\visual studio 2015\Projects\JSE\JSE\obj\Debug\JSE.AddCode.resources
 d:\documents\visual studio 2015\Projects\JSE\JSE\obj\Debug\JSE.Option.resources
+d:\documents\visual studio 2015\Projects\JSE\JSE\obj\Debug\JSE.MainForm.resources

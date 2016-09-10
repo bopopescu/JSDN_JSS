@@ -81,7 +81,7 @@ namespace JSE
             }
             else
             {
-                Form1 f = new JSE.Form1();
+                MainForm f = new JSE.MainForm();
                 f.Show();
                 this.Close();
                 timer1.Stop();

@@ -237,24 +237,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RibbonForm1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="RibbonForm1.Designer.cs">
-      <DependentUpon>RibbonForm1.cs</DependentUpon>
-    </Compile>
     <Compile Include="RichTextBoxExtensions.cs" />
     <Compile Include="StartingForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="StartingForm.Designer.cs">
       <DependentUpon>StartingForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="StartScreen.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="StartScreen.Designer.cs">
-      <DependentUpon>StartScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="SyntaxHighlighter.cs">
       <SubType>Component</SubType>
@@ -269,7 +257,6 @@
     <Compile Include="UpdateManager.Designer.cs">
       <DependentUpon>UpdateManager.cs</DependentUpon>
     </Compile>
-    <Compile Include="Youtube_Lister.cs" />
     <EmbeddedResource Include="AboutBox1.resx">
       <DependentUpon>AboutBox1.cs</DependentUpon>
     </EmbeddedResource>
@@ -304,14 +291,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="RibbonForm1.resx">
-      <DependentUpon>RibbonForm1.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="StartingForm.resx">
       <DependentUpon>StartingForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="StartScreen.resx">
-      <DependentUpon>StartScreen.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SyntaxHighlighter.resx">
       <DependentUpon>SyntaxHighlighter.cs</DependentUpon>
@@ -336,10 +317,8 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="FastColoredTextBox.dll" />
     <None Include="Resources\로고시안5.ico" />
     <None Include="Resources\로고시안5.png" />
-    <Content Include="로고시안4.ico" />
     <Content Include="로고시안5.ico" />
   </ItemGroup>
   <ItemGroup>
