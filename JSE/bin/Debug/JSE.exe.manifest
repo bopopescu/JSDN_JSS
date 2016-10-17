@@ -4,7 +4,7 @@
   <description asmv2:iconFile="Resources\로고시안5.ico" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <application />
   <entryPoint>
-    <assemblyIdentity name="JSE" version="1.0.6093.34843" language="neutral" processorArchitecture="msil" />
+    <assemblyIdentity name="JSE" version="1.0.6099.11638" language="neutral" processorArchitecture="msil" />
     <commandLine file="JSE.exe" parameters="" />
   </entryPoint>
   <trustInfo>
@@ -151,14 +151,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="JSE.exe" size="1589680">
-      <assemblyIdentity name="JSE" version="1.0.6093.34843" language="neutral" processorArchitecture="msil" />
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="JSE.exe" size="1590192">
+      <assemblyIdentity name="JSE" version="1.0.6099.11638" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>EivFnEPFlPckgD41XQu9+unnYWU=</dsig:DigestValue>
+        <dsig:DigestValue>1Y+JB5Qi+bA266Hc2xQS+aVm4uI=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

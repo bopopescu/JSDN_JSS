@@ -158,10 +158,8 @@ namespace JSE
                 m_nLineLength = m_nLineEnd - m_nLineStart;
                 // 현재 라인 가져오기
                 m_strLine = Text.Substring(m_nLineStart, m_nLineLength);
-
                 // 처리
                 ProcessLine();
-
                 m_bPaint = true;
             }
         }

@@ -10,9 +10,11 @@ namespace JSE
     {
         public Regex keyWords = new Regex("abstract as base bool break byte case catch char checked class const continue decimal default delegate do double else enum event explicit extern false finally fixed float for " + "foreach goto if implicit in int interface internal is lock long namespace new null object operator out override params private protected public readonly ref return sbyte sealed short sizeof stackalloc static " + "string struct switch this throw true try typeof uint ulong unchecked unsafe ushort using virtual volatile void while ");
         public string save_string = "";
-        public bool isfirst = false;
+        public bool isfirst = true;
         public int scrollTop;
         public int[] div_list = new int[10000];
+        public string[] div_code = new string[10000];
+        int cnt = 0;
         public MainForm()
 
         {
@@ -307,26 +309,48 @@ namespace JSE
         public void OnScrollEventHandler(object sender, EventArgs e)
         {
             HtmlDocument doc = webBrowser1.Document;
-            scrollTop = doc.GetElementsByTagName("HTML")[0].ScrollTop;
-            //MessageBox.Show(scrollTop.ToString());
-            if (!(isfirst))
+            scrollTop = doc.GetElementsByTagName("HTML")[0].ScrollTop; //현재위치
+            Console.WriteLine(scrollTop.ToString());
+            if (isfirst)
             {
                 getCode();
+                isfirst = false;
+            }
+            else
+            {
+                for(int i=1;i<=cnt;i++)
+                {
+                    Console.WriteLine(scrollTop.ToString());
+                    if (scrollTop < div_list[i] && div_list[i] < scrollTop + 300) //절대좌표를 이용, yPos를 직접비교한다.
+                    {//현재위치가 코드 위치보다 작음(더 위쪽) && 코드 위치가 현재 위치에서 300 이내일때
+                        syntaxHighlighter1.SelectAll();
+                        syntaxHighlighter1.SelectionBackColor = Color.White;
+                        HighlightText(syntaxHighlighter1, div_code[i], Color.Yellow);
+                    }
+                    
+                    else if(scrollTop > div_list[i-1]||scrollTop+300<div_list[i-1])
+                    { // 현재위치가 전 코드 위치보다 아래쪽이거나 현재위치+300이 전 코드 위치보다 작음.
+                        HighlightText(syntaxHighlighter1, div_code[i - 1], Color.White);
+                    }
+                    
+                }
             }
             /*
-             * 현재 존재하는 Tag의 yOffset을 파악한다.(배열로)
-             * 현재 Scroll된 TopOver yOffset을 파악한다. (Onscroll)
-             * Toppos에서 일정 범위 내에 있는지를 검색한다.
-             * 비교해서 일정 범위 내에 해당하면 비교해서 자동으로 해당하는지 검사한다.
-             * 만약 해당한다면, 자동적으로 Overlay를 띄워주고 만약 아니라면 냅둔다
+             * 현재 존재하는 Tag의 yOffset을 파악한다.(배열로) - Complete
+             * 현재 Scroll된 TopOver yOffset을 파악한다. (Onscroll) - Complete
+             * Toppos에서 일정 범위 내에 있는지를 검색한다. - Complete
+             * 비교해서 일정 범위 내에 해당하면 비교해서 자동으로 해당하는지 검사한다. - Complete
+             * 만약 해당한다면, 자동적으로 Overlay를 띄워주고 만약 아니라면 냅둔다 - BackColor Complete
+             * 
              */
+
         }
         public void getCode()
         {
-            int cnt = 0;
+            
             HtmlElementCollection theElementCollection = default(HtmlElementCollection);
             theElementCollection = webBrowser1.Document.GetElementsByTagName("div");
-            int[] code_div = new int[theElementCollection.Count];
+            
             
             foreach (HtmlElement curElement in theElementCollection)
             {
@@ -336,6 +360,8 @@ namespace JSE
                     cnt++;
                     int a = getYoffset(curElement); //현재 태그의 yoffset을 찾아낸다.
                     div_list[cnt] = a;
+                    div_code[cnt] = curElement.GetAttribute("InnerText");
+                    div_code[cnt] = div_code[cnt].Replace("\r","");
                     Console.WriteLine(curElement.GetAttribute("InnerText")); //InnerText만을 추출 가능하다.
                    
                 }
@@ -344,17 +370,12 @@ namespace JSE
 
         public static void HighlightText(RichTextBox myRtb, string word, Color color)
         {
-            if (word == "")
-            {
-                return;
-            }
-
-            int s_start = myRtb.SelectionStart, startIndex = 0, index;
-
+            int s_start = myRtb.SelectionStart, startIndex = 0, index=0;
+            
             while ((index = myRtb.Text.IndexOf(word, startIndex)) != -1)
             {
                 myRtb.Select(index, word.Length);
-                myRtb.SelectionColor = color;
+                myRtb.SelectionBackColor = color;
 
                 startIndex = index + word.Length;
             }
