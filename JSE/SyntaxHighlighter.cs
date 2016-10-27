@@ -9,7 +9,8 @@ namespace JSE
 {
     public partial class SyntaxHighlighter : RichTextBox
     {
-        private static string inputcache = "";
+        public static Boolean isCurslyBracesKeyPressed = false;
+        private static string inpcache = "";
         #region 줄번호 표시용 선언부
         [StructLayout(LayoutKind.Sequential)]
         public class POINT
@@ -135,9 +136,69 @@ namespace JSE
         {
            
         }
+
+        protected override void OnKeyPress(KeyPressEventArgs e)
+        {
+            String s = e.KeyChar.ToString();
+            int sel = SelectionStart;
+            switch (s)
+            {
+                case "(":
+                    Text = Text.Insert(sel, "()");
+                    e.Handled = true;
+                    SelectionStart = sel + 1;
+                    break;
+
+                case "{":
+                    String t = "{}";
+                    Text = Text.Insert(sel, t);
+                    e.Handled = true;
+                    SelectionStart = sel + t.Length - 1;
+                    isCurslyBracesKeyPressed = true;
+                    break;
+
+                case "[":
+                    Text = Text.Insert(sel, "[]");
+                    e.Handled = true;
+                    SelectionStart = sel + 1;
+                    break;
+
+                case "<":
+                    Text = Text.Insert(sel, "<>");
+                    e.Handled = true;
+                    SelectionStart = sel + 1;
+                    break;
+
+                case "\"":
+                    Text = Text.Insert(sel, "\"\"");
+                    e.Handled = true;
+                    SelectionStart = sel + 1;
+                    break;
+
+                case "'":
+                    Text = Text.Insert(sel, "''");
+                    e.Handled = true;
+                    SelectionStart = sel + 1;
+                    break;
+
+            }
+            base.OnKeyPress(e);
+        }
+
         protected override void OnKeyDown(KeyEventArgs e)
         {
-
+            if(e.KeyCode == Keys.Enter)
+            {
+                int sel = SelectionStart;
+                if (e.KeyCode == Keys.Enter)
+                {
+                    if (isCurslyBracesKeyPressed == true)
+                    {
+                        Text = Text.Insert(sel, "\n          \n");
+                        isCurslyBracesKeyPressed = false;
+                    }
+                }
+            }
             if(e.KeyCode == Keys.Enter || e.KeyCode == Keys.Space)
             {
                 m_nContentLength = this.TextLength;

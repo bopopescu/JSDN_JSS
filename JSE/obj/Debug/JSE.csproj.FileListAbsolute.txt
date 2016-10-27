@@ -2,7 +2,6 @@ d:\documents\visual studio 2015\Projects\JSE\JSE\bin\Debug\JSE.exe.config
 d:\documents\visual studio 2015\Projects\JSE\JSE\bin\Debug\JSE.exe
 d:\documents\visual studio 2015\Projects\JSE\JSE\bin\Debug\JSE.pdb
 d:\documents\visual studio 2015\Projects\JSE\JSE\bin\Debug\BouncyCastle.Crypto.dll
-d:\documents\visual studio 2015\Projects\JSE\JSE\bin\Debug\DevComponents.DotNetBar2.dll
 d:\documents\visual studio 2015\Projects\JSE\JSE\bin\Debug\FastColoredTextBox.dll
 d:\documents\visual studio 2015\Projects\JSE\JSE\bin\Debug\Google.Apis.Auth.dll
 d:\documents\visual studio 2015\Projects\JSE\JSE\bin\Debug\Google.Apis.Auth.PlatformServices.dll

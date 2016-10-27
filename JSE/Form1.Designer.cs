@@ -67,6 +67,11 @@
             this.제품등록ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripSeparator();
             this.johnscriptStudio정보ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mP3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.파일폴더열기ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
+            this.재생ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.정지ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.syntaxHighlighter1 = new JSE.SyntaxHighlighter();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -79,14 +84,13 @@
             this.toolStripMenuItem9 = new System.Windows.Forms.ToolStripSeparator();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.webBrowser1 = new System.Windows.Forms.WebBrowser();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.파일폴더열기ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
-            this.재생ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.정지ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mP3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.listView1 = new System.Windows.Forms.ListView();
+            this.splitContainer4 = new System.Windows.Forms.SplitContainer();
+            this.webBrowser1 = new System.Windows.Forms.WebBrowser();
+            this.button1 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -97,6 +101,13 @@
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
+            this.splitContainer3.Panel1.SuspendLayout();
+            this.splitContainer3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).BeginInit();
+            this.splitContainer4.Panel1.SuspendLayout();
+            this.splitContainer4.Panel2.SuspendLayout();
+            this.splitContainer4.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -113,7 +124,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(1221, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1385, 24);
             this.menuStrip1.TabIndex = 2;
             // 
             // 파일FToolStripMenuItem
@@ -269,26 +280,26 @@
             // 코드빌드ToolStripMenuItem
             // 
             this.코드빌드ToolStripMenuItem.Name = "코드빌드ToolStripMenuItem";
-            this.코드빌드ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.코드빌드ToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.코드빌드ToolStripMenuItem.Text = "코드 빌드";
             this.코드빌드ToolStripMenuItem.Click += new System.EventHandler(this.코드빌드ToolStripMenuItem_Click);
             // 
             // 코드정리ToolStripMenuItem
             // 
             this.코드정리ToolStripMenuItem.Name = "코드정리ToolStripMenuItem";
-            this.코드정리ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.코드정리ToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.코드정리ToolStripMenuItem.Text = "코드 정리";
             this.코드정리ToolStripMenuItem.Click += new System.EventHandler(this.코드정리ToolStripMenuItem_Click);
             // 
             // toolStripMenuItem10
             // 
             this.toolStripMenuItem10.Name = "toolStripMenuItem10";
-            this.toolStripMenuItem10.Size = new System.Drawing.Size(149, 6);
+            this.toolStripMenuItem10.Size = new System.Drawing.Size(123, 6);
             // 
             // 빌드옵션ToolStripMenuItem
             // 
             this.빌드옵션ToolStripMenuItem.Name = "빌드옵션ToolStripMenuItem";
-            this.빌드옵션ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.빌드옵션ToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.빌드옵션ToolStripMenuItem.Text = "빌드 옵션";
             // 
             // 디버그DToolStripMenuItem
@@ -302,7 +313,7 @@
             // 디버깅시작ToolStripMenuItem
             // 
             this.디버깅시작ToolStripMenuItem.Name = "디버깅시작ToolStripMenuItem";
-            this.디버깅시작ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.디버깅시작ToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.디버깅시작ToolStripMenuItem.Text = "디버깅 시작";
             // 
             // 도구TToolStripMenuItem
@@ -378,6 +389,42 @@
             this.johnscriptStudio정보ToolStripMenuItem.Text = "Johnscript Studio 정보";
             this.johnscriptStudio정보ToolStripMenuItem.Click += new System.EventHandler(this.johnscriptStudio정보ToolStripMenuItem_Click);
             // 
+            // mP3ToolStripMenuItem
+            // 
+            this.mP3ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.파일폴더열기ToolStripMenuItem,
+            this.toolStripMenuItem11,
+            this.재생ToolStripMenuItem,
+            this.정지ToolStripMenuItem});
+            this.mP3ToolStripMenuItem.Name = "mP3ToolStripMenuItem";
+            this.mP3ToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.mP3ToolStripMenuItem.Text = "MP3";
+            this.mP3ToolStripMenuItem.Click += new System.EventHandler(this.mP3ToolStripMenuItem_Click);
+            // 
+            // 파일폴더열기ToolStripMenuItem
+            // 
+            this.파일폴더열기ToolStripMenuItem.Name = "파일폴더열기ToolStripMenuItem";
+            this.파일폴더열기ToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.파일폴더열기ToolStripMenuItem.Text = "파일/폴더 열기";
+            // 
+            // toolStripMenuItem11
+            // 
+            this.toolStripMenuItem11.Name = "toolStripMenuItem11";
+            this.toolStripMenuItem11.Size = new System.Drawing.Size(152, 6);
+            // 
+            // 재생ToolStripMenuItem
+            // 
+            this.재생ToolStripMenuItem.Name = "재생ToolStripMenuItem";
+            this.재생ToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.재생ToolStripMenuItem.Text = "재생";
+            this.재생ToolStripMenuItem.Click += new System.EventHandler(this.재생ToolStripMenuItem_Click);
+            // 
+            // 정지ToolStripMenuItem
+            // 
+            this.정지ToolStripMenuItem.Name = "정지ToolStripMenuItem";
+            this.정지ToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.정지ToolStripMenuItem.Text = "정지";
+            // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -393,21 +440,24 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.richTextBox1);
-            this.splitContainer1.Size = new System.Drawing.Size(949, 483);
-            this.splitContainer1.SplitterDistance = 341;
+            this.splitContainer1.Size = new System.Drawing.Size(949, 473);
+            this.splitContainer1.SplitterDistance = 333;
             this.splitContainer1.TabIndex = 4;
             // 
             // syntaxHighlighter1
             // 
+            this.syntaxHighlighter1.AcceptsTab = true;
             this.syntaxHighlighter1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.syntaxHighlighter1.ContextMenuStrip = this.contextMenuStrip1;
             this.syntaxHighlighter1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.syntaxHighlighter1.Location = new System.Drawing.Point(0, 0);
             this.syntaxHighlighter1.Name = "syntaxHighlighter1";
-            this.syntaxHighlighter1.Size = new System.Drawing.Size(949, 341);
+            this.syntaxHighlighter1.Size = new System.Drawing.Size(949, 333);
             this.syntaxHighlighter1.TabIndex = 3;
             this.syntaxHighlighter1.Text = "";
             this.syntaxHighlighter1.TextChanged += new System.EventHandler(this.syntaxHighlighter1_TextChanged);
+            this.syntaxHighlighter1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.syntaxHighlighter1_KeyDown);
+            this.syntaxHighlighter1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.syntaxHighlighter1_KeyPress);
             // 
             // contextMenuStrip1
             // 
@@ -469,7 +519,7 @@
             this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBox1.Location = new System.Drawing.Point(0, 0);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(949, 138);
+            this.richTextBox1.Size = new System.Drawing.Size(949, 136);
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "출력";
             // 
@@ -486,10 +536,58 @@
             // 
             // splitContainer2.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.webBrowser1);
-            this.splitContainer2.Size = new System.Drawing.Size(1221, 483);
+            this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
+            this.splitContainer2.Size = new System.Drawing.Size(1385, 473);
             this.splitContainer2.SplitterDistance = 949;
             this.splitContainer2.TabIndex = 5;
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // splitContainer3
+            // 
+            this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer3.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer3.Name = "splitContainer3";
+            // 
+            // splitContainer3.Panel1
+            // 
+            this.splitContainer3.Panel1.Controls.Add(this.splitContainer4);
+            this.splitContainer3.Panel1.Controls.Add(this.listView1);
+            this.splitContainer3.Panel2Collapsed = true;
+            this.splitContainer3.Size = new System.Drawing.Size(432, 473);
+            this.splitContainer3.SplitterDistance = 264;
+            this.splitContainer3.TabIndex = 0;
+            // 
+            // listView1
+            // 
+            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listView1.Location = new System.Drawing.Point(0, 0);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(432, 473);
+            this.listView1.TabIndex = 0;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            // 
+            // splitContainer4
+            // 
+            this.splitContainer4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer4.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
+            this.splitContainer4.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer4.Name = "splitContainer4";
+            this.splitContainer4.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer4.Panel1
+            // 
+            this.splitContainer4.Panel1.BackColor = System.Drawing.Color.DodgerBlue;
+            this.splitContainer4.Panel1.Controls.Add(this.button1);
+            // 
+            // splitContainer4.Panel2
+            // 
+            this.splitContainer4.Panel2.Controls.Add(this.webBrowser1);
+            this.splitContainer4.Size = new System.Drawing.Size(432, 473);
+            this.splitContainer4.SplitterDistance = 48;
+            this.splitContainer4.TabIndex = 0;
             // 
             // webBrowser1
             // 
@@ -497,55 +595,29 @@
             this.webBrowser1.Location = new System.Drawing.Point(0, 0);
             this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
             this.webBrowser1.Name = "webBrowser1";
-            this.webBrowser1.Size = new System.Drawing.Size(268, 483);
+            this.webBrowser1.Size = new System.Drawing.Size(432, 421);
             this.webBrowser1.TabIndex = 0;
-            this.webBrowser1.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.webBrowser1_DocumentCompleted);
             // 
-            // openFileDialog1
+            // button1
             // 
-            this.openFileDialog1.FileName = "openFileDialog1";
-            // 
-            // 파일폴더열기ToolStripMenuItem
-            // 
-            this.파일폴더열기ToolStripMenuItem.Name = "파일폴더열기ToolStripMenuItem";
-            this.파일폴더열기ToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.파일폴더열기ToolStripMenuItem.Text = "파일/폴더 열기";
-            // 
-            // toolStripMenuItem11
-            // 
-            this.toolStripMenuItem11.Name = "toolStripMenuItem11";
-            this.toolStripMenuItem11.Size = new System.Drawing.Size(152, 6);
-            // 
-            // 재생ToolStripMenuItem
-            // 
-            this.재생ToolStripMenuItem.Name = "재생ToolStripMenuItem";
-            this.재생ToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.재생ToolStripMenuItem.Text = "재생";
-            this.재생ToolStripMenuItem.Click += new System.EventHandler(this.재생ToolStripMenuItem_Click);
-            // 
-            // 정지ToolStripMenuItem
-            // 
-            this.정지ToolStripMenuItem.Name = "정지ToolStripMenuItem";
-            this.정지ToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.정지ToolStripMenuItem.Text = "정지";
-            // 
-            // mP3ToolStripMenuItem
-            // 
-            this.mP3ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.파일폴더열기ToolStripMenuItem,
-            this.toolStripMenuItem11,
-            this.재생ToolStripMenuItem,
-            this.정지ToolStripMenuItem});
-            this.mP3ToolStripMenuItem.Name = "mP3ToolStripMenuItem";
-            this.mP3ToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.mP3ToolStripMenuItem.Text = "MP3";
-            this.mP3ToolStripMenuItem.Click += new System.EventHandler(this.mP3ToolStripMenuItem_Click);
+            this.button1.BackColor = System.Drawing.Color.Transparent;
+            this.button1.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Gulim", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.button1.ForeColor = System.Drawing.Color.Black;
+            this.button1.Location = new System.Drawing.Point(384, 0);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(48, 48);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "三";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1221, 507);
+            this.ClientSize = new System.Drawing.Size(1385, 497);
             this.ContextMenuStrip = this.contextMenuStrip1;
             this.Controls.Add(this.splitContainer2);
             this.Controls.Add(this.menuStrip1);
@@ -555,6 +627,7 @@
             this.Text = "Johnscript Studio v 1.0.0.0";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -566,6 +639,13 @@
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
+            this.splitContainer3.Panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
+            this.splitContainer3.ResumeLayout(false);
+            this.splitContainer4.Panel1.ResumeLayout(false);
+            this.splitContainer4.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).EndInit();
+            this.splitContainer4.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -623,12 +703,16 @@
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem9;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem10;
         private System.Windows.Forms.ToolStripMenuItem 빌드옵션ToolStripMenuItem;
-        private System.Windows.Forms.WebBrowser webBrowser1;
         private System.Windows.Forms.ToolStripMenuItem mP3ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 파일폴더열기ToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem11;
         private System.Windows.Forms.ToolStripMenuItem 재생ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 정지ToolStripMenuItem;
+        private System.Windows.Forms.SplitContainer splitContainer3;
+        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.SplitContainer splitContainer4;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.WebBrowser webBrowser1;
     }
 }
 

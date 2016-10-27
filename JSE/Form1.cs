@@ -15,6 +15,7 @@ namespace JSE
         public int[] div_list = new int[10000];
         public string[] div_code = new string[10000];
         int cnt = 0;
+        public static Boolean isCurslyBracesKeyPressed = false;
         public MainForm()
 
         {
@@ -40,6 +41,8 @@ namespace JSE
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            //this.syntaxHighlighter1.AutoCompleteMode;
+            button1.FlatAppearance.BorderColor = Color.DodgerBlue;
             const int dist = 36;
             syntaxHighlighter1.SetInnerMargins(dist, 0, 0, 0);
             string[] commands = Regex.Split(keyWords.ToString(), " ");
@@ -294,7 +297,7 @@ namespace JSE
 
         private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
-            webBrowser1.Document.Window.AttachEventHandler("onscroll", OnScrollEventHandler);
+            //webBrowser1.Document.Window.AttachEventHandler("onscroll", OnScrollEventHandler);
             /*
             HtmlDocument doc = this.webBrowser1.Document;
             int scrollTop = doc.GetElementsByTagName("HTML")[0].ScrollTop;
@@ -305,7 +308,7 @@ namespace JSE
             */
 
         }
-
+        /*
         public void OnScrollEventHandler(object sender, EventArgs e)
         {
             HtmlDocument doc = webBrowser1.Document;
@@ -318,7 +321,7 @@ namespace JSE
             }
             else
             {
-                for(int i=1;i<=cnt;i++)
+                for (int i = 1; i <= cnt; i++)
                 {
                     Console.WriteLine(scrollTop.ToString());
                     if (scrollTop < div_list[i] && div_list[i] < scrollTop + 300) //절대좌표를 이용, yPos를 직접비교한다.
@@ -327,31 +330,33 @@ namespace JSE
                         syntaxHighlighter1.SelectionBackColor = Color.White;
                         HighlightText(syntaxHighlighter1, div_code[i], Color.Yellow);
                     }
-                    
-                    else if(scrollTop > div_list[i-1]||scrollTop+300<div_list[i-1])
+
+                    else if (scrollTop > div_list[i - 1] || scrollTop + 300 < div_list[i - 1])
                     { // 현재위치가 전 코드 위치보다 아래쪽이거나 현재위치+300이 전 코드 위치보다 작음.
                         HighlightText(syntaxHighlighter1, div_code[i - 1], Color.White);
                     }
-                    
+
                 }
             }
-            /*
+            
              * 현재 존재하는 Tag의 yOffset을 파악한다.(배열로) - Complete
              * 현재 Scroll된 TopOver yOffset을 파악한다. (Onscroll) - Complete
              * Toppos에서 일정 범위 내에 있는지를 검색한다. - Complete
              * 비교해서 일정 범위 내에 해당하면 비교해서 자동으로 해당하는지 검사한다. - Complete
              * 만약 해당한다면, 자동적으로 Overlay를 띄워주고 만약 아니라면 냅둔다 - BackColor Complete
              * 
-             */
+             
 
         }
+        */
+        /*
         public void getCode()
         {
-            
+
             HtmlElementCollection theElementCollection = default(HtmlElementCollection);
             theElementCollection = webBrowser1.Document.GetElementsByTagName("div");
-            
-            
+
+
             foreach (HtmlElement curElement in theElementCollection)
             {
                 Console.WriteLine(curElement.GetAttribute("classname").ToString());
@@ -361,17 +366,18 @@ namespace JSE
                     int a = getYoffset(curElement); //현재 태그의 yoffset을 찾아낸다.
                     div_list[cnt] = a;
                     div_code[cnt] = curElement.GetAttribute("InnerText");
-                    div_code[cnt] = div_code[cnt].Replace("\r","");
+                    div_code[cnt] = div_code[cnt].Replace("\r", "");
                     Console.WriteLine(curElement.GetAttribute("InnerText")); //InnerText만을 추출 가능하다.
-                   
+
                 }
             }
         }
-
+        */
+        /*
         public static void HighlightText(RichTextBox myRtb, string word, Color color)
         {
-            int s_start = myRtb.SelectionStart, startIndex = 0, index=0;
-            
+            int s_start = myRtb.SelectionStart, startIndex = 0, index = 0;
+
             while ((index = myRtb.Text.IndexOf(word, startIndex)) != -1)
             {
                 myRtb.Select(index, word.Length);
@@ -383,6 +389,83 @@ namespace JSE
             myRtb.SelectionStart = s_start;
             myRtb.SelectionLength = 0;
             myRtb.SelectionColor = Color.Black;
+        }
+        */
+        private void syntaxHighlighter1_KeyDown(object sender, KeyEventArgs e)
+        {
+            
+
+        }
+
+        private void syntaxHighlighter1_KeyPress(object sender, KeyPressEventArgs e)
+        {/*
+            String s = e.KeyChar.ToString();
+            int sel = syntaxHighlighter1.SelectionStart;
+            switch (s)
+            {
+                case "(":
+                    syntaxHighlighter1.Text = syntaxHighlighter1.Text.Insert(sel, "()");
+                    e.Handled = true;
+                    syntaxHighlighter1.SelectionStart = sel + 1;
+                    break;
+
+                case "{":
+                    String t = "{}";
+                    syntaxHighlighter1.Text = syntaxHighlighter1.Text.Insert(sel, t);
+                    e.Handled = true;
+                    syntaxHighlighter1.SelectionStart = sel + t.Length - 1;
+                    isCurslyBracesKeyPressed = true;
+                    break;
+
+                case "[":
+                    syntaxHighlighter1.Text = syntaxHighlighter1.Text.Insert(sel, "[]");
+                    e.Handled = true;
+                    syntaxHighlighter1.SelectionStart = sel + 1;
+                    break;
+
+                case "<":
+                    syntaxHighlighter1.Text = syntaxHighlighter1.Text.Insert(sel, "<>");
+                    e.Handled = true;
+                    syntaxHighlighter1.SelectionStart = sel + 1;
+                    break;
+
+                case "\"":
+                    syntaxHighlighter1.Text = syntaxHighlighter1.Text.Insert(sel, "\"\"");
+                    e.Handled = true;
+                    syntaxHighlighter1.SelectionStart = sel + 1;
+                    break;
+
+                case "'":
+                    syntaxHighlighter1.Text = syntaxHighlighter1.Text.Insert(sel, "''");
+                    e.Handled = true;
+                    syntaxHighlighter1.SelectionStart = sel + 1;
+                    break;
+
+            }
+            */
+        }
+
+        private void MainForm_Resize(object sender, EventArgs e)
+        {
+            button1.Height = splitContainer4.Panel1.Height;
+            
+        }
+        private bool isclicked = false;
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if(isclicked)
+            {
+                button1.Text = "三";
+                splitContainer3.Panel2Collapsed = true;
+                isclicked = false;
+            }
+            else
+            {
+                button1.Text = ">";
+                splitContainer3.Panel2Collapsed = false;
+                isclicked = true;
+            }
+            
         }
     }
 }
