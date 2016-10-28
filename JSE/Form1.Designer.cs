@@ -73,7 +73,6 @@
             this.재생ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.정지ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.syntaxHighlighter1 = new JSE.SyntaxHighlighter();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.코드조각저장ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -93,6 +92,7 @@
             this.listView1 = new System.Windows.Forms.ListView();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.syntaxHighlighter1 = new JSE.SyntaxHighlighter();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -442,24 +442,9 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.richTextBox1);
-            this.splitContainer1.Size = new System.Drawing.Size(832, 473);
+            this.splitContainer1.Size = new System.Drawing.Size(752, 473);
             this.splitContainer1.SplitterDistance = 333;
             this.splitContainer1.TabIndex = 4;
-            // 
-            // syntaxHighlighter1
-            // 
-            this.syntaxHighlighter1.AcceptsTab = true;
-            this.syntaxHighlighter1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.syntaxHighlighter1.ContextMenuStrip = this.contextMenuStrip1;
-            this.syntaxHighlighter1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.syntaxHighlighter1.Location = new System.Drawing.Point(0, 0);
-            this.syntaxHighlighter1.Name = "syntaxHighlighter1";
-            this.syntaxHighlighter1.Size = new System.Drawing.Size(832, 333);
-            this.syntaxHighlighter1.TabIndex = 3;
-            this.syntaxHighlighter1.Text = "";
-            this.syntaxHighlighter1.TextChanged += new System.EventHandler(this.syntaxHighlighter1_TextChanged);
-            this.syntaxHighlighter1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.syntaxHighlighter1_KeyDown);
-            this.syntaxHighlighter1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.syntaxHighlighter1_KeyPress);
             // 
             // contextMenuStrip1
             // 
@@ -521,7 +506,7 @@
             this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBox1.Location = new System.Drawing.Point(0, 0);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(832, 136);
+            this.richTextBox1.Size = new System.Drawing.Size(752, 136);
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "출력";
             // 
@@ -539,8 +524,9 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
+            this.splitContainer2.Panel2MinSize = 420;
             this.splitContainer2.Size = new System.Drawing.Size(1241, 473);
-            this.splitContainer2.SplitterDistance = 832;
+            this.splitContainer2.SplitterDistance = 752;
             this.splitContainer2.TabIndex = 5;
             // 
             // splitContainer3
@@ -554,7 +540,7 @@
             this.splitContainer3.Panel1.Controls.Add(this.splitContainer4);
             this.splitContainer3.Panel1.Controls.Add(this.listView1);
             this.splitContainer3.Panel2Collapsed = true;
-            this.splitContainer3.Size = new System.Drawing.Size(405, 473);
+            this.splitContainer3.Size = new System.Drawing.Size(485, 473);
             this.splitContainer3.SplitterDistance = 264;
             this.splitContainer3.TabIndex = 0;
             // 
@@ -576,7 +562,7 @@
             // splitContainer4.Panel2
             // 
             this.splitContainer4.Panel2.Controls.Add(this.webBrowser1);
-            this.splitContainer4.Size = new System.Drawing.Size(405, 473);
+            this.splitContainer4.Size = new System.Drawing.Size(485, 473);
             this.splitContainer4.SplitterDistance = 39;
             this.splitContainer4.TabIndex = 0;
             // 
@@ -586,7 +572,7 @@
             this.textBox1.Font = new System.Drawing.Font("Gulim", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.textBox1.Location = new System.Drawing.Point(0, 0);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(309, 53);
+            this.textBox1.Size = new System.Drawing.Size(389, 53);
             this.textBox1.TabIndex = 2;
             // 
             // button2
@@ -596,7 +582,7 @@
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button2.Font = new System.Drawing.Font("Gulim", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.button2.ForeColor = System.Drawing.Color.Black;
-            this.button2.Location = new System.Drawing.Point(309, 0);
+            this.button2.Location = new System.Drawing.Point(389, 0);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(48, 39);
             this.button2.TabIndex = 1;
@@ -610,7 +596,7 @@
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button1.Font = new System.Drawing.Font("Gulim", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.button1.ForeColor = System.Drawing.Color.Black;
-            this.button1.Location = new System.Drawing.Point(357, 0);
+            this.button1.Location = new System.Drawing.Point(437, 0);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(48, 39);
             this.button1.TabIndex = 0;
@@ -624,7 +610,7 @@
             this.webBrowser1.Location = new System.Drawing.Point(0, 0);
             this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
             this.webBrowser1.Name = "webBrowser1";
-            this.webBrowser1.Size = new System.Drawing.Size(405, 430);
+            this.webBrowser1.Size = new System.Drawing.Size(485, 430);
             this.webBrowser1.TabIndex = 0;
             // 
             // listView1
@@ -632,13 +618,28 @@
             this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView1.Location = new System.Drawing.Point(0, 0);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(405, 473);
+            this.listView1.Size = new System.Drawing.Size(485, 473);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             // 
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // syntaxHighlighter1
+            // 
+            this.syntaxHighlighter1.AcceptsTab = true;
+            this.syntaxHighlighter1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.syntaxHighlighter1.ContextMenuStrip = this.contextMenuStrip1;
+            this.syntaxHighlighter1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.syntaxHighlighter1.Location = new System.Drawing.Point(0, 0);
+            this.syntaxHighlighter1.Name = "syntaxHighlighter1";
+            this.syntaxHighlighter1.Size = new System.Drawing.Size(752, 333);
+            this.syntaxHighlighter1.TabIndex = 3;
+            this.syntaxHighlighter1.Text = "";
+            this.syntaxHighlighter1.TextChanged += new System.EventHandler(this.syntaxHighlighter1_TextChanged);
+            this.syntaxHighlighter1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.syntaxHighlighter1_KeyDown);
+            this.syntaxHighlighter1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.syntaxHighlighter1_KeyPress);
             // 
             // MainForm
             // 
