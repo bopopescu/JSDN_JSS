@@ -84,15 +84,15 @@
             this.toolStripMenuItem9 = new System.Windows.Forms.ToolStripSeparator();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.splitContainer4 = new System.Windows.Forms.SplitContainer();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.webBrowser1 = new System.Windows.Forms.WebBrowser();
+            this.listView1 = new System.Windows.Forms.ListView();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.listView1 = new System.Windows.Forms.ListView();
-            this.splitContainer4 = new System.Windows.Forms.SplitContainer();
-            this.webBrowser1 = new System.Windows.Forms.WebBrowser();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -126,7 +126,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(1385, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1241, 24);
             this.menuStrip1.TabIndex = 2;
             // 
             // 파일FToolStripMenuItem
@@ -442,7 +442,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.richTextBox1);
-            this.splitContainer1.Size = new System.Drawing.Size(949, 473);
+            this.splitContainer1.Size = new System.Drawing.Size(832, 473);
             this.splitContainer1.SplitterDistance = 333;
             this.splitContainer1.TabIndex = 4;
             // 
@@ -454,7 +454,7 @@
             this.syntaxHighlighter1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.syntaxHighlighter1.Location = new System.Drawing.Point(0, 0);
             this.syntaxHighlighter1.Name = "syntaxHighlighter1";
-            this.syntaxHighlighter1.Size = new System.Drawing.Size(949, 333);
+            this.syntaxHighlighter1.Size = new System.Drawing.Size(832, 333);
             this.syntaxHighlighter1.TabIndex = 3;
             this.syntaxHighlighter1.Text = "";
             this.syntaxHighlighter1.TextChanged += new System.EventHandler(this.syntaxHighlighter1_TextChanged);
@@ -521,7 +521,7 @@
             this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBox1.Location = new System.Drawing.Point(0, 0);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(949, 136);
+            this.richTextBox1.Size = new System.Drawing.Size(832, 136);
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "출력";
             // 
@@ -539,13 +539,9 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
-            this.splitContainer2.Size = new System.Drawing.Size(1385, 473);
-            this.splitContainer2.SplitterDistance = 949;
+            this.splitContainer2.Size = new System.Drawing.Size(1241, 473);
+            this.splitContainer2.SplitterDistance = 832;
             this.splitContainer2.TabIndex = 5;
-            // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.FileName = "openFileDialog1";
             // 
             // splitContainer3
             // 
@@ -558,18 +554,9 @@
             this.splitContainer3.Panel1.Controls.Add(this.splitContainer4);
             this.splitContainer3.Panel1.Controls.Add(this.listView1);
             this.splitContainer3.Panel2Collapsed = true;
-            this.splitContainer3.Size = new System.Drawing.Size(432, 473);
+            this.splitContainer3.Size = new System.Drawing.Size(405, 473);
             this.splitContainer3.SplitterDistance = 264;
             this.splitContainer3.TabIndex = 0;
-            // 
-            // listView1
-            // 
-            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listView1.Location = new System.Drawing.Point(0, 0);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(432, 473);
-            this.listView1.TabIndex = 0;
-            this.listView1.UseCompatibleStateImageBehavior = false;
             // 
             // splitContainer4
             // 
@@ -589,33 +576,18 @@
             // splitContainer4.Panel2
             // 
             this.splitContainer4.Panel2.Controls.Add(this.webBrowser1);
-            this.splitContainer4.Size = new System.Drawing.Size(432, 473);
-            this.splitContainer4.SplitterDistance = 48;
+            this.splitContainer4.Size = new System.Drawing.Size(405, 473);
+            this.splitContainer4.SplitterDistance = 39;
             this.splitContainer4.TabIndex = 0;
             // 
-            // webBrowser1
+            // textBox1
             // 
-            this.webBrowser1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.webBrowser1.Location = new System.Drawing.Point(0, 0);
-            this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
-            this.webBrowser1.Name = "webBrowser1";
-            this.webBrowser1.Size = new System.Drawing.Size(432, 421);
-            this.webBrowser1.TabIndex = 0;
-            // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.Color.Transparent;
-            this.button1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Gulim", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.button1.ForeColor = System.Drawing.Color.Black;
-            this.button1.Location = new System.Drawing.Point(384, 0);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(48, 48);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "三";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBox1.Font = new System.Drawing.Font("Gulim", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.textBox1.Location = new System.Drawing.Point(0, 0);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(309, 53);
+            this.textBox1.TabIndex = 2;
             // 
             // button2
             // 
@@ -624,27 +596,55 @@
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button2.Font = new System.Drawing.Font("Gulim", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.button2.ForeColor = System.Drawing.Color.Black;
-            this.button2.Location = new System.Drawing.Point(336, 0);
+            this.button2.Location = new System.Drawing.Point(309, 0);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(48, 48);
+            this.button2.Size = new System.Drawing.Size(48, 39);
             this.button2.TabIndex = 1;
             this.button2.Text = "→";
             this.button2.UseVisualStyleBackColor = false;
             // 
-            // textBox1
+            // button1
             // 
-            this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox1.Font = new System.Drawing.Font("Gulim", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.textBox1.Location = new System.Drawing.Point(0, 0);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(336, 53);
-            this.textBox1.TabIndex = 2;
+            this.button1.BackColor = System.Drawing.Color.Transparent;
+            this.button1.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Gulim", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.button1.ForeColor = System.Drawing.Color.Black;
+            this.button1.Location = new System.Drawing.Point(357, 0);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(48, 39);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "三";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // webBrowser1
+            // 
+            this.webBrowser1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.webBrowser1.Location = new System.Drawing.Point(0, 0);
+            this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
+            this.webBrowser1.Name = "webBrowser1";
+            this.webBrowser1.Size = new System.Drawing.Size(405, 430);
+            this.webBrowser1.TabIndex = 0;
+            // 
+            // listView1
+            // 
+            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listView1.Location = new System.Drawing.Point(0, 0);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(405, 473);
+            this.listView1.TabIndex = 0;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1385, 497);
+            this.ClientSize = new System.Drawing.Size(1241, 497);
             this.ContextMenuStrip = this.contextMenuStrip1;
             this.Controls.Add(this.splitContainer2);
             this.Controls.Add(this.menuStrip1);

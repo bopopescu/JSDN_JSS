@@ -60,7 +60,7 @@ namespace JSE
             Console.Write("");
             richTextBox1.Text += "\r\n";
             Translator.translate();
-            webBrowser1.Navigate("http://m.post.naver.com/viewer/postView.nhn?volumeNo=4942170&memberNo=1991839");
+            webBrowser1.Navigate("https://dicontest.herokuapp.com/code_front/qna/qnaFront.html");
             //richTextBox1.Text = Translator.replace_word("정수형 i = 0");
         }
         #region 추후 MDI 구현시 사용

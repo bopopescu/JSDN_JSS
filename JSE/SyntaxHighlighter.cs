@@ -194,10 +194,12 @@ namespace JSE
                 {
                     if (isCurslyBracesKeyPressed == true)
                     {
-                        Text = Text.Insert(sel, "\n          \n");
+                        Text = Text.Insert(sel, "\n \n");
+                        sel += "\n\n".Length;
                         isCurslyBracesKeyPressed = false;
                     }
                 }
+                SelectionStart = sel;
             }
             if(e.KeyCode == Keys.Enter || e.KeyCode == Keys.Space)
             {
