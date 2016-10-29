@@ -95,6 +95,9 @@
             this.syntaxHighlighter1 = new JSE.SyntaxHighlighter();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.treeView1 = new System.Windows.Forms.TreeView();
+            this.새프로젝트PToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.새파일FToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -151,9 +154,12 @@
             // 
             // 새창ToolStripMenuItem
             // 
+            this.새창ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.새프로젝트PToolStripMenuItem,
+            this.새파일FToolStripMenuItem});
             this.새창ToolStripMenuItem.Name = "새창ToolStripMenuItem";
             this.새창ToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
-            this.새창ToolStripMenuItem.Text = "새 파일";
+            this.새창ToolStripMenuItem.Text = "새로 만들기";
             this.새창ToolStripMenuItem.Click += new System.EventHandler(this.새창ToolStripMenuItem_Click);
             // 
             // 열기ToolStripMenuItem
@@ -671,6 +677,21 @@
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(213, 473);
             this.treeView1.TabIndex = 0;
+            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
+            this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
+            // 
+            // 새프로젝트PToolStripMenuItem
+            // 
+            this.새프로젝트PToolStripMenuItem.Name = "새프로젝트PToolStripMenuItem";
+            this.새프로젝트PToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.새프로젝트PToolStripMenuItem.Text = "새 프로젝트(&P)";
+            this.새프로젝트PToolStripMenuItem.Click += new System.EventHandler(this.새프로젝트PToolStripMenuItem_Click);
+            // 
+            // 새파일FToolStripMenuItem
+            // 
+            this.새파일FToolStripMenuItem.Name = "새파일FToolStripMenuItem";
+            this.새파일FToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.새파일FToolStripMenuItem.Text = "새 파일(&F)";
             // 
             // MainForm
             // 
@@ -781,6 +802,9 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.SplitContainer splitContainer5;
         private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.ToolStripMenuItem 새프로젝트PToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 새파일FToolStripMenuItem;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
     }
 }
 
