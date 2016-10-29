@@ -33,6 +33,8 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.파일FToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.새창ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.새프로젝트PToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.새파일FToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.열기ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.저장ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -73,6 +75,7 @@
             this.재생ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.정지ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.syntaxHighlighter1 = new JSE.SyntaxHighlighter();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.코드조각저장ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -92,11 +95,8 @@
             this.listView1 = new System.Windows.Forms.ListView();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.syntaxHighlighter1 = new JSE.SyntaxHighlighter();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.treeView1 = new System.Windows.Forms.TreeView();
-            this.새프로젝트PToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.새파일FToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -161,6 +161,20 @@
             this.새창ToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.새창ToolStripMenuItem.Text = "새로 만들기";
             this.새창ToolStripMenuItem.Click += new System.EventHandler(this.새창ToolStripMenuItem_Click);
+            // 
+            // 새프로젝트PToolStripMenuItem
+            // 
+            this.새프로젝트PToolStripMenuItem.Name = "새프로젝트PToolStripMenuItem";
+            this.새프로젝트PToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.새프로젝트PToolStripMenuItem.Text = "새 프로젝트(&P)";
+            this.새프로젝트PToolStripMenuItem.Click += new System.EventHandler(this.새프로젝트PToolStripMenuItem_Click);
+            // 
+            // 새파일FToolStripMenuItem
+            // 
+            this.새파일FToolStripMenuItem.Name = "새파일FToolStripMenuItem";
+            this.새파일FToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.새파일FToolStripMenuItem.Text = "새 파일(&F)";
+            this.새파일FToolStripMenuItem.Click += new System.EventHandler(this.새파일FToolStripMenuItem_Click);
             // 
             // 열기ToolStripMenuItem
             // 
@@ -294,26 +308,26 @@
             // 코드빌드ToolStripMenuItem
             // 
             this.코드빌드ToolStripMenuItem.Name = "코드빌드ToolStripMenuItem";
-            this.코드빌드ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.코드빌드ToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.코드빌드ToolStripMenuItem.Text = "코드 빌드";
             this.코드빌드ToolStripMenuItem.Click += new System.EventHandler(this.코드빌드ToolStripMenuItem_Click);
             // 
             // 코드정리ToolStripMenuItem
             // 
             this.코드정리ToolStripMenuItem.Name = "코드정리ToolStripMenuItem";
-            this.코드정리ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.코드정리ToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.코드정리ToolStripMenuItem.Text = "코드 정리";
             this.코드정리ToolStripMenuItem.Click += new System.EventHandler(this.코드정리ToolStripMenuItem_Click);
             // 
             // toolStripMenuItem10
             // 
             this.toolStripMenuItem10.Name = "toolStripMenuItem10";
-            this.toolStripMenuItem10.Size = new System.Drawing.Size(149, 6);
+            this.toolStripMenuItem10.Size = new System.Drawing.Size(123, 6);
             // 
             // 빌드옵션ToolStripMenuItem
             // 
             this.빌드옵션ToolStripMenuItem.Name = "빌드옵션ToolStripMenuItem";
-            this.빌드옵션ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.빌드옵션ToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.빌드옵션ToolStripMenuItem.Text = "빌드 옵션";
             // 
             // 디버그DToolStripMenuItem
@@ -327,7 +341,7 @@
             // 디버깅시작ToolStripMenuItem
             // 
             this.디버깅시작ToolStripMenuItem.Name = "디버깅시작ToolStripMenuItem";
-            this.디버깅시작ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.디버깅시작ToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.디버깅시작ToolStripMenuItem.Text = "디버깅 시작";
             // 
             // 도구TToolStripMenuItem
@@ -457,6 +471,21 @@
             this.splitContainer1.Size = new System.Drawing.Size(600, 473);
             this.splitContainer1.SplitterDistance = 359;
             this.splitContainer1.TabIndex = 4;
+            // 
+            // syntaxHighlighter1
+            // 
+            this.syntaxHighlighter1.AcceptsTab = true;
+            this.syntaxHighlighter1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.syntaxHighlighter1.ContextMenuStrip = this.contextMenuStrip1;
+            this.syntaxHighlighter1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.syntaxHighlighter1.Location = new System.Drawing.Point(0, 0);
+            this.syntaxHighlighter1.Name = "syntaxHighlighter1";
+            this.syntaxHighlighter1.Size = new System.Drawing.Size(600, 359);
+            this.syntaxHighlighter1.TabIndex = 3;
+            this.syntaxHighlighter1.Text = "";
+            this.syntaxHighlighter1.TextChanged += new System.EventHandler(this.syntaxHighlighter1_TextChanged);
+            this.syntaxHighlighter1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.syntaxHighlighter1_KeyDown);
+            this.syntaxHighlighter1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.syntaxHighlighter1_KeyPress);
             // 
             // contextMenuStrip1
             // 
@@ -638,21 +667,6 @@
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // syntaxHighlighter1
-            // 
-            this.syntaxHighlighter1.AcceptsTab = true;
-            this.syntaxHighlighter1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.syntaxHighlighter1.ContextMenuStrip = this.contextMenuStrip1;
-            this.syntaxHighlighter1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.syntaxHighlighter1.Location = new System.Drawing.Point(0, 0);
-            this.syntaxHighlighter1.Name = "syntaxHighlighter1";
-            this.syntaxHighlighter1.Size = new System.Drawing.Size(600, 359);
-            this.syntaxHighlighter1.TabIndex = 3;
-            this.syntaxHighlighter1.Text = "";
-            this.syntaxHighlighter1.TextChanged += new System.EventHandler(this.syntaxHighlighter1_TextChanged);
-            this.syntaxHighlighter1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.syntaxHighlighter1_KeyDown);
-            this.syntaxHighlighter1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.syntaxHighlighter1_KeyPress);
-            // 
             // splitContainer5
             // 
             this.splitContainer5.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -679,19 +693,6 @@
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
-            // 
-            // 새프로젝트PToolStripMenuItem
-            // 
-            this.새프로젝트PToolStripMenuItem.Name = "새프로젝트PToolStripMenuItem";
-            this.새프로젝트PToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
-            this.새프로젝트PToolStripMenuItem.Text = "새 프로젝트(&P)";
-            this.새프로젝트PToolStripMenuItem.Click += new System.EventHandler(this.새프로젝트PToolStripMenuItem_Click);
-            // 
-            // 새파일FToolStripMenuItem
-            // 
-            this.새파일FToolStripMenuItem.Name = "새파일FToolStripMenuItem";
-            this.새파일FToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
-            this.새파일FToolStripMenuItem.Text = "새 파일(&F)";
             // 
             // MainForm
             // 

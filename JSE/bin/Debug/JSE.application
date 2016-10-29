@@ -7,14 +7,14 @@
     <framework targetVersion="4.0" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="JSE.exe.manifest" size="222350">
+    <dependentAssembly dependencyType="install" codebase="JSE.exe.manifest" size="222348">
       <assemblyIdentity name="JSE.exe" version="1.0.0.1" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>HtMd8EUnQQVzsWArlBho1orIeck=</dsig:DigestValue>
+        <dsig:DigestValue>G6/Gg8Bqk5POgYz/69Ns6NZk/EA=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

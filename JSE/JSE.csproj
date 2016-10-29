@@ -275,6 +275,7 @@
       <DependentUpon>Option.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
+    <Compile Include="ProjectOpt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RichTextBoxExtensions.cs" />
     <Compile Include="StartingForm.cs">

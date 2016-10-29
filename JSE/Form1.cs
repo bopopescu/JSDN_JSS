@@ -22,7 +22,7 @@ namespace JSE
         {
             InitializeComponent();
             openFileDialog1.Title = "열기";
-            PopulateTreeView();
+            //PopulateTreeView();
         }
 
         public int getYoffset(HtmlElement el)
@@ -40,10 +40,10 @@ namespace JSE
 
             return yPos;
         }
-        private void PopulateTreeView()
+        public void PopulateTreeView()
         {
             TreeNode rootNode;
-            DirectoryInfo info = new DirectoryInfo("");
+            DirectoryInfo info = new DirectoryInfo(ProjectOpt.m_ProjectPath);
             if(info.Exists)
             {
                 rootNode = new TreeNode(info.Name);
@@ -52,6 +52,7 @@ namespace JSE
                 treeView1.Nodes.Add(rootNode);
             }
         }
+
 
         private void GetDirectories(DirectoryInfo[] subDirs, TreeNode nodeToAddTo)
         {
@@ -538,6 +539,15 @@ namespace JSE
 
         private void 새프로젝트PToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            NewProject n = new NewProject();
+            n.ShowDialog();
+            PopulateTreeView();
+        }
+
+        private void 새파일FToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewProject n = new NewProject();
+            n.Show();
 
         }
     }
