@@ -3,7 +3,8 @@ using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-
+using IronPython;
+using IronPython.Hosting;
 namespace JSE
 {
     public partial class MainForm : Form
@@ -122,14 +123,11 @@ namespace JSE
             richTextBox1.Text = "";
             string org_word = syntaxHighlighter1.Text;
             string[] splitted = org_word.Split('\n');
-            for (int i = 0; i < splitted.Length; i++)
-            {
-                /*
-                richTextBox1.Text += Translator.replace_word(splitted[i]);
-                richTextBox1.Text += "\r\n";
-                */
-                richTextBox1.Text = Translator.Interpret_bf(syntaxHighlighter1.Text);
-            }
+            var engine = Python.CreateEngine();
+            var scope = engine.CreateScope();
+            var source = engine.CreateScriptSourceFromFile("A.py");
+            source.Execute(scope);
+
         }
 
         private void 열기ToolStripMenuItem_Click(object sender, EventArgs e)

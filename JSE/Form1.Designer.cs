@@ -93,6 +93,8 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.syntaxHighlighter1 = new JSE.SyntaxHighlighter();
+            this.splitContainer5 = new System.Windows.Forms.SplitContainer();
+            this.treeView1 = new System.Windows.Forms.TreeView();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -110,6 +112,10 @@
             this.splitContainer4.Panel1.SuspendLayout();
             this.splitContainer4.Panel2.SuspendLayout();
             this.splitContainer4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer5)).BeginInit();
+            this.splitContainer5.Panel1.SuspendLayout();
+            this.splitContainer5.Panel2.SuspendLayout();
+            this.splitContainer5.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -282,26 +288,26 @@
             // 코드빌드ToolStripMenuItem
             // 
             this.코드빌드ToolStripMenuItem.Name = "코드빌드ToolStripMenuItem";
-            this.코드빌드ToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.코드빌드ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.코드빌드ToolStripMenuItem.Text = "코드 빌드";
             this.코드빌드ToolStripMenuItem.Click += new System.EventHandler(this.코드빌드ToolStripMenuItem_Click);
             // 
             // 코드정리ToolStripMenuItem
             // 
             this.코드정리ToolStripMenuItem.Name = "코드정리ToolStripMenuItem";
-            this.코드정리ToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.코드정리ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.코드정리ToolStripMenuItem.Text = "코드 정리";
             this.코드정리ToolStripMenuItem.Click += new System.EventHandler(this.코드정리ToolStripMenuItem_Click);
             // 
             // toolStripMenuItem10
             // 
             this.toolStripMenuItem10.Name = "toolStripMenuItem10";
-            this.toolStripMenuItem10.Size = new System.Drawing.Size(123, 6);
+            this.toolStripMenuItem10.Size = new System.Drawing.Size(149, 6);
             // 
             // 빌드옵션ToolStripMenuItem
             // 
             this.빌드옵션ToolStripMenuItem.Name = "빌드옵션ToolStripMenuItem";
-            this.빌드옵션ToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.빌드옵션ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.빌드옵션ToolStripMenuItem.Text = "빌드 옵션";
             // 
             // 디버그DToolStripMenuItem
@@ -315,7 +321,7 @@
             // 디버깅시작ToolStripMenuItem
             // 
             this.디버깅시작ToolStripMenuItem.Name = "디버깅시작ToolStripMenuItem";
-            this.디버깅시작ToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.디버깅시작ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.디버깅시작ToolStripMenuItem.Text = "디버깅 시작";
             // 
             // 도구TToolStripMenuItem
@@ -442,8 +448,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.richTextBox1);
-            this.splitContainer1.Size = new System.Drawing.Size(752, 473);
-            this.splitContainer1.SplitterDistance = 333;
+            this.splitContainer1.Size = new System.Drawing.Size(600, 473);
+            this.splitContainer1.SplitterDistance = 359;
             this.splitContainer1.TabIndex = 4;
             // 
             // contextMenuStrip1
@@ -506,7 +512,7 @@
             this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBox1.Location = new System.Drawing.Point(0, 0);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(752, 136);
+            this.richTextBox1.Size = new System.Drawing.Size(600, 110);
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "출력";
             // 
@@ -514,7 +520,7 @@
             // 
             this.splitContainer2.BackColor = System.Drawing.Color.White;
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 24);
+            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
             this.splitContainer2.Name = "splitContainer2";
             // 
             // splitContainer2.Panel1
@@ -525,8 +531,8 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
             this.splitContainer2.Panel2MinSize = 420;
-            this.splitContainer2.Size = new System.Drawing.Size(1241, 473);
-            this.splitContainer2.SplitterDistance = 752;
+            this.splitContainer2.Size = new System.Drawing.Size(1024, 473);
+            this.splitContainer2.SplitterDistance = 600;
             this.splitContainer2.TabIndex = 5;
             // 
             // splitContainer3
@@ -540,7 +546,7 @@
             this.splitContainer3.Panel1.Controls.Add(this.splitContainer4);
             this.splitContainer3.Panel1.Controls.Add(this.listView1);
             this.splitContainer3.Panel2Collapsed = true;
-            this.splitContainer3.Size = new System.Drawing.Size(485, 473);
+            this.splitContainer3.Size = new System.Drawing.Size(420, 473);
             this.splitContainer3.SplitterDistance = 264;
             this.splitContainer3.TabIndex = 0;
             // 
@@ -562,7 +568,7 @@
             // splitContainer4.Panel2
             // 
             this.splitContainer4.Panel2.Controls.Add(this.webBrowser1);
-            this.splitContainer4.Size = new System.Drawing.Size(485, 473);
+            this.splitContainer4.Size = new System.Drawing.Size(420, 473);
             this.splitContainer4.SplitterDistance = 39;
             this.splitContainer4.TabIndex = 0;
             // 
@@ -572,7 +578,7 @@
             this.textBox1.Font = new System.Drawing.Font("Gulim", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.textBox1.Location = new System.Drawing.Point(0, 0);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(389, 53);
+            this.textBox1.Size = new System.Drawing.Size(324, 53);
             this.textBox1.TabIndex = 2;
             // 
             // button2
@@ -582,7 +588,7 @@
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button2.Font = new System.Drawing.Font("Gulim", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.button2.ForeColor = System.Drawing.Color.Black;
-            this.button2.Location = new System.Drawing.Point(389, 0);
+            this.button2.Location = new System.Drawing.Point(324, 0);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(48, 39);
             this.button2.TabIndex = 1;
@@ -596,7 +602,7 @@
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button1.Font = new System.Drawing.Font("Gulim", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.button1.ForeColor = System.Drawing.Color.Black;
-            this.button1.Location = new System.Drawing.Point(437, 0);
+            this.button1.Location = new System.Drawing.Point(372, 0);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(48, 39);
             this.button1.TabIndex = 0;
@@ -610,7 +616,7 @@
             this.webBrowser1.Location = new System.Drawing.Point(0, 0);
             this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
             this.webBrowser1.Name = "webBrowser1";
-            this.webBrowser1.Size = new System.Drawing.Size(485, 430);
+            this.webBrowser1.Size = new System.Drawing.Size(420, 430);
             this.webBrowser1.TabIndex = 0;
             // 
             // listView1
@@ -618,7 +624,7 @@
             this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView1.Location = new System.Drawing.Point(0, 0);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(485, 473);
+            this.listView1.Size = new System.Drawing.Size(420, 473);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             // 
@@ -634,12 +640,37 @@
             this.syntaxHighlighter1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.syntaxHighlighter1.Location = new System.Drawing.Point(0, 0);
             this.syntaxHighlighter1.Name = "syntaxHighlighter1";
-            this.syntaxHighlighter1.Size = new System.Drawing.Size(752, 333);
+            this.syntaxHighlighter1.Size = new System.Drawing.Size(600, 359);
             this.syntaxHighlighter1.TabIndex = 3;
             this.syntaxHighlighter1.Text = "";
             this.syntaxHighlighter1.TextChanged += new System.EventHandler(this.syntaxHighlighter1_TextChanged);
             this.syntaxHighlighter1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.syntaxHighlighter1_KeyDown);
             this.syntaxHighlighter1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.syntaxHighlighter1_KeyPress);
+            // 
+            // splitContainer5
+            // 
+            this.splitContainer5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer5.Location = new System.Drawing.Point(0, 24);
+            this.splitContainer5.Name = "splitContainer5";
+            // 
+            // splitContainer5.Panel1
+            // 
+            this.splitContainer5.Panel1.Controls.Add(this.treeView1);
+            // 
+            // splitContainer5.Panel2
+            // 
+            this.splitContainer5.Panel2.Controls.Add(this.splitContainer2);
+            this.splitContainer5.Size = new System.Drawing.Size(1241, 473);
+            this.splitContainer5.SplitterDistance = 213;
+            this.splitContainer5.TabIndex = 6;
+            // 
+            // treeView1
+            // 
+            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView1.Location = new System.Drawing.Point(0, 0);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(213, 473);
+            this.treeView1.TabIndex = 0;
             // 
             // MainForm
             // 
@@ -647,7 +678,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1241, 497);
             this.ContextMenuStrip = this.contextMenuStrip1;
-            this.Controls.Add(this.splitContainer2);
+            this.Controls.Add(this.splitContainer5);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
@@ -675,6 +706,10 @@
             this.splitContainer4.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).EndInit();
             this.splitContainer4.ResumeLayout(false);
+            this.splitContainer5.Panel1.ResumeLayout(false);
+            this.splitContainer5.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer5)).EndInit();
+            this.splitContainer5.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -744,6 +779,8 @@
         private System.Windows.Forms.WebBrowser webBrowser1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.SplitContainer splitContainer5;
+        private System.Windows.Forms.TreeView treeView1;
     }
 }
 
