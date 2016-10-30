@@ -43,13 +43,16 @@ namespace JSE
         public void PopulateTreeView()
         {
             TreeNode rootNode;
-            DirectoryInfo info = new DirectoryInfo(ProjectOpt.m_ProjectPath);
-            if(info.Exists)
+            if (ProjectOpt.m_ProjectPath != null)
             {
-                rootNode = new TreeNode(info.Name);
-                rootNode.Tag = info;
-                GetDirectories((info.GetDirectories()), rootNode);
-                treeView1.Nodes.Add(rootNode);
+                DirectoryInfo info = new DirectoryInfo(ProjectOpt.m_ProjectPath);
+                if (info.Exists)
+                {
+                    rootNode = new TreeNode(info.Name);
+                    rootNode.Tag = info;
+                    GetDirectories((info.GetDirectories()), rootNode);
+                    treeView1.Nodes.Add(rootNode);
+                }
             }
         }
 
@@ -57,19 +60,29 @@ namespace JSE
         private void GetDirectories(DirectoryInfo[] subDirs, TreeNode nodeToAddTo)
         {
             TreeNode aNode;
+            TreeNode fNode;
             DirectoryInfo[] subSubDirs;
-            foreach(DirectoryInfo subDir in subDirs)
+            FileInfo[] subFile;
+            foreach (DirectoryInfo subDir in subDirs)
             {
                 aNode = new TreeNode(subDir.Name, 0, 0);
                 aNode.Tag = subDir;
                 aNode.ImageKey = "folder";
+                subFile = subDir.GetFiles();
                 subSubDirs = subDir.GetDirectories();
-                if(subSubDirs.Length != 0)
+                if (subSubDirs.Length != 0)
                 {
                     GetDirectories(subSubDirs, aNode);
                 }
+                foreach (FileInfo fileInfo in subDir.GetFiles())
+                {
+                    fNode = new TreeNode(fileInfo.Name, 0, 0);
+                    fNode.Tag = fileInfo;
+                    nodeToAddTo.Nodes.Add(fNode);
+                }
                 nodeToAddTo.Nodes.Add(aNode);
             }
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -424,7 +437,7 @@ namespace JSE
         */
         private void syntaxHighlighter1_KeyDown(object sender, KeyEventArgs e)
         {
-            
+
 
         }
 
@@ -479,12 +492,12 @@ namespace JSE
         private void MainForm_Resize(object sender, EventArgs e)
         {
             button1.Height = splitContainer4.Panel1.Height;
-            
+
         }
         private bool isclicked = false;
         private void button1_Click(object sender, EventArgs e)
         {
-            if(isclicked)
+            if (isclicked)
             {
                 button1.Text = "三";
                 splitContainer3.Panel2Collapsed = true;
@@ -496,7 +509,7 @@ namespace JSE
                 splitContainer3.Panel2Collapsed = false;
                 isclicked = true;
             }
-            
+
         }
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
@@ -541,6 +554,7 @@ namespace JSE
         {
             NewProject n = new NewProject();
             n.ShowDialog();
+            treeView1.Nodes.Clear();
             PopulateTreeView();
         }
 
