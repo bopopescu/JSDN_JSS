@@ -8,6 +8,6 @@ namespace JSE
     class ProjectOpt
     {
         public static string m_ProjectPath { get; set; }
-
+       
     }
 }

@@ -18,7 +18,14 @@ namespace JSE
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            textBox2.Text = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\" + textBox1.Text;
+            if (folderBrowserDialog1.SelectedPath != "")
+            {
+                textBox2.Text = folderBrowserDialog1.SelectedPath + "\\" + textBox1.Text;
+            }
+            else
+            { 
+                textBox2.Text = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\" + textBox1.Text;
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -69,6 +76,20 @@ namespace JSE
             ProjectOpt.m_ProjectPath = textBox2.Text;
             
             Close();
+        }
+
+        private void NewProject_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            folderBrowserDialog1.ShowDialog();
+            if(folderBrowserDialog1.SelectedPath != "")
+            {
+                textBox2.Text = folderBrowserDialog1.SelectedPath + "\\" + textBox1.Text;
+            }
         }
     }
 }
