@@ -201,7 +201,7 @@ namespace JSE
                 }
                 SelectionStart = sel;
             }
-            if(e.KeyCode == Keys.Enter || e.KeyCode == Keys.Space)
+            if(e.KeyCode == Keys.Enter || e.KeyCode == Keys.Space || e.KeyCode == Keys.Delete || e.KeyCode == Keys.Back)
             {
                 m_nContentLength = this.TextLength;
                 int nCurrentSelectionStart = SelectionStart;
