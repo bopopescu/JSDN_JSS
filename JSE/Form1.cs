@@ -74,11 +74,11 @@ namespace JSE
                 {
                     GetDirectories(subSubDirs, aNode);
                 }
-                foreach (FileInfo fileInfo in subDir.GetFiles())
+                foreach (FileInfo fileInfo in subFile)
                 {
                     fNode = new TreeNode(fileInfo.Name, 0, 0);
                     fNode.Tag = fileInfo;
-                    nodeToAddTo.Nodes.Add(fNode);
+                    nodeToAddTo.Nodes[0].Nodes.Add(fNode);
                 }
                 nodeToAddTo.Nodes.Add(aNode);
             }
@@ -107,6 +107,8 @@ namespace JSE
             Console.Write("");
             richTextBox1.Text += "\r\n";
             Translator.translate();
+            richTextBox1.Font = new Font("Consolas", 10);
+            ;
             webBrowser1.Navigate("https://dicontest.herokuapp.com/code_front/qna/qnaFront.html");
             //richTextBox1.Text = Translator.replace_word("정수형 i = 0");
         }
@@ -167,12 +169,7 @@ namespace JSE
         private void 코드빌드ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             richTextBox1.Text = "";
-           // string org_word = syntaxHighlighter1.Text;
-           // string[] splitted = org_word.Split('\n');
-           // var engine = Python.CreateEngine();
-           // var scope = engine.CreateScope();
-           // var source = engine.CreateScriptSourceFromFile("A.py");
-           // source.Execute(scope);
+
 
         }
 

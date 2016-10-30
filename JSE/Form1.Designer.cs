@@ -75,7 +75,6 @@
             this.재생ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.정지ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.syntaxHighlighter1 = new JSE.SyntaxHighlighter();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.코드조각저장ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -98,6 +97,7 @@
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.syntaxHighlighter1 = new JSE.SyntaxHighlighter();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -470,23 +470,8 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.richTextBox1);
             this.splitContainer1.Size = new System.Drawing.Size(600, 473);
-            this.splitContainer1.SplitterDistance = 359;
+            this.splitContainer1.SplitterDistance = 348;
             this.splitContainer1.TabIndex = 4;
-            // 
-            // syntaxHighlighter1
-            // 
-            this.syntaxHighlighter1.AcceptsTab = true;
-            this.syntaxHighlighter1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.syntaxHighlighter1.ContextMenuStrip = this.contextMenuStrip1;
-            this.syntaxHighlighter1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.syntaxHighlighter1.Location = new System.Drawing.Point(0, 0);
-            this.syntaxHighlighter1.Name = "syntaxHighlighter1";
-            this.syntaxHighlighter1.Size = new System.Drawing.Size(600, 359);
-            this.syntaxHighlighter1.TabIndex = 3;
-            this.syntaxHighlighter1.Text = "";
-            this.syntaxHighlighter1.TextChanged += new System.EventHandler(this.syntaxHighlighter1_TextChanged);
-            this.syntaxHighlighter1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.syntaxHighlighter1_KeyDown);
-            this.syntaxHighlighter1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.syntaxHighlighter1_KeyPress);
             // 
             // contextMenuStrip1
             // 
@@ -548,7 +533,7 @@
             this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBox1.Location = new System.Drawing.Point(0, 0);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(600, 110);
+            this.richTextBox1.Size = new System.Drawing.Size(600, 121);
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "출력";
             // 
@@ -694,6 +679,21 @@
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
+            // 
+            // syntaxHighlighter1
+            // 
+            this.syntaxHighlighter1.AcceptsTab = true;
+            this.syntaxHighlighter1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.syntaxHighlighter1.ContextMenuStrip = this.contextMenuStrip1;
+            this.syntaxHighlighter1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.syntaxHighlighter1.Location = new System.Drawing.Point(0, 0);
+            this.syntaxHighlighter1.Name = "syntaxHighlighter1";
+            this.syntaxHighlighter1.Size = new System.Drawing.Size(600, 348);
+            this.syntaxHighlighter1.TabIndex = 3;
+            this.syntaxHighlighter1.Text = "";
+            this.syntaxHighlighter1.TextChanged += new System.EventHandler(this.syntaxHighlighter1_TextChanged);
+            this.syntaxHighlighter1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.syntaxHighlighter1_KeyDown);
+            this.syntaxHighlighter1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.syntaxHighlighter1_KeyPress);
             // 
             // MainForm
             // 

@@ -89,3 +89,4 @@ D:\Documents\Visual Studio 2015\Projects\JSE\JSE\bin\Debug\Microsoft.Scripting.x
 D:\Documents\Visual Studio 2015\Projects\JSE\JSE\bin\Debug\Microsoft.Scripting.AspNet.xml
 D:\Documents\Visual Studio 2015\Projects\JSE\JSE\bin\Debug\Microsoft.Scripting.Metadata.xml
 D:\Documents\Visual Studio 2015\Projects\JSE\JSE\obj\Debug\JSE.NewProject.resources
+D:\Documents\Visual Studio 2015\Projects\JSE\JSE\obj\Debug\JSE.NewFile.resources
