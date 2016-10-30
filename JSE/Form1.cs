@@ -167,12 +167,12 @@ namespace JSE
         private void 코드빌드ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             richTextBox1.Text = "";
-            string org_word = syntaxHighlighter1.Text;
-            string[] splitted = org_word.Split('\n');
-            var engine = Python.CreateEngine();
-            var scope = engine.CreateScope();
-            var source = engine.CreateScriptSourceFromFile("A.py");
-            source.Execute(scope);
+           // string org_word = syntaxHighlighter1.Text;
+           // string[] splitted = org_word.Split('\n');
+           // var engine = Python.CreateEngine();
+           // var scope = engine.CreateScope();
+           // var source = engine.CreateScriptSourceFromFile("A.py");
+           // source.Execute(scope);
 
         }
 
@@ -560,9 +560,10 @@ namespace JSE
 
         private void 새파일FToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NewProject n = new NewProject();
-            n.Show();
-
+            NewFile n = new NewFile();
+            n.ShowDialog();
+            treeView1.Nodes.Clear();
+            PopulateTreeView();
         }
 
         private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)

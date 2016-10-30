@@ -15,7 +15,7 @@ namespace JSE
         public NewFile()
         {
             InitializeComponent();
-            if(ProjectOpt.m_ProjectPath != null)
+            if (ProjectOpt.m_ProjectPath != null)
             {
                 filepath = ProjectOpt.m_ProjectPath;
             }
@@ -61,10 +61,10 @@ namespace JSE
         private void button2_Click(object sender, EventArgs e)
         {
             //System.IO.Directory.CreateDirectory(textBox2.Text);
-              using (System.IO.FileStream fs = System.IO.File.Create(textBox2.Text))
-                    {
-                        fs.WriteByte(1);
-                    }
+            using (System.IO.FileStream fs = System.IO.File.Create(textBox2.Text))
+            {
+                fs.WriteByte(1);
+            }
             ProjectOpt.m_ProjectPath = textBox2.Text;
 
             Close();
