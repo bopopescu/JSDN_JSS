@@ -60,6 +60,7 @@ namespace JSE
 
         private void button2_Click(object sender, EventArgs e)
         {
+            ProjectOpt.m_FileName = textBox1.Text;
             //System.IO.Directory.CreateDirectory(textBox2.Text);
             using (System.IO.FileStream fs = System.IO.File.Create(textBox2.Text))
             {

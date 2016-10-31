@@ -8,6 +8,7 @@ namespace JSE
     class ProjectOpt
     {
         public static string m_ProjectPath { get; set; }
-       
+        public static string m_FileName { get; set; }
+
     }
 }

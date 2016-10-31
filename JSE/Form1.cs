@@ -74,15 +74,23 @@ namespace JSE
                 {
                     GetDirectories(subSubDirs, aNode);
                 }
+
                 foreach (FileInfo fileInfo in subFile)
                 {
                     fNode = new TreeNode(fileInfo.Name, 0, 0);
                     fNode.Tag = fileInfo;
                     nodeToAddTo.Nodes[0].Nodes.Add(fNode);
                 }
-                nodeToAddTo.Nodes.Add(aNode);
+                
             }
 
+        }
+
+        private void AddFileNode(string filename)
+        {
+            TreeNode subFile;
+            subFile = new TreeNode(filename, 0, 0);
+            treeView1.Nodes[0].Nodes.Add(subFile);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -515,7 +523,7 @@ namespace JSE
         }
 
         private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
+        {/*
             TreeNode newSelected = e.Node;
             listView1.Items.Clear();
             DirectoryInfo nodeDirInfo = (DirectoryInfo)newSelected.Tag;
@@ -545,6 +553,7 @@ namespace JSE
             }
 
             listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+            */
         }
 
         private void 새프로젝트PToolStripMenuItem_Click(object sender, EventArgs e)
@@ -559,8 +568,8 @@ namespace JSE
         {
             NewFile n = new NewFile();
             n.ShowDialog();
-            treeView1.Nodes.Clear();
-            PopulateTreeView();
+            //treeView1.Nodes.Clear();
+            AddFileNode(ProjectOpt.m_FileName);
         }
 
         private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)

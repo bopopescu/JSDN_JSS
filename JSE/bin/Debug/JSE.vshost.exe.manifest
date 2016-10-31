@@ -4,7 +4,7 @@
   <description asmv2:iconFile="Resources\로고시안5.ico" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <application />
   <entryPoint>
-    <assemblyIdentity name="JSE" version="1.0.6148.2334" language="neutral" processorArchitecture="msil" />
+    <assemblyIdentity name="JSE" version="1.0.6149.4009" language="neutral" processorArchitecture="msil" />
     <commandLine file="JSE.exe" parameters="" />
   </entryPoint>
   <trustInfo>
@@ -199,14 +199,26 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="JSE.exe" size="1653168">
-      <assemblyIdentity name="JSE" version="1.0.6148.2334" language="neutral" processorArchitecture="msil" />
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="JSE.exe" size="1705392">
+      <assemblyIdentity name="JSE" version="1.0.6149.4009" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>iqMO8RRdq5pSZu+ZHldZE2DrdLc=</dsig:DigestValue>
+        <dsig:DigestValue>fmYVFNb18uU3ZA1/1oNWlVJJmrg=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="aa\JSE.resources.dll" size="374272">
+      <assemblyIdentity name="JSE.resources" version="1.0.6149.4009" language="aa" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+        <dsig:DigestValue>BbmSUgihCU19ARZaMdptVq6kJ00=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
