@@ -81,7 +81,7 @@ namespace JSE
                     fNode.Tag = fileInfo;
                     nodeToAddTo.Nodes[0].Nodes.Add(fNode);
                 }
-                
+
             }
 
         }
@@ -95,7 +95,48 @@ namespace JSE
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            menuStrip1.BackColor = Color.FromArgb(22, 22, 22);
+            splitContainer1.BackColor = Color.FromArgb(19, 19, 19);
+            splitContainer2.BackColor = Color.FromArgb(19, 19, 19);
+            splitContainer3.BackColor = Color.FromArgb(19, 19, 19);
+            splitContainer4.BackColor = Color.FromArgb(19, 19, 19);
+            splitContainer5.BackColor = Color.FromArgb(19, 19, 19);
+            splitContainer6.BackColor = Color.FromArgb(19, 19, 19);
+            splitContainer7.BackColor = Color.FromArgb(19, 19, 19);
+            splitContainer8.BackColor = Color.FromArgb(19, 19, 19);
+            splitContainer1.ForeColor = Color.FromArgb(19, 19, 19);
+            splitContainer2.ForeColor = Color.FromArgb(19, 19, 19);
+            splitContainer3.ForeColor = Color.FromArgb(19, 19, 19);
+            splitContainer4.ForeColor = Color.FromArgb(19, 19, 19);
+            splitContainer5.ForeColor = Color.FromArgb(19, 19, 19);
+            splitContainer6.ForeColor = Color.FromArgb(19, 19, 19);
+            splitContainer7.ForeColor = Color.FromArgb(19, 19, 19);
+            splitContainer8.ForeColor = Color.FromArgb(19, 19, 19);
+            splitContainer1.Panel1.BackColor = Color.FromArgb(19, 19, 19);
+            splitContainer1.Panel1.ForeColor = Color.FromArgb(19, 19, 19);
+            splitContainer1.Panel2.BackColor = Color.FromArgb(19, 19, 19);
+            splitContainer1.Panel2.ForeColor = Color.FromArgb(19, 19, 19);
+            splitContainer2.Panel1.BackColor = Color.FromArgb(19, 19, 19);
+            splitContainer2.Panel1.ForeColor = Color.FromArgb(19, 19, 19);
+            splitContainer2.Panel2.BackColor = Color.FromArgb(19, 19, 19);
+            splitContainer2.Panel2.ForeColor = Color.FromArgb(19, 19, 19);
+            splitContainer3.Panel1.BackColor = Color.FromArgb(19, 19, 19);
+            splitContainer3.Panel1.ForeColor = Color.FromArgb(19, 19, 19);
+            splitContainer3.Panel2.BackColor = Color.FromArgb(19, 19, 19);
+            splitContainer3.Panel2.ForeColor = Color.FromArgb(19, 19, 19);
+            splitContainer4.Panel1.BackColor = Color.FromArgb(19, 19, 19);
+            splitContainer4.Panel1.ForeColor = Color.FromArgb(19, 19, 19);
+            splitContainer4.Panel2.BackColor = Color.FromArgb(19, 19, 19);
+            splitContainer4.Panel2.ForeColor = Color.FromArgb(19, 19, 19);
+            treeView1.BackColor = Color.FromArgb(22, 22, 22);
+            treeView1.ForeColor = Color.White;
+            menuStrip1.ForeColor = Color.White;
+            syntaxHighlighter1.BackColor = Color.FromArgb(26, 26, 26);
+            richTextBox1.BackColor = Color.FromArgb(26, 26, 26);
+            richTextBox1.ForeColor = Color.White;
+            textBox1.BackColor = richTextBox1.BackColor = Color.FromArgb(26, 26, 26);
+            textBox1.ForeColor = Color.White;
+            syntaxHighlighter1.ForeColor = Color.White;
             //this.syntaxHighlighter1.AutoCompleteMode;
             button1.FlatAppearance.BorderColor = Color.DodgerBlue;
             const int dist = 36;
@@ -106,8 +147,8 @@ namespace JSE
                 syntaxHighlighter1.Settings.Keywords.Add(commands[i]);
             }
             syntaxHighlighter1.Settings.Comment = "//";
-            syntaxHighlighter1.Settings.KeywordColor = Color.Blue;
-            syntaxHighlighter1.Settings.CommentColor = Color.Green;
+            syntaxHighlighter1.Settings.KeywordColor = Color.LightBlue;
+            syntaxHighlighter1.Settings.CommentColor = Color.LightGreen;
             syntaxHighlighter1.Settings.EnableStrings = false;
             syntaxHighlighter1.Settings.EnableIntegers = false;
             syntaxHighlighter1.CompileKeywords();
@@ -496,7 +537,7 @@ namespace JSE
 
         private void MainForm_Resize(object sender, EventArgs e)
         {
-            button1.Height = splitContainer4.Panel1.Height;
+            //button1.Height = splitContainer4.Panel1.Height;
 
         }
         private bool isclicked = false;
@@ -573,6 +614,16 @@ namespace JSE
         }
 
         private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+        }
+
+        private void splitContainer4_Panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void splitContainer8_Panel2_Paint(object sender, PaintEventArgs e)
         {
 
         }

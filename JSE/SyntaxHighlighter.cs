@@ -40,8 +40,8 @@ namespace JSE
         public SyntaxHighlighter()
         {
             InitializeComponent();
-            this.txtBrush = new SolidBrush(Color.Black);
-            this.marginBrush = new SolidBrush(Color.White);
+            this.txtBrush = new SolidBrush(Color.White);
+            this.marginBrush = new SolidBrush(Color.FromArgb(22,22,22));
             this.dotPen = new Pen(new SolidBrush(Color.LightSeaGreen));
             this.solidPen = new Pen(new SolidBrush(Color.Indigo));
             this.dotPen.DashStyle = DashStyle.Dot;
@@ -138,7 +138,7 @@ namespace JSE
         }
 
         protected override void OnKeyPress(KeyPressEventArgs e)
-        {
+        {/*
             String s = e.KeyChar.ToString();
             int sel = SelectionStart;
             switch (s)
@@ -183,6 +183,7 @@ namespace JSE
 
             }
             base.OnKeyPress(e);
+            */
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
@@ -235,7 +236,7 @@ namespace JSE
             int nPosition = SelectionStart;
             SelectionStart = m_nLineStart;
             SelectionLength = m_nLineLength;
-            SelectionColor = Color.Black;
+            SelectionColor = Color.White;
 
             // 키워드로 설정된 것들을 처리
             ProcessRegex(m_strKeywords, Settings.KeywordColor);
@@ -250,8 +251,9 @@ namespace JSE
                 ProcessRegex(Settings.Comment + ".*$", Settings.CommentColor);
      
             SelectionStart = nPosition;
+            //Text.Insert(nPosition, " ");
             SelectionLength = 0;
-            SelectionColor = Color.Black;
+            SelectionColor = Color.White;
     
             m_nCurSelection = nPosition;
         }
