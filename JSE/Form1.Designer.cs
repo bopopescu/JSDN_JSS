@@ -416,6 +416,7 @@
             // splitContainer4.Panel1
             // 
             this.splitContainer4.Panel1.Controls.Add(this.splitContainer6);
+            this.splitContainer4.Panel1Collapsed = true;
             // 
             // splitContainer4.Panel2
             // 

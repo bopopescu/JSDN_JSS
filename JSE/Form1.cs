@@ -677,11 +677,13 @@ namespace JSE
             if (m_IsFlipped)
             {
                 splitContainer4.Panel1Collapsed = false;
+                button1.Text = "<";
                 m_IsFlipped = false;
             }
             else
             {
                 splitContainer4.Panel1Collapsed = true;
+                button1.Text = "三";
                 m_IsFlipped = true;
             }
             

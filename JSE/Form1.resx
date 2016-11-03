@@ -169,42 +169,6 @@
   <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>21, 20</value>
   </metadata>
-  <data name="파일FToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>57, 20</value>
-  </data>
-  <data name="파일FToolStripMenuItem.Text" xml:space="preserve">
-    <value>파일(&amp;F)</value>
-  </data>
-  <data name="편집FToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>57, 20</value>
-  </data>
-  <data name="편집FToolStripMenuItem.Text" xml:space="preserve">
-    <value>편집(&amp;F)</value>
-  </data>
-  <data name="빌드BToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 20</value>
-  </data>
-  <data name="빌드BToolStripMenuItem.Text" xml:space="preserve">
-    <value>빌드(&amp;B)</value>
-  </data>
-  <data name="도구TToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>57, 20</value>
-  </data>
-  <data name="도구TToolStripMenuItem.Text" xml:space="preserve">
-    <value>도구(&amp;T)</value>
-  </data>
-  <data name="johnscriptStudio정보ToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>152, 22</value>
-  </data>
-  <data name="johnscriptStudio정보ToolStripMenuItem.Text" xml:space="preserve">
-    <value>CodIDE 정보</value>
-  </data>
-  <data name="도움말HToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>72, 20</value>
-  </data>
-  <data name="도움말HToolStripMenuItem.Text" xml:space="preserve">
-    <value>도움말(&amp;H)</value>
-  </data>
   <data name="menuStrip1.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
@@ -230,6 +194,12 @@
   </data>
   <data name="&gt;&gt;menuStrip1.ZOrder" xml:space="preserve">
     <value>2</value>
+  </data>
+  <data name="파일FToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>57, 20</value>
+  </data>
+  <data name="파일FToolStripMenuItem.Text" xml:space="preserve">
+    <value>파일(&amp;F)</value>
   </data>
   <data name="새창ToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>178, 22</value>
@@ -272,6 +242,12 @@
   </data>
   <data name="끝내기ToolStripMenuItem.Text" xml:space="preserve">
     <value>끝내기</value>
+  </data>
+  <data name="편집FToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>57, 20</value>
+  </data>
+  <data name="편집FToolStripMenuItem.Text" xml:space="preserve">
+    <value>편집(&amp;F)</value>
   </data>
   <data name="실행취소ㅓToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>154, 22</value>
@@ -324,6 +300,12 @@
   <data name="찾기및바꾸기ToolStripMenuItem.Text" xml:space="preserve">
     <value>찾기 및 바꾸기</value>
   </data>
+  <data name="빌드BToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 20</value>
+  </data>
+  <data name="빌드BToolStripMenuItem.Text" xml:space="preserve">
+    <value>빌드(&amp;B)</value>
+  </data>
   <data name="코드빌드ToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>152, 22</value>
   </data>
@@ -333,11 +315,29 @@
   <data name="toolStripMenuItem10.Size" type="System.Drawing.Size, System.Drawing">
     <value>149, 6</value>
   </data>
+  <data name="도구TToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>57, 20</value>
+  </data>
+  <data name="도구TToolStripMenuItem.Text" xml:space="preserve">
+    <value>도구(&amp;T)</value>
+  </data>
   <data name="업데이트ToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>166, 22</value>
   </data>
   <data name="업데이트ToolStripMenuItem.Text" xml:space="preserve">
     <value>확장 및 업데이트</value>
+  </data>
+  <data name="도움말HToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>72, 20</value>
+  </data>
+  <data name="도움말HToolStripMenuItem.Text" xml:space="preserve">
+    <value>도움말(&amp;H)</value>
+  </data>
+  <data name="johnscriptStudio정보ToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>152, 22</value>
+  </data>
+  <data name="johnscriptStudio정보ToolStripMenuItem.Text" xml:space="preserve">
+    <value>CodIDE 정보</value>
   </data>
   <metadata name="openFileDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>266, 17</value>
@@ -595,7 +595,7 @@
     <value>20, 20</value>
   </data>
   <data name="webBrowser1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>181, 321</value>
+    <value>339, 321</value>
   </data>
   <data name="webBrowser1.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -625,7 +625,7 @@
     <value>1</value>
   </data>
   <data name="splitContainer5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>183, 367</value>
+    <value>341, 367</value>
   </data>
   <data name="splitContainer5.SplitterDistance" type="System.Int32, mscorlib">
     <value>43</value>

@@ -29,8 +29,11 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Python File(.py)", 3);
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("C File(.c)", 0);
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Python File(.py)", 0);
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("C File(.c)", 1);
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("HTML File(.html)", 2);
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("CSS File(.css)", 3);
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("JS File(.js)", 4);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NewFile));
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -111,8 +114,11 @@
             // listView1
             // 
             this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+            listViewItem1,
+            listViewItem2,
             listViewItem3,
-            listViewItem4});
+            listViewItem4,
+            listViewItem5});
             this.listView1.LargeImageList = this.imageList1;
             this.listView1.Location = new System.Drawing.Point(14, 12);
             this.listView1.Name = "listView1";
@@ -124,10 +130,11 @@
             // 
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList1.Images.SetKeyName(0, "C.png");
-            this.imageList1.Images.SetKeyName(1, "js.png");
-            this.imageList1.Images.SetKeyName(2, "cs.png");
-            this.imageList1.Images.SetKeyName(3, "python1.png");
+            this.imageList1.Images.SetKeyName(0, "pt.png");
+            this.imageList1.Images.SetKeyName(1, "C.png");
+            this.imageList1.Images.SetKeyName(2, "HTML5.png");
+            this.imageList1.Images.SetKeyName(3, "CSS3.png");
+            this.imageList1.Images.SetKeyName(4, "js.png");
             // 
             // NewFile
             // 
