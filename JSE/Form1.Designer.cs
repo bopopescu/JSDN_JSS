@@ -41,7 +41,6 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.파일FToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.새창ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.새프로젝트PToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.새파일FToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.열기ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
@@ -89,7 +88,6 @@
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.syntaxHighlighter1 = new JSE.SyntaxHighlighter();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
             this.splitContainer6 = new System.Windows.Forms.SplitContainer();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
@@ -98,6 +96,7 @@
             this.splitContainer8 = new System.Windows.Forms.SplitContainer();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.syntaxHighlighter1 = new JSE.SyntaxHighlighter();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -208,17 +207,10 @@
             // 새창ToolStripMenuItem
             // 
             this.새창ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.새프로젝트PToolStripMenuItem,
             this.새파일FToolStripMenuItem});
             this.새창ToolStripMenuItem.Name = "새창ToolStripMenuItem";
             resources.ApplyResources(this.새창ToolStripMenuItem, "새창ToolStripMenuItem");
             this.새창ToolStripMenuItem.Click += new System.EventHandler(this.새창ToolStripMenuItem_Click);
-            // 
-            // 새프로젝트PToolStripMenuItem
-            // 
-            this.새프로젝트PToolStripMenuItem.Name = "새프로젝트PToolStripMenuItem";
-            resources.ApplyResources(this.새프로젝트PToolStripMenuItem, "새프로젝트PToolStripMenuItem");
-            this.새프로젝트PToolStripMenuItem.Click += new System.EventHandler(this.새프로젝트PToolStripMenuItem_Click);
             // 
             // 새파일FToolStripMenuItem
             // 
@@ -524,14 +516,6 @@
             // 
             this.splitContainer3.Panel2.Controls.Add(this.splitContainer4);
             // 
-            // syntaxHighlighter1
-            // 
-            this.syntaxHighlighter1.AcceptsTab = true;
-            this.syntaxHighlighter1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.syntaxHighlighter1.ContextMenuStrip = this.contextMenuStrip1;
-            resources.ApplyResources(this.syntaxHighlighter1, "syntaxHighlighter1");
-            this.syntaxHighlighter1.Name = "syntaxHighlighter1";
-            // 
             // splitContainer4
             // 
             this.splitContainer4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -560,6 +544,7 @@
             // 
             // splitContainer5.Panel1
             // 
+            this.splitContainer5.Panel1.BackColor = System.Drawing.Color.Black;
             this.splitContainer5.Panel1.Controls.Add(this.button1);
             // 
             // splitContainer5.Panel2
@@ -569,8 +554,10 @@
             // button1
             // 
             resources.ApplyResources(this.button1, "button1");
+            this.button1.ForeColor = System.Drawing.Color.White;
             this.button1.Name = "button1";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
             // 
             // webBrowser1
             // 
@@ -603,6 +590,14 @@
             resources.ApplyResources(this.textBox1, "textBox1");
             this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox1.Name = "textBox1";
+            // 
+            // syntaxHighlighter1
+            // 
+            this.syntaxHighlighter1.AcceptsTab = true;
+            this.syntaxHighlighter1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.syntaxHighlighter1.ContextMenuStrip = this.contextMenuStrip1;
+            resources.ApplyResources(this.syntaxHighlighter1, "syntaxHighlighter1");
+            this.syntaxHighlighter1.Name = "syntaxHighlighter1";
             // 
             // MainForm
             // 
@@ -704,7 +699,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem11;
         private System.Windows.Forms.ToolStripMenuItem 재생ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 정지ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 새프로젝트PToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 새파일FToolStripMenuItem;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.SplitContainer splitContainer1;

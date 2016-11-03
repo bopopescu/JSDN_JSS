@@ -73,7 +73,8 @@ namespace JSE
 
         private void NewFile_Load(object sender, EventArgs e)
         {
-
+            textBox1.Text = "";
+            textBox2.Text = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 
         private void button1_Click(object sender, EventArgs e)

@@ -9,7 +9,7 @@ namespace JSE
 {
     public partial class MainForm : Form
     {
-        public Regex keyWords = new Regex("abstract as base bool break byte case catch char checked class const continue decimal default delegate do double else enum event explicit extern false finally fixed float for " + "foreach goto if implicit in int interface internal is lock long namespace new null object operator out override params private protected public readonly ref return sbyte sealed short sizeof stackalloc static " + "string struct switch this throw true try typeof uint ulong unchecked unsafe ushort using virtual volatile void while ");
+        public Regex keyWords = new Regex("and del from not while as elif global or with assert else if pass yield break except import print class exec in raise continue finally is return def for lambda try");
         public string save_string = "";
         public bool isfirst = true;
         public int scrollTop;
@@ -217,8 +217,7 @@ namespace JSE
         #region 메뉴클릭 이벤트
         private void 코드빌드ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            richTextBox1.Text = "";
-
+            
 
         }
 
@@ -609,8 +608,8 @@ namespace JSE
         {
             NewFile n = new NewFile();
             n.ShowDialog();
-            //treeView1.Nodes.Clear();
-            AddFileNode(ProjectOpt.m_FileName);
+            treeView1.Nodes.Clear();
+            PopulateTreeView();
         }
 
         private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -626,6 +625,21 @@ namespace JSE
         private void splitContainer8_Panel2_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+        private bool m_IsFlipped = true;
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            if (m_IsFlipped)
+            {
+                splitContainer4.Panel1Collapsed = false;
+                m_IsFlipped = false;
+            }
+            else
+            {
+                splitContainer4.Panel1Collapsed = true;
+                m_IsFlipped = true;
+            }
+            
         }
     }
 }

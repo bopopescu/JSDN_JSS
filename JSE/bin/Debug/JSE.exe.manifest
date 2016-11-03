@@ -4,7 +4,7 @@
   <description asmv2:iconFile="Resources\로고시안5.ico" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <application />
   <entryPoint>
-    <assemblyIdentity name="JSE" version="1.0.6151.30550" language="neutral" processorArchitecture="msil" />
+    <assemblyIdentity name="JSE" version="1.0.6152.1148" language="neutral" processorArchitecture="msil" />
     <commandLine file="JSE.exe" parameters="" />
   </entryPoint>
   <trustInfo>
@@ -200,25 +200,25 @@
   </dependency>
   <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="JSE.exe" size="1708464">
-      <assemblyIdentity name="JSE" version="1.0.6151.30550" language="neutral" processorArchitecture="msil" />
+      <assemblyIdentity name="JSE" version="1.0.6152.1148" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>9cjRdLwbKrPkmS13py+kjHNGyQ4=</dsig:DigestValue>
+        <dsig:DigestValue>E5pGw97lon6Yhh8MM2zQsaj3G70=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="aa\JSE.resources.dll" size="374272">
-      <assemblyIdentity name="JSE.resources" version="1.0.6151.30550" language="aa" processorArchitecture="msil" />
+      <assemblyIdentity name="JSE.resources" version="1.0.6152.1148" language="aa" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>UYx9RAqpMtIT1Mmi9sq3L3CavOo=</dsig:DigestValue>
+        <dsig:DigestValue>LNMvMbkiM4Al9Td1rZwsFjdZNGw=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
