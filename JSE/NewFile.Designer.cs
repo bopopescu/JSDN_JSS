@@ -130,11 +130,11 @@
             // 
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList1.Images.SetKeyName(0, "pt.png");
-            this.imageList1.Images.SetKeyName(1, "C.png");
+            this.imageList1.Images.SetKeyName(0, "KakaoTalk_20161104_034052349.png");
+            this.imageList1.Images.SetKeyName(1, "KakaoTalk_20161104_034307745.png");
             this.imageList1.Images.SetKeyName(2, "HTML5.png");
             this.imageList1.Images.SetKeyName(3, "CSS3.png");
-            this.imageList1.Images.SetKeyName(4, "js.png");
+            this.imageList1.Images.SetKeyName(4, "KakaoTalk_20161104_034337957.png");
             // 
             // NewFile
             // 
