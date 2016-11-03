@@ -4,7 +4,7 @@
   <description asmv2:iconFile="Resources\로고시안5.ico" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <application />
   <entryPoint>
-    <assemblyIdentity name="JSE" version="1.0.6152.6395" language="neutral" processorArchitecture="msil" />
+    <assemblyIdentity name="JSE" version="1.0.6152.7819" language="neutral" processorArchitecture="msil" />
     <commandLine file="JSE.exe" parameters="" />
   </entryPoint>
   <trustInfo>
@@ -199,26 +199,26 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="JSE.exe" size="1700272">
-      <assemblyIdentity name="JSE" version="1.0.6152.6395" language="neutral" processorArchitecture="msil" />
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="JSE.exe" size="1704880">
+      <assemblyIdentity name="JSE" version="1.0.6152.7819" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>lqtC8S45QDryy5li0Dy4VQwVFzo=</dsig:DigestValue>
+        <dsig:DigestValue>OV2grRvNWhM+57oARjhluTPMcBo=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="aa\JSE.resources.dll" size="374272">
-      <assemblyIdentity name="JSE.resources" version="1.0.6152.6395" language="aa" processorArchitecture="msil" />
+      <assemblyIdentity name="JSE.resources" version="1.0.6152.7819" language="aa" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>CODY9InqiepxIpuuvuNysNo8ZJ4=</dsig:DigestValue>
+        <dsig:DigestValue>N78Hrt4sggUcfhb69NQgLksDCTA=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

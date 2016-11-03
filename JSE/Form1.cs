@@ -104,7 +104,7 @@ namespace JSE
             splitContainer3.BackColor = Color.FromArgb(19, 19, 19);
             splitContainer4.BackColor = Color.FromArgb(19, 19, 19);
             splitContainer5.BackColor = Color.FromArgb(19, 19, 19);
-            splitContainer6.BackColor = Color.FromArgb(19, 19, 19);
+            //splitContainer6.BackColor = Color.FromArgb(19, 19, 19);
             //splitContainer7.BackColor = Color.FromArgb(19, 19, 19);
             splitContainer8.BackColor = Color.FromArgb(19, 19, 19);
             splitContainer1.ForeColor = Color.FromArgb(19, 19, 19);
@@ -112,7 +112,7 @@ namespace JSE
             splitContainer3.ForeColor = Color.FromArgb(19, 19, 19);
             splitContainer4.ForeColor = Color.FromArgb(19, 19, 19);
             splitContainer5.ForeColor = Color.FromArgb(19, 19, 19);
-            splitContainer6.ForeColor = Color.FromArgb(19, 19, 19);
+            //splitContainer6.ForeColor = Color.FromArgb(19, 19, 19);
             //splitContainer7.ForeColor = Color.FromArgb(19, 19, 19);
             splitContainer8.ForeColor = Color.FromArgb(19, 19, 19);
             splitContainer1.Panel1.BackColor = Color.FromArgb(19, 19, 19);
@@ -130,6 +130,7 @@ namespace JSE
             splitContainer4.Panel1.BackColor = Color.FromArgb(19, 19, 19);
             splitContainer4.Panel1.ForeColor = Color.FromArgb(19, 19, 19);
             splitContainer4.Panel2.BackColor = Color.FromArgb(19, 19, 19);
+            splitContainer4.Panel1Collapsed = true;
             splitContainer4.Panel2.ForeColor = Color.FromArgb(19, 19, 19);
             treeView1.BackColor = Color.FromArgb(22, 22, 22);
             treeView1.ForeColor = Color.White;
@@ -274,10 +275,18 @@ namespace JSE
 
         private void 저장ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            string save; 
+            if (ProjectOpt.m_ProjectPath != ""||ProjectOpt.m_ProjectPath != null)
+            {
             saveFileDialog1.DefaultExt = Path.GetExtension(ProjectOpt.m_ProjectPath);
             saveFileDialog1.Title = "Choose Save Place";
             saveFileDialog1.ShowDialog();
-            string save = saveFileDialog1.FileName;
+            save = saveFileDialog1.FileName;
+            }
+            else
+            {
+               save = ProjectOpt.m_ProjectPath;
+            }
             StreamWriter sw = new StreamWriter(save, false);
             for (int i = 0; i < syntaxHighlighter1.Lines.Length; i++)
             {
@@ -289,8 +298,17 @@ namespace JSE
 
         private void 다른이름으로저장ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            saveFileDialog1.Title = "다른 이름으로 저장";
+            saveFileDialog1.DefaultExt = Path.GetExtension(ProjectOpt.m_ProjectPath);
+            saveFileDialog1.Title = "Choose Save Place";
             saveFileDialog1.ShowDialog();
+            string save = saveFileDialog1.FileName;
+            StreamWriter sw = new StreamWriter(save, false);
+            for (int i = 0; i < syntaxHighlighter1.Lines.Length; i++)
+            {
+                sw.WriteLine(syntaxHighlighter1.Lines[i]);
+            }
+            sw.Flush();
+            sw.Close();
         }
 
         private void 끝내기ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -674,19 +692,20 @@ namespace JSE
         private bool m_IsFlipped = true;
         private void button1_Click_1(object sender, EventArgs e)
         {
-            if (m_IsFlipped)
+            if(m_IsFlipped)
             {
-                splitContainer4.Panel1Collapsed = false;
-                button1.Text = "<";
+              
+                button1.Image = JSE.Properties.Resources.arrow;
                 m_IsFlipped = false;
+                splitContainer4.Panel1Collapsed = false;
             }
             else
             {
-                splitContainer4.Panel1Collapsed = true;
-                button1.Text = "三";
+                button1.Image = JSE.Properties.Resources.df;
+
                 m_IsFlipped = true;
+                splitContainer4.Panel1Collapsed = true;
             }
-            
         }
 
         private void syntaxHighlighter1_TextChanged_1(object sender, EventArgs e)
@@ -748,6 +767,16 @@ namespace JSE
             {
                 syntaxHighlighter1.SelectAll();
             }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void splitContainer6_Panel1_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

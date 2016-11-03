@@ -1,7 +1,10 @@
 #!/usr/bin/python
-def KelvinToFahrenheit(Temperature):
-   assert (Temperature >= 0),"Colder than absolute zero!"
-   return ((Temperature-273)*1.8)+32
-print KelvinToFahrenheit(273)
-print int(KelvinToFahrenheit(505.78))
-print KelvinToFahrenheit(-5)
+
+dict = {'Name': 'Zara', 'Age': 7, 'Class': 'First'}
+
+dict['Age'] = 8; # update existing entry
+dict['School'] = "DPS School"; # Add new entry
+
+
+print "dict['Age']: ", dict['Age']
+print "dict['School']: ", dict['School']

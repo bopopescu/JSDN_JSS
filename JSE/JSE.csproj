@@ -890,6 +890,9 @@
     <None Include="Resources\js.png" />
     <None Include="Resources\python.png" />
     <None Include="Resources\python1.png" />
+    <None Include="Resources\arrow.png" />
+    <None Include="Resources\arrow2.png" />
+    <None Include="Resources\df.png" />
     <Content Include="로고시안5.ico" />
   </ItemGroup>
   <ItemGroup>
