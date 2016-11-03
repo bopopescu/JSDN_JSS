@@ -170,7 +170,7 @@
     <value>21, 20</value>
   </metadata>
   <data name="새파일FToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>152, 22</value>
+    <value>128, 22</value>
   </data>
   <data name="새파일FToolStripMenuItem.Text" xml:space="preserve">
     <value>새 파일(&amp;F)</value>
@@ -275,22 +275,22 @@
     <value>편집(&amp;F)</value>
   </data>
   <data name="코드빌드ToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>152, 22</value>
+    <value>126, 22</value>
   </data>
   <data name="코드빌드ToolStripMenuItem.Text" xml:space="preserve">
     <value>코드 빌드</value>
   </data>
   <data name="코드정리ToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>152, 22</value>
+    <value>126, 22</value>
   </data>
   <data name="코드정리ToolStripMenuItem.Text" xml:space="preserve">
     <value>코드 정리</value>
   </data>
   <data name="toolStripMenuItem10.Size" type="System.Drawing.Size, System.Drawing">
-    <value>149, 6</value>
+    <value>123, 6</value>
   </data>
   <data name="빌드옵션ToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>152, 22</value>
+    <value>126, 22</value>
   </data>
   <data name="빌드옵션ToolStripMenuItem.Text" xml:space="preserve">
     <value>빌드 옵션</value>
@@ -514,7 +514,7 @@
     <value>syntaxHighlighter1</value>
   </data>
   <data name="&gt;&gt;syntaxHighlighter1.Type" xml:space="preserve">
-    <value>JSE.SyntaxHighlighter, JSE, Version=1.0.6152.1148, Culture=neutral, PublicKeyToken=null</value>
+    <value>JSE.SyntaxHighlighter, JSE, Version=1.0.6152.2917, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;syntaxHighlighter1.Parent" xml:space="preserve">
     <value>splitContainer3.Panel1</value>

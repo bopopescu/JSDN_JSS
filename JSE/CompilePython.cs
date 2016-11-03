@@ -14,7 +14,7 @@ namespace JSE
         /// </summary>
         /// <param name="source">source 파일의 위치이다.</param>
         /// <returns></returns>
-        public string Compile(string source) 
+        public static string Compile(string source) 
         {
             ProcessStartInfo proInfo = new ProcessStartInfo();
             Process pro = new Process();
@@ -26,7 +26,8 @@ namespace JSE
             proInfo.RedirectStandardError = true;
             pro.StartInfo = proInfo;
             pro.Start();
-            pro.StandardInput.Write(Application.StartupPath + @"\Python27\python " + source);//ex> D:\Desktop\Python27\python test1.py
+            pro.StandardInput.Write("cd " + Application.StartupPath + @"\Python27");
+            pro.StandardInput.Write("python " + source);//ex> D:\Desktop\Python27\python test1.py
             pro.Close();
             string returnVal = pro.StandardOutput.ReadToEnd();
             string filename = source;

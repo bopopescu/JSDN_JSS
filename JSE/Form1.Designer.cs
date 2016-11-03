@@ -203,6 +203,7 @@
             this.끝내기ToolStripMenuItem});
             this.파일FToolStripMenuItem.Name = "파일FToolStripMenuItem";
             resources.ApplyResources(this.파일FToolStripMenuItem, "파일FToolStripMenuItem");
+            this.파일FToolStripMenuItem.Click += new System.EventHandler(this.파일FToolStripMenuItem_Click);
             // 
             // 새창ToolStripMenuItem
             // 
@@ -598,6 +599,7 @@
             this.syntaxHighlighter1.ContextMenuStrip = this.contextMenuStrip1;
             resources.ApplyResources(this.syntaxHighlighter1, "syntaxHighlighter1");
             this.syntaxHighlighter1.Name = "syntaxHighlighter1";
+            this.syntaxHighlighter1.TextChanged += new System.EventHandler(this.syntaxHighlighter1_TextChanged_1);
             // 
             // MainForm
             // 

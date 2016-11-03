@@ -5,6 +5,9 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using IronPython;
 using IronPython.Hosting;
+using System.Diagnostics;
+using System.Text;
+
 namespace JSE
 {
     public partial class MainForm : Form
@@ -217,31 +220,72 @@ namespace JSE
         #region 메뉴클릭 이벤트
         private void 코드빌드ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+            // if(ProjectOpt.Type == "Python")
+            // {
+            ProcessStartInfo proInfo = new ProcessStartInfo();
+            Process pro = new Process();
+            proInfo.FileName = @"cmd";
+            proInfo.CreateNoWindow = false;
+            proInfo.WorkingDirectory = Application.StartupPath + @"\Python27";
+            proInfo.UseShellExecute = false;
+            proInfo.RedirectStandardOutput = true;
+            proInfo.RedirectStandardInput = true;
+            proInfo.RedirectStandardError = true;
+            pro.StartInfo = proInfo;
+            pro.Start();
+            //pro.StandardInput.Write("cd " + Application.StartupPath + @"\Python27" + Environment.NewLine);
+            //pro.StandardInput.Close();
+            // pro.StandardInput.WriteLine("D:");
+            // pro.StandardInput.WriteLine(Application.StartupPath + @"\Python27");
+            System.IO.File.Copy(ProjectOpt.m_ProjectPath, Application.StartupPath + @"\Python27\a.py", true);
+            pro.StandardInput.Write("python a.py"+ Environment.NewLine);//ex> D:\Desktop\Python27\python test1.py
+            pro.StandardInput.WriteLine("exit");
+            StringBuilder returnVal = new StringBuilder();
+            while (!pro.HasExited)
+            {
+                returnVal.Append(pro.StandardOutput.ReadToEnd());
+            }
+            pro.Close();
+            richTextBox1.Text = returnVal.ToString();
+            //string filename = source;
+            //  }
 
         }
 
         private void 열기ToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            openFileDialog1.ShowDialog();
-            if (openFileDialog1.FileName != null)
+            DialogResult r = openFileDialog1.ShowDialog();
+            if (!(r == DialogResult.Cancel))
             {
-
+                if (openFileDialog1.FileName != null)
+                {
+                    syntaxHighlighter1.Text = "";
+                    StreamReader sr = new StreamReader(openFileDialog1.FileName);
+                    ProjectOpt.m_ProjectPath = openFileDialog1.FileName;
+                    while (sr.EndOfStream != true)
+                    {
+                        syntaxHighlighter1.Text += sr.ReadLine();
+                        syntaxHighlighter1.Text += Environment.NewLine;
+                    }
+                    sr.Close();
+                }
             }
         }
 
         private void 저장ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (save_string != "")
+            saveFileDialog1.DefaultExt = Path.GetExtension(ProjectOpt.m_ProjectPath);
+            saveFileDialog1.Title = "Choose Save Place";
+            saveFileDialog1.ShowDialog();
+            string save = saveFileDialog1.FileName;
+            StreamWriter sw = new StreamWriter(save, false);
+            for (int i = 0; i < syntaxHighlighter1.Lines.Length; i++)
             {
-                saveFileDialog1.Title = "저장";
-                saveFileDialog1.ShowDialog();
+                sw.WriteLine(syntaxHighlighter1.Lines[i]);
             }
-            else
-            {
-
-            }
+            sw.Flush();
+            sw.Close();
         }
 
         private void 다른이름으로저장ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -610,6 +654,7 @@ namespace JSE
             n.ShowDialog();
             treeView1.Nodes.Clear();
             PopulateTreeView();
+            //Text = "JSS 1.0.0.0 - " + ProjectOpt.m_ProjectPath;
         }
 
         private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -640,6 +685,19 @@ namespace JSE
                 m_IsFlipped = true;
             }
             
+        }
+
+        private void syntaxHighlighter1_TextChanged_1(object sender, EventArgs e)
+        {
+            if(!(Text.Contains("*")))
+            {
+                Text += " *";
+            }
+        }
+
+        private void 파일FToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

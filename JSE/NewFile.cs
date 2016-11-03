@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -15,15 +16,7 @@ namespace JSE
         public NewFile()
         {
             InitializeComponent();
-            if (ProjectOpt.m_ProjectPath != null)
-            {
-                filepath = ProjectOpt.m_ProjectPath;
-            }
-            else
-            {
-                filepath = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-            }
+            filepath = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -34,22 +27,22 @@ namespace JSE
                 idx = listView1.Items.IndexOf(listView1.SelectedItems[0]);
             }
             textBox2.Text = filepath + @"\" + textBox1.Text;
-            switch (idx)
+            if (!(textBox2.Text.Contains(".py")||textBox2.Text.Contains(".c"))) //확장자가 안붙어있을때는 이렇게 해준다.
             {
-                case 0:
-                    textBox2.Text += ".py";
-                    break;
-                case 1:
-                    textBox2.Text += ".cs";
-                    break;
-                case 2:
-                    textBox2.Text += ".js";
-                    break;
-                case 3:
-                    textBox2.Text += ".c";
-                    break;
-                default:
-                    break;
+                
+                switch (idx)
+                {
+                    case 0:
+                        textBox2.Text += ".py";
+                        ProjectOpt.Type = "Python";
+                        break;
+                    case 1:
+                        textBox2.Text += ".c";
+                        ProjectOpt.Type = "C";
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -73,15 +66,28 @@ namespace JSE
 
         private void NewFile_Load(object sender, EventArgs e)
         {
-            textBox1.Text = "";
-            textBox2.Text = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            textBox1.Text = "New_File";
+            textBox2.Text = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            saveFileDialog1.Title = "Save File";
-            saveFileDialog1.ShowDialog();
-            filepath = saveFileDialog1.FileName;
+            folderBrowserDialog1.ShowDialog();
+            string path = folderBrowserDialog1.SelectedPath;
+            textBox2.Text = path + textBox1.Text;
+            filepath = path;
+            int idx = 9999;
+            switch (idx)
+            {
+                case 0:
+                    textBox2.Text += ".py";
+                    break;
+                case 1:
+                    textBox2.Text += ".c";
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

@@ -9,6 +9,6 @@ namespace JSE
     {
         public static string m_ProjectPath { get; set; }
         public static string m_FileName { get; set; }
-
+        public static string Type { get; set; } //Python, C, etc..
     }
 }
