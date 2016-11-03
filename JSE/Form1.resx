@@ -520,7 +520,7 @@
     <value>syntaxHighlighter1</value>
   </data>
   <data name="&gt;&gt;syntaxHighlighter1.Type" xml:space="preserve">
-    <value>JSE.SyntaxHighlighter, JSE, Version=1.0.6151.1475, Culture=neutral, PublicKeyToken=null</value>
+    <value>JSE.SyntaxHighlighter, JSE, Version=1.0.6151.30550, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;syntaxHighlighter1.Parent" xml:space="preserve">
     <value>splitContainer3.Panel1</value>
@@ -874,7 +874,7 @@
     <value>0, 0</value>
   </data>
   <data name="richTextBox1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1292, 115</value>
+    <value>1292, 112</value>
   </data>
   <data name="richTextBox1.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -913,7 +913,7 @@
     <value>1, 2</value>
   </data>
   <data name="textBox1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1289, 21</value>
+    <value>1289, 14</value>
   </data>
   <data name="textBox1.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -946,7 +946,7 @@
     <value>1294, 144</value>
   </data>
   <data name="splitContainer8.SplitterDistance" type="System.Int32, mscorlib">
-    <value>117</value>
+    <value>114</value>
   </data>
   <data name="splitContainer8.SplitterWidth" type="System.Int32, mscorlib">
     <value>1</value>

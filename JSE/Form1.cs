@@ -102,7 +102,7 @@ namespace JSE
             splitContainer4.BackColor = Color.FromArgb(19, 19, 19);
             splitContainer5.BackColor = Color.FromArgb(19, 19, 19);
             splitContainer6.BackColor = Color.FromArgb(19, 19, 19);
-            splitContainer7.BackColor = Color.FromArgb(19, 19, 19);
+            //splitContainer7.BackColor = Color.FromArgb(19, 19, 19);
             splitContainer8.BackColor = Color.FromArgb(19, 19, 19);
             splitContainer1.ForeColor = Color.FromArgb(19, 19, 19);
             splitContainer2.ForeColor = Color.FromArgb(19, 19, 19);
@@ -110,7 +110,7 @@ namespace JSE
             splitContainer4.ForeColor = Color.FromArgb(19, 19, 19);
             splitContainer5.ForeColor = Color.FromArgb(19, 19, 19);
             splitContainer6.ForeColor = Color.FromArgb(19, 19, 19);
-            splitContainer7.ForeColor = Color.FromArgb(19, 19, 19);
+            //splitContainer7.ForeColor = Color.FromArgb(19, 19, 19);
             splitContainer8.ForeColor = Color.FromArgb(19, 19, 19);
             splitContainer1.Panel1.BackColor = Color.FromArgb(19, 19, 19);
             splitContainer1.Panel1.ForeColor = Color.FromArgb(19, 19, 19);
