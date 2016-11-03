@@ -1,12 +1,7 @@
 #!/usr/bin/python
-
-i = 2
-while(i < 100):
-   j = 2
-   while(j <= (i/j)):
-      if not(i%j): break
-      j = j + 1
-   if (j > i/j) : print i, " is prime"
-   i = i + 1
-
-print "Good bye!"
+def KelvinToFahrenheit(Temperature):
+   assert (Temperature >= 0),"Colder than absolute zero!"
+   return ((Temperature-273)*1.8)+32
+print KelvinToFahrenheit(273)
+print int(KelvinToFahrenheit(505.78))
+print KelvinToFahrenheit(-5)

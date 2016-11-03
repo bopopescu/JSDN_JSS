@@ -254,7 +254,6 @@ namespace JSE
 
         private void 열기ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
             DialogResult r = openFileDialog1.ShowDialog();
             if (!(r == DialogResult.Cancel))
             {
@@ -375,6 +374,7 @@ namespace JSE
         private void 코드정리ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //빌드된 파일 전부 정리하기
+
         }
 
         private void 코드조각관리자ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -698,6 +698,54 @@ namespace JSE
         private void 파일FToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void 빌드BToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void syntaxHighlighter1_KeyPress_1(object sender, KeyPressEventArgs e)
+        {
+
+        }
+
+        private void syntaxHighlighter1_KeyDown_1(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Z && (e.Control))
+            {
+                syntaxHighlighter1.Undo();
+            }
+            if (e.KeyCode == Keys.S && (e.Control))
+            {
+                saveFileDialog1.DefaultExt = Path.GetExtension(ProjectOpt.m_ProjectPath);
+                saveFileDialog1.Title = "Choose Save Place";
+                saveFileDialog1.ShowDialog();
+                string save = saveFileDialog1.FileName;
+                StreamWriter sw = new StreamWriter(save, false);
+                for (int i = 0; i < syntaxHighlighter1.Lines.Length; i++)
+                {
+                    sw.WriteLine(syntaxHighlighter1.Lines[i]);
+                }
+                sw.Flush();
+                sw.Close();
+            }
+            if (e.KeyCode == Keys.Z && (e.Shift) && (e.Control))
+            {
+                syntaxHighlighter1.Redo();
+            }
+            if (e.KeyCode == Keys.X && (e.Control))
+            {
+                syntaxHighlighter1.Cut();
+            }
+            if (e.KeyCode == Keys.V && (e.Control))
+            {
+                syntaxHighlighter1.Paste();
+            }
+            if (e.KeyCode == Keys.A && (e.Control))
+            {
+                syntaxHighlighter1.SelectAll();
+            }
         }
     }
 }
