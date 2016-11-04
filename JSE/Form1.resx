@@ -275,37 +275,25 @@
     <value>편집(&amp;F)</value>
   </data>
   <data name="코드빌드ToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>126, 22</value>
+    <value>152, 22</value>
   </data>
   <data name="코드빌드ToolStripMenuItem.Text" xml:space="preserve">
     <value>코드 빌드</value>
   </data>
   <data name="코드정리ToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>126, 22</value>
+    <value>152, 22</value>
   </data>
   <data name="코드정리ToolStripMenuItem.Text" xml:space="preserve">
     <value>코드 정리</value>
   </data>
   <data name="toolStripMenuItem10.Size" type="System.Drawing.Size, System.Drawing">
-    <value>123, 6</value>
+    <value>149, 6</value>
   </data>
   <data name="빌드BToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>58, 20</value>
   </data>
   <data name="빌드BToolStripMenuItem.Text" xml:space="preserve">
     <value>빌드(&amp;B)</value>
-  </data>
-  <data name="업데이트ToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>166, 22</value>
-  </data>
-  <data name="업데이트ToolStripMenuItem.Text" xml:space="preserve">
-    <value>확장 및 업데이트</value>
-  </data>
-  <data name="도구TToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>57, 20</value>
-  </data>
-  <data name="도구TToolStripMenuItem.Text" xml:space="preserve">
-    <value>도구(&amp;T)</value>
   </data>
   <data name="johnscriptStudio정보ToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>142, 22</value>
@@ -439,7 +427,7 @@
     <value>syntaxHighlighter1</value>
   </data>
   <data name="&gt;&gt;syntaxHighlighter1.Type" xml:space="preserve">
-    <value>JSE.SyntaxHighlighter, JSE, Version=1.0.6152.7802, Culture=neutral, PublicKeyToken=null</value>
+    <value>JSE.SyntaxHighlighter, JSE, Version=1.0.6152.29861, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;syntaxHighlighter1.Parent" xml:space="preserve">
     <value>splitContainer3.Panel1</value>
@@ -7051,9 +7039,6 @@
         AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
 </value>
   </data>
-  <data name="$this.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
   <data name="$this.Text" xml:space="preserve">
     <value>CodIDE</value>
   </data>
@@ -7242,18 +7227,6 @@
   </data>
   <data name="&gt;&gt;toolStripMenuItem10.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;도구TToolStripMenuItem.Name" xml:space="preserve">
-    <value>도구TToolStripMenuItem</value>
-  </data>
-  <data name="&gt;&gt;도구TToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;업데이트ToolStripMenuItem.Name" xml:space="preserve">
-    <value>업데이트ToolStripMenuItem</value>
-  </data>
-  <data name="&gt;&gt;업데이트ToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;도움말HToolStripMenuItem.Name" xml:space="preserve">
     <value>도움말HToolStripMenuItem</value>

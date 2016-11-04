@@ -63,8 +63,6 @@
             this.코드빌드ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.코드정리ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem10 = new System.Windows.Forms.ToolStripSeparator();
-            this.도구TToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.업데이트ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.도움말HToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.johnscriptStudio정보ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
@@ -74,6 +72,7 @@
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.syntaxHighlighter1 = new JSE.SyntaxHighlighter();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.button1 = new System.Windows.Forms.Button();
@@ -81,7 +80,6 @@
             this.splitContainer8 = new System.Windows.Forms.SplitContainer();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.syntaxHighlighter1 = new JSE.SyntaxHighlighter();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -165,7 +163,6 @@
             this.파일FToolStripMenuItem,
             this.편집FToolStripMenuItem,
             this.빌드BToolStripMenuItem,
-            this.도구TToolStripMenuItem,
             this.도움말HToolStripMenuItem});
             resources.ApplyResources(this.menuStrip1, "menuStrip1");
             this.menuStrip1.Name = "menuStrip1";
@@ -332,19 +329,6 @@
             this.toolStripMenuItem10.Name = "toolStripMenuItem10";
             resources.ApplyResources(this.toolStripMenuItem10, "toolStripMenuItem10");
             // 
-            // 도구TToolStripMenuItem
-            // 
-            this.도구TToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.업데이트ToolStripMenuItem});
-            this.도구TToolStripMenuItem.Name = "도구TToolStripMenuItem";
-            resources.ApplyResources(this.도구TToolStripMenuItem, "도구TToolStripMenuItem");
-            // 
-            // 업데이트ToolStripMenuItem
-            // 
-            this.업데이트ToolStripMenuItem.Name = "업데이트ToolStripMenuItem";
-            resources.ApplyResources(this.업데이트ToolStripMenuItem, "업데이트ToolStripMenuItem");
-            this.업데이트ToolStripMenuItem.Click += new System.EventHandler(this.업데이트ToolStripMenuItem_Click);
-            // 
             // 도움말HToolStripMenuItem
             // 
             this.도움말HToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -409,10 +393,22 @@
             // 
             this.splitContainer3.Panel2.Controls.Add(this.splitContainer4);
             // 
+            // syntaxHighlighter1
+            // 
+            this.syntaxHighlighter1.AcceptsTab = true;
+            this.syntaxHighlighter1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.syntaxHighlighter1.ContextMenuStrip = this.contextMenuStrip1;
+            resources.ApplyResources(this.syntaxHighlighter1, "syntaxHighlighter1");
+            this.syntaxHighlighter1.Name = "syntaxHighlighter1";
+            this.syntaxHighlighter1.TextChanged += new System.EventHandler(this.syntaxHighlighter1_TextChanged_1);
+            this.syntaxHighlighter1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.syntaxHighlighter1_KeyDown_1);
+            this.syntaxHighlighter1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.syntaxHighlighter1_KeyPress_1);
+            // 
             // splitContainer4
             // 
             this.splitContainer4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             resources.ApplyResources(this.splitContainer4, "splitContainer4");
+            this.splitContainer4.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             this.splitContainer4.Name = "splitContainer4";
             // 
             // splitContainer4.Panel2
@@ -477,17 +473,6 @@
             this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox1.Name = "textBox1";
             // 
-            // syntaxHighlighter1
-            // 
-            this.syntaxHighlighter1.AcceptsTab = true;
-            this.syntaxHighlighter1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.syntaxHighlighter1.ContextMenuStrip = this.contextMenuStrip1;
-            resources.ApplyResources(this.syntaxHighlighter1, "syntaxHighlighter1");
-            this.syntaxHighlighter1.Name = "syntaxHighlighter1";
-            this.syntaxHighlighter1.TextChanged += new System.EventHandler(this.syntaxHighlighter1_TextChanged_1);
-            this.syntaxHighlighter1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.syntaxHighlighter1_KeyDown_1);
-            this.syntaxHighlighter1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.syntaxHighlighter1_KeyPress_1);
-            // 
             // MainForm
             // 
             resources.ApplyResources(this, "$this");
@@ -537,7 +522,6 @@
         private System.Windows.Forms.ToolStripMenuItem 파일FToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 편집FToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 빌드BToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 도구TToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 도움말HToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 새창ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 열기ToolStripMenuItem;
@@ -557,7 +541,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem5;
         private System.Windows.Forms.ToolStripMenuItem 찾기및바꾸기ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 코드빌드ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 업데이트ToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.ToolStripMenuItem johnscriptStudio정보ToolStripMenuItem;

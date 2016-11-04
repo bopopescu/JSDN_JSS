@@ -15,7 +15,7 @@ namespace JSE
         static void Main()
         {
             Application.EnableVisualStyles();
-            MainForm f = new MainForm();
+           StartingForm f = new StartingForm();
             f.Show();
             Application.Run();
         }

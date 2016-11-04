@@ -3,10 +3,9 @@ using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using IronPython;
-using IronPython.Hosting;
 using System.Diagnostics;
 using System.Text;
+using System.Net;
 
 namespace JSE
 {
@@ -18,6 +17,7 @@ namespace JSE
         public int scrollTop;
         public int[] div_list = new int[10000];
         public string[] div_code = new string[10000];
+        public bool isChanged = false;
         int cnt = 0;
         public static Boolean isCurslyBracesKeyPressed = false;
         public MainForm()
@@ -91,9 +91,10 @@ namespace JSE
 
         private void AddFileNode(string filename)
         {
+            treeView1.Nodes.Clear();
             TreeNode subFile;
             subFile = new TreeNode(filename, 0, 0);
-            treeView1.Nodes[0].Nodes.Add(subFile);
+            treeView1.Nodes.Add(subFile);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -162,7 +163,7 @@ namespace JSE
             Translator.translate();
             richTextBox1.Font = new Font("Consolas", 10);
             ;
-            webBrowser1.Navigate("https://dicontest.herokuapp.com/code_front/qna/qnaFront.html");
+            webBrowser1.Navigate("https://testsec.herokuapp.com/");
             //richTextBox1.Text = Translator.replace_word("정수형 i = 0");
         }
         #region 추후 MDI 구현시 사용
@@ -221,6 +222,36 @@ namespace JSE
         #region 메뉴클릭 이벤트
         private void 코드빌드ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            DialogResult dr;
+            string save;
+            saveFileDialog1.Filter = "*.py|*.py";
+
+            if (ProjectOpt.m_ProjectPath == "" || ProjectOpt.m_ProjectPath == null)
+            {
+                saveFileDialog1.DefaultExt = Path.GetExtension(ProjectOpt.m_ProjectPath);
+                saveFileDialog1.Title = "Choose Save Place";
+                saveFileDialog1.FileName = ProjectOpt.m_ProjectPath;
+                dr = saveFileDialog1.ShowDialog();
+                save = saveFileDialog1.FileName;
+            }
+            else
+            {
+                save = ProjectOpt.m_ProjectPath;
+                dr = DialogResult.OK;
+            }
+
+            if(dr != DialogResult.Cancel)
+            {
+                StreamWriter sw = new StreamWriter(save, false);
+                for (int i = 0; i < syntaxHighlighter1.Lines.Length; i++)
+                {
+                    sw.WriteLine(syntaxHighlighter1.Lines[i]);
+                }
+                sw.Flush();
+                sw.Close();
+            }
+            
+            isChanged = false;
             // if(ProjectOpt.Type == "Python")
             // {
             ProcessStartInfo proInfo = new ProcessStartInfo();
@@ -234,11 +265,7 @@ namespace JSE
             proInfo.RedirectStandardError = true;
             pro.StartInfo = proInfo;
             pro.Start();
-            //pro.StandardInput.Write("cd " + Application.StartupPath + @"\Python27" + Environment.NewLine);
-            //pro.StandardInput.Close();
-            // pro.StandardInput.WriteLine("D:");
-            // pro.StandardInput.WriteLine(Application.StartupPath + @"\Python27");
-            System.IO.File.Copy(ProjectOpt.m_ProjectPath, Application.StartupPath + @"\Python27\a.py", true);
+            File.Copy(ProjectOpt.m_ProjectPath, Application.StartupPath + @"\Python27\a.py", true);
             pro.StandardInput.Write("python a.py"+ Environment.NewLine);//ex> D:\Desktop\Python27\python test1.py
             pro.StandardInput.WriteLine("exit");
             StringBuilder returnVal = new StringBuilder();
@@ -250,7 +277,6 @@ namespace JSE
             richTextBox1.Text = returnVal.ToString();
             //string filename = source;
             //  }
-
         }
 
         private void 열기ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -269,46 +295,63 @@ namespace JSE
                         syntaxHighlighter1.Text += Environment.NewLine;
                     }
                     sr.Close();
+                    syntaxHighlighter1.ProcessAllLines();
+                    AddFileNode(Path.GetFileNameWithoutExtension(ProjectOpt.m_ProjectPath));
                 }
             }
         }
 
         private void 저장ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string save; 
-            if (ProjectOpt.m_ProjectPath != ""||ProjectOpt.m_ProjectPath != null)
+            DialogResult dr;
+            string save;
+            saveFileDialog1.Filter = "*.py|*.py";
+            
+            if (ProjectOpt.m_ProjectPath == ""||ProjectOpt.m_ProjectPath == null)
             {
             saveFileDialog1.DefaultExt = Path.GetExtension(ProjectOpt.m_ProjectPath);
             saveFileDialog1.Title = "Choose Save Place";
-            saveFileDialog1.ShowDialog();
+                saveFileDialog1.FileName = ProjectOpt.m_ProjectPath;
+            dr = saveFileDialog1.ShowDialog();
             save = saveFileDialog1.FileName;
             }
             else
             {
                save = ProjectOpt.m_ProjectPath;
+                dr = DialogResult.OK;
             }
-            StreamWriter sw = new StreamWriter(save, false);
-            for (int i = 0; i < syntaxHighlighter1.Lines.Length; i++)
+            if (dr != DialogResult.Cancel)
             {
-                sw.WriteLine(syntaxHighlighter1.Lines[i]);
+                StreamWriter sw = new StreamWriter(save, false);
+                for (int i = 0; i < syntaxHighlighter1.Lines.Length; i++)
+                {
+                    sw.WriteLine(syntaxHighlighter1.Lines[i]);
+                }
+                sw.Flush();
+                sw.Close();
             }
-            sw.Flush();
-            sw.Close();
+            isChanged = false;
         }
 
         private void 다른이름으로저장ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            DialogResult dr;
             saveFileDialog1.DefaultExt = Path.GetExtension(ProjectOpt.m_ProjectPath);
             saveFileDialog1.Title = "Choose Save Place";
-            saveFileDialog1.ShowDialog();
+            dr = saveFileDialog1.ShowDialog();
             string save = saveFileDialog1.FileName;
-            StreamWriter sw = new StreamWriter(save, false);
-            for (int i = 0; i < syntaxHighlighter1.Lines.Length; i++)
+            if(dr != DialogResult.Cancel)
             {
-                sw.WriteLine(syntaxHighlighter1.Lines[i]);
+                StreamWriter sw = new StreamWriter(save, false);
+                for (int i = 0; i < syntaxHighlighter1.Lines.Length; i++)
+                {
+                    sw.WriteLine(syntaxHighlighter1.Lines[i]);
+                }
+                sw.Flush();
+                sw.Close();
             }
-            sw.Flush();
-            sw.Close();
+            isChanged = false;
+
         }
 
         private void 끝내기ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -671,7 +714,7 @@ namespace JSE
             NewFile n = new NewFile();
             n.ShowDialog();
             treeView1.Nodes.Clear();
-            PopulateTreeView();
+            AddFileNode(Path.GetFileNameWithoutExtension(ProjectOpt.m_ProjectPath));
             //Text = "JSS 1.0.0.0 - " + ProjectOpt.m_ProjectPath;
         }
 
@@ -710,10 +753,7 @@ namespace JSE
 
         private void syntaxHighlighter1_TextChanged_1(object sender, EventArgs e)
         {
-            if(!(Text.Contains("*")))
-            {
-                Text += " *";
-            }
+            isChanged = true;
         }
 
         private void 파일FToolStripMenuItem_Click(object sender, EventArgs e)
@@ -762,6 +802,7 @@ namespace JSE
             if (e.KeyCode == Keys.V && (e.Control))
             {
                 syntaxHighlighter1.Paste();
+                syntaxHighlighter1.ProcessAllLines();
             }
             if (e.KeyCode == Keys.A && (e.Control))
             {
@@ -777,6 +818,32 @@ namespace JSE
         private void splitContainer6_Panel1_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void 강ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            /*
+             * TODO : 
+             * 서버에 POST request를 보내거나 GET을 때려서 아무튼 response를 받고, string값으로 받아서 그걸 코드 에디터에 띄워 준다.
+             */
+
+            HttpWebRequest login_request = (HttpWebRequest)WebRequest.Create("https://testsec.herokuapp.com/");
+            string login_postData = "content=SEX";//JsonConvert.SerializeObject(u);
+                                                                                         //login_postData = "drop database;";
+            var login_data = Encoding.ASCII.GetBytes(login_postData);
+            login_request.Method = "POST";
+            login_request.ContentType = "application/x-www-form-urlencoded";
+
+            login_request.ContentLength = login_data.Length;
+            using (var stream = login_request.GetRequestStream())
+            {
+                stream.Write(login_data, 0, login_data.Length);
+            }
+
+            var login_response = (HttpWebResponse)login_request.GetResponse();
+            var login_responseString = new StreamReader(login_response.GetResponseStream()).ReadToEnd();
+            syntaxHighlighter1.Text = login_responseString;
+            syntaxHighlighter1.ProcessAllLines();
         }
     }
 }

@@ -1,10 +1,24 @@
 #!/usr/bin/python
 
-dict = {'Name': 'Zara', 'Age': 7, 'Class': 'First'}
+class Employee:
+   'Common base class for all employees'
+   empCount = 0
 
-dict['Age'] = 8; # update existing entry
-dict['School'] = "DPS School"; # Add new entry
+   def __init__(self, name, salary):
+      self.name = name
+      self.salary = salary
+      Employee.empCount += 1
+   
+   def displayCount(self):
+     print "Total Employee %d" % Employee.empCount
+
+   def displayEmployee(self):
+      print "Name : ", self.name,  ", Salary: ", self.salary
+
+print "Employee.__doc__:", Employee.__doc__
+print "Employee.__name__:", Employee.__name__
+print "Employee.__module__:", Employee.__module__
+print "Employee.__bases__:", Employee.__bases__
+print "Employee.__dict__:", Employee.__dict__
 
 
-print "dict['Age']: ", dict['Age']
-print "dict['School']: ", dict['School']
