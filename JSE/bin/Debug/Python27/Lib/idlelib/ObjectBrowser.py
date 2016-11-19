@@ -9,9 +9,11 @@
 # XXX TO DO:
 # - for classes/modules, add "open source" to object browser
 
+import re
+
 from idlelib.TreeWidget import TreeItem, TreeNode, ScrolledCanvas
 
-from repr import Repr
+from reprlib import Repr
 
 myrepr = Repr()
 myrepr.maxstring = 100
@@ -57,15 +59,6 @@ class ObjectTreeItem(TreeItem):
             sublist.append(item)
         return sublist
 
-class InstanceTreeItem(ObjectTreeItem):
-    def IsExpandable(self):
-        return True
-    def GetSubList(self):
-        sublist = ObjectTreeItem.GetSubList(self)
-        sublist.insert(0,
-            make_objecttreeitem("__class__ =", self.object.__class__))
-        return sublist
-
 class ClassTreeItem(ObjectTreeItem):
     def IsExpandable(self):
         return True
@@ -103,25 +96,21 @@ class SequenceTreeItem(ObjectTreeItem):
 
 class DictTreeItem(SequenceTreeItem):
     def keys(self):
-        keys = self.object.keys()
+        keys = list(self.object.keys())
         try:
             keys.sort()
         except:
             pass
         return keys
 
-from types import *
-
 dispatch = {
-    IntType: AtomicObjectTreeItem,
-    LongType: AtomicObjectTreeItem,
-    FloatType: AtomicObjectTreeItem,
-    StringType: AtomicObjectTreeItem,
-    TupleType: SequenceTreeItem,
-    ListType: SequenceTreeItem,
-    DictType: DictTreeItem,
-    InstanceType: InstanceTreeItem,
-    ClassType: ClassTreeItem,
+    int: AtomicObjectTreeItem,
+    float: AtomicObjectTreeItem,
+    str: AtomicObjectTreeItem,
+    tuple: SequenceTreeItem,
+    list: SequenceTreeItem,
+    dict: DictTreeItem,
+    type: ClassTreeItem,
 }
 
 def make_objecttreeitem(labeltext, object, setfunction=None):
@@ -132,12 +121,14 @@ def make_objecttreeitem(labeltext, object, setfunction=None):
         c = ObjectTreeItem
     return c(labeltext, object, setfunction)
 
-# Test script
 
-def _test():
+def _object_browser(parent):
     import sys
-    from Tkinter import Tk
+    from tkinter import Tk
     root = Tk()
+    root.title("Test ObjectBrowser")
+    width, height, x, y = list(map(int, re.split('[x+]', parent.geometry())))
+    root.geometry("+%d+%d"%(x, y + 150))
     root.configure(bd=0, bg="yellow")
     root.focus_set()
     sc = ScrolledCanvas(root, bg="white", highlightthickness=0, takefocus=1)
@@ -148,4 +139,5 @@ def _test():
     root.mainloop()
 
 if __name__ == '__main__':
-    _test()
+    from idlelib.idle_test.htest import run
+    run(_object_browser)

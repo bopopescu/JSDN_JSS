@@ -5,7 +5,7 @@ import sys
 import unittest
 import site
 
-from test.test_support import captured_stdout, run_unittest
+from test.support import captured_stdout, run_unittest
 
 from distutils import sysconfig
 from distutils.command.install import install
@@ -22,10 +22,11 @@ from distutils.tests import support
 def _make_ext_name(modname):
     if os.name == 'nt' and sys.executable.endswith('_d.exe'):
         modname += '_d'
-    return modname + sysconfig.get_config_var('SO')
+    return modname + sysconfig.get_config_var('EXT_SUFFIX')
 
 
 class InstallTestCase(support.TempdirManager,
+                      support.EnvironGuard,
                       support.LoggingSilencer,
                       unittest.TestCase):
 
@@ -66,10 +67,7 @@ class InstallTestCase(support.TempdirManager,
         check_path(cmd.install_data, destination)
 
     def test_user_site(self):
-        # site.USER_SITE was introduced in 2.6
-        if sys.version < '2.6':
-            return
-
+        # test install with --user
         # preparing the environment for the test
         self.old_user_base = site.USER_BASE
         self.old_user_site = site.USER_SITE
@@ -86,19 +84,17 @@ class InstallTestCase(support.TempdirManager,
         self.old_expand = os.path.expanduser
         os.path.expanduser = _expanduser
 
-        try:
-            # this is the actual test
-            self._test_user_site()
-        finally:
+        def cleanup():
             site.USER_BASE = self.old_user_base
             site.USER_SITE = self.old_user_site
             install_module.USER_BASE = self.old_user_base
             install_module.USER_SITE = self.old_user_site
             os.path.expanduser = self.old_expand
 
-    def _test_user_site(self):
-        for key in ('nt_user', 'unix_user', 'os2_home'):
-            self.assertTrue(key in INSTALL_SCHEMES)
+        self.addCleanup(cleanup)
+
+        for key in ('nt_user', 'unix_user'):
+            self.assertIn(key, INSTALL_SCHEMES)
 
         dist = Distribution({'name': 'xx'})
         cmd = install(dist)
@@ -106,14 +102,14 @@ class InstallTestCase(support.TempdirManager,
         # making sure the user option is there
         options = [name for name, short, lable in
                    cmd.user_options]
-        self.assertTrue('user' in options)
+        self.assertIn('user', options)
 
         # setting a value
         cmd.user = 1
 
         # user base and site shouldn't be created yet
-        self.assertTrue(not os.path.exists(self.user_base))
-        self.assertTrue(not os.path.exists(self.user_site))
+        self.assertFalse(os.path.exists(self.user_base))
+        self.assertFalse(os.path.exists(self.user_site))
 
         # let's run finalize
         cmd.ensure_finalized()
@@ -122,8 +118,8 @@ class InstallTestCase(support.TempdirManager,
         self.assertTrue(os.path.exists(self.user_base))
         self.assertTrue(os.path.exists(self.user_site))
 
-        self.assertTrue('userbase' in cmd.config_vars)
-        self.assertTrue('usersite' in cmd.config_vars)
+        self.assertIn('userbase', cmd.config_vars)
+        self.assertIn('usersite', cmd.config_vars)
 
     def test_handle_extra_path(self):
         dist = Distribution({'name': 'xx', 'extra_path': 'path,dirs'})
@@ -168,7 +164,7 @@ class InstallTestCase(support.TempdirManager,
         cmd.home = 'home'
         self.assertRaises(DistutilsOptionError, cmd.finalize_options)
 
-        # can't combine user with with prefix/exec_prefix/home or
+        # can't combine user with prefix/exec_prefix/home or
         # install_(plat)base
         cmd.prefix = None
         cmd.user = 'user'
@@ -176,15 +172,16 @@ class InstallTestCase(support.TempdirManager,
 
     def test_record(self):
         install_dir = self.mkdtemp()
-        project_dir, dist = self.create_dist(scripts=['hello'])
-        self.addCleanup(os.chdir, os.getcwd())
+        project_dir, dist = self.create_dist(py_modules=['hello'],
+                                             scripts=['sayhi'])
         os.chdir(project_dir)
-        self.write_file('hello', "print('o hai')")
+        self.write_file('hello.py', "def main(): print('o hai')")
+        self.write_file('sayhi', 'from hello import main; main()')
 
         cmd = install(dist)
         dist.command_obj['install'] = cmd
         cmd.root = install_dir
-        cmd.record = os.path.join(project_dir, 'RECORD')
+        cmd.record = os.path.join(project_dir, 'filelist')
         cmd.ensure_finalized()
         cmd.run()
 
@@ -195,7 +192,8 @@ class InstallTestCase(support.TempdirManager,
             f.close()
 
         found = [os.path.basename(line) for line in content.splitlines()]
-        expected = ['hello',
+        expected = ['hello.py', 'hello.%s.pyc' % sys.implementation.cache_tag,
+                    'sayhi',
                     'UNKNOWN-0.0.0-py%s.%s.egg-info' % sys.version_info[:2]]
         self.assertEqual(found, expected)
 
@@ -203,7 +201,6 @@ class InstallTestCase(support.TempdirManager,
         install_dir = self.mkdtemp()
         project_dir, dist = self.create_dist(ext_modules=[
             Extension('xx', ['xxmodule.c'])])
-        self.addCleanup(os.chdir, os.getcwd())
         os.chdir(project_dir)
         support.copy_xxmodule_c(project_dir)
 
@@ -215,7 +212,7 @@ class InstallTestCase(support.TempdirManager,
         dist.command_obj['install'] = cmd
         dist.command_obj['build_ext'] = buildextcmd
         cmd.root = install_dir
-        cmd.record = os.path.join(project_dir, 'RECORD')
+        cmd.record = os.path.join(project_dir, 'filelist')
         cmd.ensure_finalized()
         cmd.run()
 
@@ -239,7 +236,8 @@ class InstallTestCase(support.TempdirManager,
                 self.test_record()
         finally:
             install_module.DEBUG = False
-        self.assertTrue(len(self.logs) > old_logs_len)
+        self.assertGreater(len(self.logs), old_logs_len)
+
 
 def test_suite():
     return unittest.makeSuite(InstallTestCase)

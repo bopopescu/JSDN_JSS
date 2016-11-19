@@ -4,9 +4,11 @@ Miscellaneous utility functions -- anything that doesn't fit into
 one of the other *util.py modules.
 """
 
-__revision__ = "$Id$"
-
-import sys, os, string, re
+import os
+import re
+import importlib.util
+import sys
+import string
 from distutils.errors import DistutilsPlatformError
 from distutils.dep_util import newer
 from distutils.spawn import spawn
@@ -40,16 +42,20 @@ def get_platform ():
     if os.name == 'nt':
         # sniff sys.version for architecture.
         prefix = " bit ("
-        i = string.find(sys.version, prefix)
+        i = sys.version.find(prefix)
         if i == -1:
             return sys.platform
-        j = string.find(sys.version, ")", i)
+        j = sys.version.find(")", i)
         look = sys.version[i+len(prefix):j].lower()
-        if look=='amd64':
+        if look == 'amd64':
             return 'win-amd64'
-        if look=='itanium':
+        if look == 'itanium':
             return 'win-ia64'
         return sys.platform
+
+    # Set for cross builds explicitly
+    if "_PYTHON_HOST_PLATFORM" in os.environ:
+        return os.environ["_PYTHON_HOST_PLATFORM"]
 
     if os.name != "posix" or not hasattr(os, 'uname'):
         # XXX what about the architecture? NT is Intel or Alpha,
@@ -62,10 +68,9 @@ def get_platform ():
 
     # Convert the OS name to lowercase, remove '/' characters
     # (to accommodate BSD/OS), and translate spaces (for "Power Macintosh")
-    osname = string.lower(osname)
-    osname = string.replace(osname, '/', '')
-    machine = string.replace(machine, ' ', '_')
-    machine = string.replace(machine, '/', '-')
+    osname = osname.lower().replace('/', '')
+    machine = machine.replace(' ', '_')
+    machine = machine.replace('/', '-')
 
     if osname[:5] == "linux":
         # At least on Linux/Intel, 'machine' is the processor --
@@ -80,7 +85,7 @@ def get_platform ():
             # bootstrap problem. We use a dict to get an error
             # if some suspicious happens.
             bitness = {2147483647:"32bit", 9223372036854775807:"64bit"}
-            machine += ".%s" % bitness[sys.maxint]
+            machine += ".%s" % bitness[sys.maxsize]
         # fall through to standard osname-release-machine representation
     elif osname[:4] == "irix":              # could be "irix64"!
         return "%s-%s" % (osname, release)
@@ -88,99 +93,15 @@ def get_platform ():
         return "%s-%s.%s" % (osname, version, release)
     elif osname[:6] == "cygwin":
         osname = "cygwin"
-        rel_re = re.compile (r'[\d.]+')
+        rel_re = re.compile (r'[\d.]+', re.ASCII)
         m = rel_re.match(release)
         if m:
             release = m.group()
     elif osname[:6] == "darwin":
-        #
-        # For our purposes, we'll assume that the system version from
-        # distutils' perspective is what MACOSX_DEPLOYMENT_TARGET is set
-        # to. This makes the compatibility story a bit more sane because the
-        # machine is going to compile and link as if it were
-        # MACOSX_DEPLOYMENT_TARGET.
-        from distutils.sysconfig import get_config_vars
-        cfgvars = get_config_vars()
-
-        macver = cfgvars.get('MACOSX_DEPLOYMENT_TARGET')
-
-        if 1:
-            # Always calculate the release of the running machine,
-            # needed to determine if we can build fat binaries or not.
-
-            macrelease = macver
-            # Get the system version. Reading this plist is a documented
-            # way to get the system version (see the documentation for
-            # the Gestalt Manager)
-            try:
-                f = open('/System/Library/CoreServices/SystemVersion.plist')
-            except IOError:
-                # We're on a plain darwin box, fall back to the default
-                # behaviour.
-                pass
-            else:
-                try:
-                    m = re.search(
-                            r'<key>ProductUserVisibleVersion</key>\s*' +
-                            r'<string>(.*?)</string>', f.read())
-                    if m is not None:
-                        macrelease = '.'.join(m.group(1).split('.')[:2])
-                    # else: fall back to the default behaviour
-                finally:
-                    f.close()
-
-        if not macver:
-            macver = macrelease
-
-        if macver:
-            from distutils.sysconfig import get_config_vars
-            release = macver
-            osname = "macosx"
-
-            if (macrelease + '.') >= '10.4.' and \
-                    '-arch' in get_config_vars().get('CFLAGS', '').strip():
-                # The universal build will build fat binaries, but not on
-                # systems before 10.4
-                #
-                # Try to detect 4-way universal builds, those have machine-type
-                # 'universal' instead of 'fat'.
-
-                machine = 'fat'
-                cflags = get_config_vars().get('CFLAGS')
-
-                archs = re.findall('-arch\s+(\S+)', cflags)
-                archs = tuple(sorted(set(archs)))
-
-                if len(archs) == 1:
-                    machine = archs[0]
-                elif archs == ('i386', 'ppc'):
-                    machine = 'fat'
-                elif archs == ('i386', 'x86_64'):
-                    machine = 'intel'
-                elif archs == ('i386', 'ppc', 'x86_64'):
-                    machine = 'fat3'
-                elif archs == ('ppc64', 'x86_64'):
-                    machine = 'fat64'
-                elif archs == ('i386', 'ppc', 'ppc64', 'x86_64'):
-                    machine = 'universal'
-                else:
-                    raise ValueError(
-                       "Don't know machine value for archs=%r"%(archs,))
-
-            elif machine == 'i386':
-                # On OSX the machine type returned by uname is always the
-                # 32-bit variant, even if the executable architecture is
-                # the 64-bit variant
-                if sys.maxint >= 2**32:
-                    machine = 'x86_64'
-
-            elif machine in ('PowerPC', 'Power_Macintosh'):
-                # Pick a sane name for the PPC architecture.
-                machine = 'ppc'
-
-                # See 'i386' case
-                if sys.maxint >= 2**32:
-                    machine = 'ppc64'
+        import _osx_support, distutils.sysconfig
+        osname, release, machine = _osx_support.get_platform_osx(
+                                        distutils.sysconfig.get_config_vars(),
+                                        osname, release, machine)
 
     return "%s-%s-%s" % (osname, release, machine)
 
@@ -201,11 +122,11 @@ def convert_path (pathname):
     if not pathname:
         return pathname
     if pathname[0] == '/':
-        raise ValueError, "path '%s' cannot be absolute" % pathname
+        raise ValueError("path '%s' cannot be absolute" % pathname)
     if pathname[-1] == '/':
-        raise ValueError, "path '%s' cannot end with '/'" % pathname
+        raise ValueError("path '%s' cannot end with '/'" % pathname)
 
-    paths = string.split(pathname, '/')
+    paths = pathname.split('/')
     while '.' in paths:
         paths.remove('.')
     if not paths:
@@ -233,15 +154,8 @@ def change_root (new_root, pathname):
             path = path[1:]
         return os.path.join(new_root, path)
 
-    elif os.name == 'os2':
-        (drive, path) = os.path.splitdrive(pathname)
-        if path[0] == os.sep:
-            path = path[1:]
-        return os.path.join(new_root, path)
-
     else:
-        raise DistutilsPlatformError, \
-              "nothing known about platform '%s'" % os.name
+        raise DistutilsPlatformError("nothing known about platform '%s'" % os.name)
 
 
 _environ_checked = 0
@@ -286,32 +200,17 @@ def subst_vars (s, local_vars):
 
     try:
         return re.sub(r'\$([a-zA-Z_][a-zA-Z_0-9]*)', _subst, s)
-    except KeyError, var:
-        raise ValueError, "invalid variable '$%s'" % var
+    except KeyError as var:
+        raise ValueError("invalid variable '$%s'" % var)
 
 # subst_vars ()
 
 
 def grok_environment_error (exc, prefix="error: "):
-    """Generate a useful error message from an EnvironmentError (IOError or
-    OSError) exception object.  Handles Python 1.5.1 and 1.5.2 styles, and
-    does what it can to deal with exception objects that don't have a
-    filename (which happens when the error is due to a two-file operation,
-    such as 'rename()' or 'link()'.  Returns the error message as a string
-    prefixed with 'prefix'.
-    """
-    # check for Python 1.5.2-style {IO,OS}Error exception objects
-    if hasattr(exc, 'filename') and hasattr(exc, 'strerror'):
-        if exc.filename:
-            error = prefix + "%s: %s" % (exc.filename, exc.strerror)
-        else:
-            # two-argument functions in posix module don't
-            # include the filename in the exception object!
-            error = prefix + "%s" % exc.strerror
-    else:
-        error = prefix + str(exc[-1])
-
-    return error
+    # Function kept for backward compatibility.
+    # Used to try clever things with EnvironmentErrors,
+    # but nowadays str(exception) produces good messages.
+    return prefix + str(exc)
 
 
 # Needed by 'split_quoted()'
@@ -338,7 +237,7 @@ def split_quoted (s):
     # bit of a brain-bender to get it working right, though...
     if _wordchars_re is None: _init_regex()
 
-    s = string.strip(s)
+    s = s.strip()
     words = []
     pos = 0
 
@@ -351,7 +250,7 @@ def split_quoted (s):
 
         if s[end] in string.whitespace: # unescaped, unquoted whitespace: now
             words.append(s[:end])       # we definitely have a word delimiter
-            s = string.lstrip(s[end:])
+            s = s[end:].lstrip()
             pos = 0
 
         elif s[end] == '\\':            # preserve whatever is being escaped;
@@ -365,12 +264,10 @@ def split_quoted (s):
             elif s[end] == '"':         # slurp doubly-quoted string
                 m = _dquote_re.match(s, end)
             else:
-                raise RuntimeError, \
-                      "this can't happen (bad char '%c')" % s[end]
+                raise RuntimeError("this can't happen (bad char '%c')" % s[end])
 
             if m is None:
-                raise ValueError, \
-                      "bad string (mismatched %s quotes?)" % s[end]
+                raise ValueError("bad string (mismatched %s quotes?)" % s[end])
 
             (beg, end) = m.span()
             s = s[:beg] + s[beg+1:end-1] + s[end:]
@@ -411,13 +308,13 @@ def strtobool (val):
     are 'n', 'no', 'f', 'false', 'off', and '0'.  Raises ValueError if
     'val' is anything else.
     """
-    val = string.lower(val)
+    val = val.lower()
     if val in ('y', 'yes', 't', 'true', 'on', '1'):
         return 1
     elif val in ('n', 'no', 'f', 'false', 'off', '0'):
         return 0
     else:
-        raise ValueError, "invalid truth value %r" % (val,)
+        raise ValueError("invalid truth value %r" % (val,))
 
 
 def byte_compile (py_files,
@@ -426,9 +323,9 @@ def byte_compile (py_files,
                   verbose=1, dry_run=0,
                   direct=None):
     """Byte-compile a collection of Python source files to either .pyc
-    or .pyo files in the same directory.  'py_files' is a list of files
-    to compile; any files that don't end in ".py" are silently skipped.
-    'optimize' must be one of the following:
+    or .pyo files in a __pycache__ subdirectory.  'py_files' is a list
+    of files to compile; any files that don't end in ".py" are silently
+    skipped.  'optimize' must be one of the following:
       0 - don't optimize (generate .pyc)
       1 - normal optimization (like "python -O")
       2 - extra optimization (like "python -OO")
@@ -505,7 +402,7 @@ files = [
             #if prefix:
             #    prefix = os.path.abspath(prefix)
 
-            script.write(string.join(map(repr, py_files), ",\n") + "]\n")
+            script.write(",\n".join(map(repr, py_files)) + "]\n")
             script.write("""
 byte_compile(files, optimize=%r, force=%r,
              prefix=%r, base_dir=%r,
@@ -540,12 +437,15 @@ byte_compile(files, optimize=%r, force=%r,
             # Terminology from the py_compile module:
             #   cfile - byte-compiled file
             #   dfile - purported source filename (same as 'file' by default)
-            cfile = file + (__debug__ and "c" or "o")
+            if optimize >= 0:
+                cfile = importlib.util.cache_from_source(
+                    file, debug_override=not optimize)
+            else:
+                cfile = importlib.util.cache_from_source(file)
             dfile = file
             if prefix:
                 if file[:len(prefix)] != prefix:
-                    raise ValueError, \
-                          ("invalid prefix: filename %r doesn't start with %r"
+                    raise ValueError("invalid prefix: filename %r doesn't start with %r"
                            % (file, prefix))
                 dfile = dfile[len(prefix):]
             if base_dir:
@@ -567,6 +467,87 @@ def rfc822_escape (header):
     """Return a version of the string escaped for inclusion in an
     RFC-822 header, by ensuring there are 8 spaces space after each newline.
     """
-    lines = string.split(header, '\n')
-    header = string.join(lines, '\n' + 8*' ')
-    return header
+    lines = header.split('\n')
+    sep = '\n' + 8 * ' '
+    return sep.join(lines)
+
+# 2to3 support
+
+def run_2to3(files, fixer_names=None, options=None, explicit=None):
+    """Invoke 2to3 on a list of Python files.
+    The files should all come from the build area, as the
+    modification is done in-place. To reduce the build time,
+    only files modified since the last invocation of this
+    function should be passed in the files argument."""
+
+    if not files:
+        return
+
+    # Make this class local, to delay import of 2to3
+    from lib2to3.refactor import RefactoringTool, get_fixers_from_package
+    class DistutilsRefactoringTool(RefactoringTool):
+        def log_error(self, msg, *args, **kw):
+            log.error(msg, *args)
+
+        def log_message(self, msg, *args):
+            log.info(msg, *args)
+
+        def log_debug(self, msg, *args):
+            log.debug(msg, *args)
+
+    if fixer_names is None:
+        fixer_names = get_fixers_from_package('lib2to3.fixes')
+    r = DistutilsRefactoringTool(fixer_names, options=options)
+    r.refactor(files, write=True)
+
+def copydir_run_2to3(src, dest, template=None, fixer_names=None,
+                     options=None, explicit=None):
+    """Recursively copy a directory, only copying new and changed files,
+    running run_2to3 over all newly copied Python modules afterward.
+
+    If you give a template string, it's parsed like a MANIFEST.in.
+    """
+    from distutils.dir_util import mkpath
+    from distutils.file_util import copy_file
+    from distutils.filelist import FileList
+    filelist = FileList()
+    curdir = os.getcwd()
+    os.chdir(src)
+    try:
+        filelist.findall()
+    finally:
+        os.chdir(curdir)
+    filelist.files[:] = filelist.allfiles
+    if template:
+        for line in template.splitlines():
+            line = line.strip()
+            if not line: continue
+            filelist.process_template_line(line)
+    copied = []
+    for filename in filelist.files:
+        outname = os.path.join(dest, filename)
+        mkpath(os.path.dirname(outname))
+        res = copy_file(os.path.join(src, filename), outname, update=1)
+        if res[1]: copied.append(outname)
+    run_2to3([fn for fn in copied if fn.lower().endswith('.py')],
+             fixer_names=fixer_names, options=options, explicit=explicit)
+    return copied
+
+class Mixin2to3:
+    '''Mixin class for commands that run 2to3.
+    To configure 2to3, setup scripts may either change
+    the class variables, or inherit from individual commands
+    to override how 2to3 is invoked.'''
+
+    # provide list of fixers to run;
+    # defaults to all from lib2to3.fixers
+    fixer_names = None
+
+    # options dictionary
+    options = None
+
+    # list of fixers to invoke even though they are marked as explicit
+    explicit = None
+
+    def run_2to3(self, files):
+        return run_2to3(files, self.fixer_names, self.options, self.explicit)

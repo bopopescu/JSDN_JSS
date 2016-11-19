@@ -20,7 +20,7 @@ from . import token, tokenize
 
 
 class Grammar(object):
-    """Pgen parsing tables tables conversion class.
+    """Pgen parsing tables conversion class.
 
     Once initialized, this class supplies the grammar tables for the
     parsing engine implemented by parse.py.  The parsing engine
@@ -45,7 +45,7 @@ class Grammar(object):
                      these two are each other's inverse.
 
     states        -- a list of DFAs, where each DFA is a list of
-                     states, each state is is a list of arcs, and each
+                     states, each state is a list of arcs, and each
                      arc is a (i, j) pair where i is a label and j is
                      a state number.  The DFA number is the index into
                      this list.  (This name is slightly confusing.)
@@ -86,15 +86,13 @@ class Grammar(object):
 
     def dump(self, filename):
         """Dump the grammar tables to a pickle file."""
-        f = open(filename, "wb")
-        pickle.dump(self.__dict__, f, 2)
-        f.close()
+        with open(filename, "wb") as f:
+            pickle.dump(self.__dict__, f, 2)
 
     def load(self, filename):
         """Load the grammar tables from a pickle file."""
-        f = open(filename, "rb")
-        d = pickle.load(f)
-        f.close()
+        with open(filename, "rb") as f:
+            d = pickle.load(f)
         self.__dict__.update(d)
 
     def copy(self):
@@ -113,17 +111,17 @@ class Grammar(object):
     def report(self):
         """Dump the grammar tables to standard output, for debugging."""
         from pprint import pprint
-        print "s2n"
+        print("s2n")
         pprint(self.symbol2number)
-        print "n2s"
+        print("n2s")
         pprint(self.number2symbol)
-        print "states"
+        print("states")
         pprint(self.states)
-        print "dfas"
+        print("dfas")
         pprint(self.dfas)
-        print "labels"
+        print("labels")
         pprint(self.labels)
-        print "start", self.start
+        print("start", self.start)
 
 
 # Map from operator to number (since tokenize doesn't do this)
@@ -151,6 +149,7 @@ opmap_raw = """
 { LBRACE
 } RBRACE
 @ AT
+@= ATEQUAL
 == EQEQUAL
 != NOTEQUAL
 <> NOTEQUAL

@@ -1,13 +1,9 @@
-# -*- coding: iso-8859-1 -*-
-import unittest
+import io
 import shlex
+import string
+import unittest
 
-from test import test_support
-
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+from test import support
 
 
 # The original test data set was from shellwords, by Hartmut Goebel.
@@ -72,7 +68,7 @@ foo\ x\x\""|foo|\|x|\|x|\|""|
 foo\ bar|foo|\|bar|
 foo#bar\nbaz|foobaz|
 :-) ;-)|:|-|)|;|-|)|
-αινσϊ|α|ι|ν|σ|ϊ|
+Γ‘Γ©Γ­Γ³ΓΊ|Γ‘|Γ©|Γ­|Γ³|ΓΊ|
 """
 
 posix_data = r"""x|x|
@@ -136,7 +132,7 @@ foo\ x\x\"|foo xx"|
 foo\ bar|foo bar|
 foo#bar\nbaz|foo|baz|
 :-) ;-)|:-)|;-)|
-αινσϊ|αινσϊ|
+Γ‘Γ©Γ­Γ³ΓΊ|Γ‘Γ©Γ­Γ³ΓΊ|
 """
 
 class ShlexTest(unittest.TestCase):
@@ -159,7 +155,7 @@ class ShlexTest(unittest.TestCase):
 
     def oldSplit(self, s):
         ret = []
-        lex = shlex.shlex(StringIO(s))
+        lex = shlex.shlex(io.StringIO(s))
         tok = lex.get_token()
         while tok:
             ret.append(tok)
@@ -178,6 +174,21 @@ class ShlexTest(unittest.TestCase):
                              "%s: %s != %s" %
                              (self.data[i][0], l, self.data[i][1:]))
 
+    def testQuote(self):
+        safeunquoted = string.ascii_letters + string.digits + '@%_-+=:,./'
+        unicode_sample = '\xe9\xe0\xdf'  # e + acute accent, a + grave, sharp s
+        unsafe = '"`$\\!' + unicode_sample
+
+        self.assertEqual(shlex.quote(''), "''")
+        self.assertEqual(shlex.quote(safeunquoted), safeunquoted)
+        self.assertEqual(shlex.quote('test file name'), "'test file name'")
+        for u in unsafe:
+            self.assertEqual(shlex.quote('test%sname' % u),
+                             "'test%sname'" % u)
+        for u in unsafe:
+            self.assertEqual(shlex.quote("test%s'name'" % u),
+                             "'test%s'\"'\"'name'\"'\"''" % u)
+
 # Allow this test to be used with old shlex.py
 if not getattr(shlex, "split", None):
     for methname in dir(ShlexTest):
@@ -185,7 +196,7 @@ if not getattr(shlex, "split", None):
             delattr(ShlexTest, methname)
 
 def test_main():
-    test_support.run_unittest(ShlexTest)
+    support.run_unittest(ShlexTest)
 
 if __name__ == "__main__":
     test_main()

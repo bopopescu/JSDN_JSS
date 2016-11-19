@@ -1,8 +1,8 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 """(Ostensibly) fix copyright notices in files.
 
-Actually, this sript will simply replace a block of text in a file from one
+Actually, this script will simply replace a block of text in a file from one
 string to another.  It will only do this once though, i.e. not globally
 throughout the file.  It writes a backup file and then does an os.rename()
 dance for atomicity.
@@ -50,9 +50,9 @@ VERBOSE = 0
 
 
 def usage(code, msg=''):
-    print __doc__ % globals()
+    print(__doc__ % globals())
     if msg:
-        print msg
+        print(msg)
     sys.exit(code)
 
 
@@ -62,7 +62,7 @@ def main():
         opts, args = getopt.getopt(sys.argv[1:], 'hv',
                                    ['help', 'oldnotice=', 'newnotice=',
                                     'dry-run', 'verbose'])
-    except getopt.error, msg:
+    except getopt.error as msg:
         usage(1, msg)
 
     for opt, arg in opts:
@@ -92,10 +92,10 @@ def process(file):
     i = data.find(OLD_NOTICE)
     if i < 0:
         if VERBOSE:
-            print 'no change:', file
+            print('no change:', file)
         return
     elif DRYRUN or VERBOSE:
-        print '   change:', file
+        print('   change:', file)
     if DRYRUN:
         # Don't actually change the file
         return

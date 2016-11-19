@@ -1,4 +1,4 @@
-# Copyright 2001-2010 by Vinay Sajip. All Rights Reserved.
+# Copyright 2001-2014 by Vinay Sajip. All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and its
 # documentation for any purpose and without fee is hereby granted,
@@ -19,29 +19,32 @@ Configuration functions for the logging package for Python. The core package
 is based on PEP 282 and comments thereto in comp.lang.python, and influenced
 by Apache's log4j system.
 
-Copyright (C) 2001-2010 Vinay Sajip. All Rights Reserved.
+Copyright (C) 2001-2014 Vinay Sajip. All Rights Reserved.
 
 To use, simply 'import logging' and log away!
 """
 
-import sys, logging, logging.handlers, socket, struct, os, traceback, re
-import types, cStringIO
+import errno
+import io
+import logging
+import logging.handlers
+import re
+import struct
+import sys
+import traceback
 
 try:
-    import thread
+    import _thread as thread
     import threading
-except ImportError:
+except ImportError: #pragma: no cover
     thread = None
 
-from SocketServer import ThreadingTCPServer, StreamRequestHandler
+from socketserver import ThreadingTCPServer, StreamRequestHandler
 
 
 DEFAULT_LOGGING_CONFIG_PORT = 9030
 
-if sys.platform == "win32":
-    RESET_ERROR = 10054   #WSAECONNRESET
-else:
-    RESET_ERROR = 104     #ECONNRESET
+RESET_ERROR = errno.ECONNRESET
 
 #
 #   The following code implements a socket listener for on-the-fly
@@ -59,13 +62,16 @@ def fileConfig(fname, defaults=None, disable_existing_loggers=True):
     developer provides a mechanism to present the choices and load the chosen
     configuration).
     """
-    import ConfigParser
+    import configparser
 
-    cp = ConfigParser.ConfigParser(defaults)
-    if hasattr(fname, 'readline'):
-        cp.readfp(fname)
+    if isinstance(fname, configparser.RawConfigParser):
+        cp = fname
     else:
-        cp.read(fname)
+        cp = configparser.ConfigParser(defaults)
+        if hasattr(fname, 'readline'):
+            cp.read_file(fname)
+        else:
+            cp.read(fname)
 
     formatters = _create_formatters(cp)
 
@@ -98,12 +104,9 @@ def _resolve(name):
 def _strip_spaces(alist):
     return map(lambda x: x.strip(), alist)
 
-def _encoded(s):
-    return s if isinstance(s, str) else s.encode('utf-8')
-
 def _create_formatters(cp):
     """Create and return formatters"""
-    flist = cp.get("formatters", "keys")
+    flist = cp["formatters"]["keys"]
     if not len(flist):
         return {}
     flist = flist.split(",")
@@ -111,20 +114,12 @@ def _create_formatters(cp):
     formatters = {}
     for form in flist:
         sectname = "formatter_%s" % form
-        opts = cp.options(sectname)
-        if "format" in opts:
-            fs = cp.get(sectname, "format", 1)
-        else:
-            fs = None
-        if "datefmt" in opts:
-            dfs = cp.get(sectname, "datefmt", 1)
-        else:
-            dfs = None
+        fs = cp.get(sectname, "format", raw=True, fallback=None)
+        dfs = cp.get(sectname, "datefmt", raw=True, fallback=None)
         c = logging.Formatter
-        if "class" in opts:
-            class_name = cp.get(sectname, "class")
-            if class_name:
-                c = _resolve(class_name)
+        class_name = cp[sectname].get("class")
+        if class_name:
+            c = _resolve(class_name)
         f = c(fs, dfs)
         formatters[form] = f
     return formatters
@@ -132,7 +127,7 @@ def _create_formatters(cp):
 
 def _install_handlers(cp, formatters):
     """Install and return handlers"""
-    hlist = cp.get("handlers", "keys")
+    hlist = cp["handlers"]["keys"]
     if not len(hlist):
         return {}
     hlist = hlist.split(",")
@@ -140,30 +135,23 @@ def _install_handlers(cp, formatters):
     handlers = {}
     fixups = [] #for inter-handler references
     for hand in hlist:
-        sectname = "handler_%s" % hand
-        klass = cp.get(sectname, "class")
-        opts = cp.options(sectname)
-        if "formatter" in opts:
-            fmt = cp.get(sectname, "formatter")
-        else:
-            fmt = ""
+        section = cp["handler_%s" % hand]
+        klass = section["class"]
+        fmt = section.get("formatter", "")
         try:
             klass = eval(klass, vars(logging))
         except (AttributeError, NameError):
             klass = _resolve(klass)
-        args = cp.get(sectname, "args")
+        args = section["args"]
         args = eval(args, vars(logging))
         h = klass(*args)
-        if "level" in opts:
-            level = cp.get(sectname, "level")
-            h.setLevel(logging._levelNames[level])
+        if "level" in section:
+            level = section["level"]
+            h.setLevel(level)
         if len(fmt):
             h.setFormatter(formatters[fmt])
         if issubclass(klass, logging.handlers.MemoryHandler):
-            if "target" in opts:
-                target = cp.get(sectname,"target")
-            else:
-                target = ""
+            target = section.get("target", "")
             if len(target): #the target handler may not be loaded yet, so keep for later...
                 fixups.append((h, target))
         handlers[hand] = h
@@ -172,25 +160,44 @@ def _install_handlers(cp, formatters):
         h.setTarget(handlers[t])
     return handlers
 
+def _handle_existing_loggers(existing, child_loggers, disable_existing):
+    """
+    When (re)configuring logging, handle loggers which were in the previous
+    configuration but are not in the new configuration. There's no point
+    deleting them as other threads may continue to hold references to them;
+    and by disabling them, you stop them doing any logging.
 
-def _install_loggers(cp, handlers, disable_existing_loggers):
+    However, don't disable children of named loggers, as that's probably not
+    what was intended by the user. Also, allow existing loggers to NOT be
+    disabled if disable_existing is false.
+    """
+    root = logging.root
+    for log in existing:
+        logger = root.manager.loggerDict[log]
+        if log in child_loggers:
+            logger.level = logging.NOTSET
+            logger.handlers = []
+            logger.propagate = True
+        else:
+            logger.disabled = disable_existing
+
+def _install_loggers(cp, handlers, disable_existing):
     """Create and install loggers"""
 
     # configure the root first
-    llist = cp.get("loggers", "keys")
+    llist = cp["loggers"]["keys"]
     llist = llist.split(",")
     llist = list(map(lambda x: x.strip(), llist))
     llist.remove("root")
-    sectname = "logger_root"
+    section = cp["logger_root"]
     root = logging.root
     log = root
-    opts = cp.options(sectname)
-    if "level" in opts:
-        level = cp.get(sectname, "level")
-        log.setLevel(logging._levelNames[level])
+    if "level" in section:
+        level = section["level"]
+        log.setLevel(level)
     for h in root.handlers[:]:
         root.removeHandler(h)
-    hlist = cp.get(sectname, "handlers")
+    hlist = section["handlers"]
     if len(hlist):
         hlist = hlist.split(",")
         hlist = _strip_spaces(hlist)
@@ -217,13 +224,9 @@ def _install_loggers(cp, handlers, disable_existing_loggers):
     child_loggers = []
     #now set up the new ones...
     for log in llist:
-        sectname = "logger_%s" % log
-        qn = cp.get(sectname, "qualname")
-        opts = cp.options(sectname)
-        if "propagate" in opts:
-            propagate = cp.getint(sectname, "propagate")
-        else:
-            propagate = 1
+        section = cp["logger_%s" % log]
+        qn = section["qualname"]
+        propagate = section.getint("propagate", fallback=1)
         logger = logging.getLogger(qn)
         if qn in existing:
             i = existing.index(qn) + 1 # start with the entry after qn
@@ -235,14 +238,14 @@ def _install_loggers(cp, handlers, disable_existing_loggers):
                     child_loggers.append(existing[i])
                 i += 1
             existing.remove(qn)
-        if "level" in opts:
-            level = cp.get(sectname, "level")
-            logger.setLevel(logging._levelNames[level])
+        if "level" in section:
+            level = section["level"]
+            logger.setLevel(level)
         for h in logger.handlers[:]:
             logger.removeHandler(h)
         logger.propagate = propagate
         logger.disabled = 0
-        hlist = cp.get(sectname, "handlers")
+        hlist = section["handlers"]
         if len(hlist):
             hlist = hlist.split(",")
             hlist = _strip_spaces(hlist)
@@ -254,16 +257,15 @@ def _install_loggers(cp, handlers, disable_existing_loggers):
     #and by disabling them, you stop them doing any logging.
     #However, don't disable children of named loggers, as that's
     #probably not what was intended by the user.
-    for log in existing:
-        logger = root.manager.loggerDict[log]
-        if log in child_loggers:
-            logger.level = logging.NOTSET
-            logger.handlers = []
-            logger.propagate = 1
-        elif disable_existing_loggers:
-            logger.disabled = 1
-
-
+    #for log in existing:
+    #    logger = root.manager.loggerDict[log]
+    #    if log in child_loggers:
+    #        logger.level = logging.NOTSET
+    #        logger.handlers = []
+    #        logger.propagate = 1
+    #    elif disable_existing_loggers:
+    #        logger.disabled = 1
+    _handle_existing_loggers(existing, child_loggers, disable_existing)
 
 IDENTIFIER = re.compile('^[a-z_][a-z0-9_]*$', re.I)
 
@@ -275,6 +277,30 @@ def valid_ident(s):
     return True
 
 
+class ConvertingMixin(object):
+    """For ConvertingXXX's, this mixin class provides common functions"""
+
+    def convert_with_key(self, key, value, replace=True):
+        result = self.configurator.convert(value)
+        #If the converted value is different, save for next time
+        if value is not result:
+            if replace:
+                self[key] = result
+            if type(result) in (ConvertingDict, ConvertingList,
+                               ConvertingTuple):
+                result.parent = self
+                result.key = key
+        return result
+
+    def convert(self, value):
+        result = self.configurator.convert(value)
+        if value is not result:
+            if type(result) in (ConvertingDict, ConvertingList,
+                               ConvertingTuple):
+                result.parent = self
+        return result
+
+
 # The ConvertingXXX classes are wrappers around standard Python containers,
 # and they serve to convert any suitable values in the container. The
 # conversion converts base dicts, lists and tuples to their wrapped
@@ -284,77 +310,37 @@ def valid_ident(s):
 # Each wrapper should have a configurator attribute holding the actual
 # configurator to use for conversion.
 
-class ConvertingDict(dict):
+class ConvertingDict(dict, ConvertingMixin):
     """A converting dictionary wrapper."""
 
     def __getitem__(self, key):
         value = dict.__getitem__(self, key)
-        result = self.configurator.convert(value)
-        #If the converted value is different, save for next time
-        if value is not result:
-            self[key] = result
-            if type(result) in (ConvertingDict, ConvertingList,
-                                ConvertingTuple):
-                result.parent = self
-                result.key = key
-        return result
+        return self.convert_with_key(key, value)
 
     def get(self, key, default=None):
         value = dict.get(self, key, default)
-        result = self.configurator.convert(value)
-        #If the converted value is different, save for next time
-        if value is not result:
-            self[key] = result
-            if type(result) in (ConvertingDict, ConvertingList,
-                                ConvertingTuple):
-                result.parent = self
-                result.key = key
-        return result
+        return self.convert_with_key(key, value)
 
     def pop(self, key, default=None):
         value = dict.pop(self, key, default)
-        result = self.configurator.convert(value)
-        if value is not result:
-            if type(result) in (ConvertingDict, ConvertingList,
-                                ConvertingTuple):
-                result.parent = self
-                result.key = key
-        return result
+        return self.convert_with_key(key, value, replace=False)
 
-class ConvertingList(list):
+class ConvertingList(list, ConvertingMixin):
     """A converting list wrapper."""
     def __getitem__(self, key):
         value = list.__getitem__(self, key)
-        result = self.configurator.convert(value)
-        #If the converted value is different, save for next time
-        if value is not result:
-            self[key] = result
-            if type(result) in (ConvertingDict, ConvertingList,
-                                ConvertingTuple):
-                result.parent = self
-                result.key = key
-        return result
+        return self.convert_with_key(key, value)
 
     def pop(self, idx=-1):
         value = list.pop(self, idx)
-        result = self.configurator.convert(value)
-        if value is not result:
-            if type(result) in (ConvertingDict, ConvertingList,
-                                ConvertingTuple):
-                result.parent = self
-        return result
+        return self.convert(value)
 
-class ConvertingTuple(tuple):
+class ConvertingTuple(tuple, ConvertingMixin):
     """A converting tuple wrapper."""
     def __getitem__(self, key):
         value = tuple.__getitem__(self, key)
-        result = self.configurator.convert(value)
-        if value is not result:
-            if type(result) in (ConvertingDict, ConvertingList,
-                                ConvertingTuple):
-                result.parent = self
-                result.key = key
-        return result
+        # Can't replace a tuple entry.
+        return self.convert_with_key(key, value, replace=False)
 
 class BaseConfigurator(object):
     """
@@ -374,7 +360,7 @@ class BaseConfigurator(object):
     }
 
     # We might want to use a different one, e.g. importlib
-    importer = __import__
+    importer = staticmethod(__import__)
 
     def __init__(self, config):
         self.config = ConvertingDict(config)
@@ -457,7 +443,7 @@ class BaseConfigurator(object):
                  isinstance(value, tuple):
             value = ConvertingTuple(value)
             value.configurator = self
-        elif isinstance(value, basestring): # str for py3k
+        elif isinstance(value, str): # str for py3k
             m = self.CONVERT_PATTERN.match(value)
             if m:
                 d = m.groupdict()
@@ -472,7 +458,7 @@ class BaseConfigurator(object):
     def configure_custom(self, config):
         """Configure an object with a user-supplied factory."""
         c = config.pop('()')
-        if not hasattr(c, '__call__') and hasattr(types, 'ClassType') and type(c) != types.ClassType:
+        if not callable(c):
             c = self.resolve(c)
         props = config.pop('.', None)
         # Check for valid identifiers
@@ -520,21 +506,21 @@ class DictConfigurator(BaseConfigurator):
                             level = handler_config.get('level', None)
                             if level:
                                 handler.setLevel(logging._checkLevel(level))
-                        except StandardError, e:
+                        except Exception as e:
                             raise ValueError('Unable to configure handler '
                                              '%r: %s' % (name, e))
                 loggers = config.get('loggers', EMPTY_DICT)
                 for name in loggers:
                     try:
                         self.configure_logger(name, loggers[name], True)
-                    except StandardError, e:
+                    except Exception as e:
                         raise ValueError('Unable to configure logger '
                                          '%r: %s' % (name, e))
                 root = config.get('root', None)
                 if root:
                     try:
                         self.configure_root(root, True)
-                    except StandardError, e:
+                    except Exception as e:
                         raise ValueError('Unable to configure root '
                                          'logger: %s' % e)
             else:
@@ -549,7 +535,7 @@ class DictConfigurator(BaseConfigurator):
                     try:
                         formatters[name] = self.configure_formatter(
                                                             formatters[name])
-                    except StandardError, e:
+                    except Exception as e:
                         raise ValueError('Unable to configure '
                                          'formatter %r: %s' % (name, e))
                 # Next, do filters - they don't refer to anything else, either
@@ -557,7 +543,7 @@ class DictConfigurator(BaseConfigurator):
                 for name in filters:
                     try:
                         filters[name] = self.configure_filter(filters[name])
-                    except StandardError, e:
+                    except Exception as e:
                         raise ValueError('Unable to configure '
                                          'filter %r: %s' % (name, e))
 
@@ -565,14 +551,29 @@ class DictConfigurator(BaseConfigurator):
                 # As handlers can refer to other handlers, sort the keys
                 # to allow a deterministic order of configuration
                 handlers = config.get('handlers', EMPTY_DICT)
+                deferred = []
                 for name in sorted(handlers):
                     try:
                         handler = self.configure_handler(handlers[name])
                         handler.name = name
                         handlers[name] = handler
-                    except StandardError, e:
+                    except Exception as e:
+                        if 'target not configured yet' in str(e):
+                            deferred.append(name)
+                        else:
+                            raise ValueError('Unable to configure handler '
+                                             '%r: %s' % (name, e))
+
+                # Now do any that were deferred
+                for name in deferred:
+                    try:
+                        handler = self.configure_handler(handlers[name])
+                        handler.name = name
+                        handlers[name] = handler
+                    except Exception as e:
                         raise ValueError('Unable to configure handler '
                                          '%r: %s' % (name, e))
+
                 # Next, do loggers - they refer to handlers and filters
 
                 #we don't want to lose the existing loggers,
@@ -584,7 +585,7 @@ class DictConfigurator(BaseConfigurator):
                 #which were in the previous configuration but
                 #which are not in the new configuration.
                 root = logging.root
-                existing = root.manager.loggerDict.keys()
+                existing = list(root.manager.loggerDict.keys())
                 #The list needs to be sorted so that we can
                 #avoid disabling child loggers of explicitly
                 #named loggers. With a sorted list it is easier
@@ -596,21 +597,19 @@ class DictConfigurator(BaseConfigurator):
                 #now set up the new ones...
                 loggers = config.get('loggers', EMPTY_DICT)
                 for name in loggers:
-                    name = _encoded(name)
                     if name in existing:
-                        i = existing.index(name)
+                        i = existing.index(name) + 1 # look after name
                         prefixed = name + "."
                         pflen = len(prefixed)
                         num_existing = len(existing)
-                        i = i + 1 # look at the entry after name
-                        while (i < num_existing) and\
-                              (existing[i][:pflen] == prefixed):
-                            child_loggers.append(existing[i])
-                            i = i + 1
+                        while i < num_existing:
+                            if existing[i][:pflen] == prefixed:
+                                child_loggers.append(existing[i])
+                            i += 1
                         existing.remove(name)
                     try:
                         self.configure_logger(name, loggers[name])
-                    except StandardError, e:
+                    except Exception as e:
                         raise ValueError('Unable to configure logger '
                                          '%r: %s' % (name, e))
 
@@ -619,21 +618,23 @@ class DictConfigurator(BaseConfigurator):
                 #and by disabling them, you stop them doing any logging.
                 #However, don't disable children of named loggers, as that's
                 #probably not what was intended by the user.
-                for log in existing:
-                    logger = root.manager.loggerDict[log]
-                    if log in child_loggers:
-                        logger.level = logging.NOTSET
-                        logger.handlers = []
-                        logger.propagate = True
-                    elif disable_existing:
-                        logger.disabled = True
+                #for log in existing:
+                #    logger = root.manager.loggerDict[log]
+                #    if log in child_loggers:
+                #        logger.level = logging.NOTSET
+                #        logger.handlers = []
+                #        logger.propagate = True
+                #    elif disable_existing:
+                #        logger.disabled = True
+                _handle_existing_loggers(existing, child_loggers,
+                                         disable_existing)
 
                 # And finally, do the root logger
                 root = config.get('root', None)
                 if root:
                     try:
                         self.configure_root(root)
-                    except StandardError, e:
+                    except Exception as e:
                         raise ValueError('Unable to configure root '
                                          'logger: %s' % e)
         finally:
@@ -645,7 +646,7 @@ class DictConfigurator(BaseConfigurator):
             factory = config['()'] # for use in exception handler
             try:
                 result = self.configure_custom(config)
-            except TypeError, te:
+            except TypeError as te:
                 if "'format'" not in str(te):
                     raise
                 #Name of parameter changed from fmt to format.
@@ -658,7 +659,8 @@ class DictConfigurator(BaseConfigurator):
         else:
             fmt = config.get('format', None)
             dfmt = config.get('datefmt', None)
-            result = logging.Formatter(fmt, dfmt)
+            style = config.get('style', '%')
+            result = logging.Formatter(fmt, dfmt, style)
         return result
 
     def configure_filter(self, config):
@@ -675,33 +677,39 @@ class DictConfigurator(BaseConfigurator):
         for f in filters:
             try:
                 filterer.addFilter(self.config['filters'][f])
-            except StandardError, e:
+            except Exception as e:
                 raise ValueError('Unable to add filter %r: %s' % (f, e))
 
     def configure_handler(self, config):
         """Configure a handler from a dictionary."""
+        config_copy = dict(config)  # for restoring in case of error
         formatter = config.pop('formatter', None)
         if formatter:
             try:
                 formatter = self.config['formatters'][formatter]
-            except StandardError, e:
+            except Exception as e:
                 raise ValueError('Unable to set formatter '
                                  '%r: %s' % (formatter, e))
         level = config.pop('level', None)
         filters = config.pop('filters', None)
         if '()' in config:
             c = config.pop('()')
-            if not hasattr(c, '__call__') and hasattr(types, 'ClassType') and type(c) != types.ClassType:
+            if not callable(c):
                 c = self.resolve(c)
             factory = c
         else:
-            klass = self.resolve(config.pop('class'))
+            cname = config.pop('class')
+            klass = self.resolve(cname)
             #Special case for handler which refers to another handler
             if issubclass(klass, logging.handlers.MemoryHandler) and\
                 'target' in config:
                 try:
-                    config['target'] = self.config['handlers'][config['target']]
-                except StandardError, e:
+                    th = self.config['handlers'][config['target']]
+                    if not isinstance(th, logging.Handler):
+                        config.update(config_copy)  # restore for deferred cfg
+                        raise TypeError('target not configured yet')
+                    config['target'] = th
+                except Exception as e:
                     raise ValueError('Unable to set target handler '
                                      '%r: %s' % (config['target'], e))
             elif issubclass(klass, logging.handlers.SMTPHandler) and\
@@ -711,10 +719,11 @@ class DictConfigurator(BaseConfigurator):
                 'address' in config:
                 config['address'] = self.as_tuple(config['address'])
             factory = klass
+        props = config.pop('.', None)
         kwargs = dict([(k, config[k]) for k in config if valid_ident(k)])
         try:
             result = factory(**kwargs)
-        except TypeError, te:
+        except TypeError as te:
             if "'stream'" not in str(te):
                 raise
             #The argument name changed from strm to stream
@@ -729,6 +738,9 @@ class DictConfigurator(BaseConfigurator):
             result.setLevel(logging._checkLevel(level))
         if filters:
             self.add_filters(result, filters)
+        if props:
+            for name, value in props.items():
+                setattr(result, name, value)
         return result
 
     def add_handlers(self, logger, handlers):
@@ -736,7 +748,7 @@ class DictConfigurator(BaseConfigurator):
         for h in handlers:
             try:
                 logger.addHandler(self.config['handlers'][h])
-            except StandardError, e:
+            except Exception as e:
                 raise ValueError('Unable to add handler %r: %s' % (h, e))
 
     def common_logger_config(self, logger, config, incremental=False):
@@ -777,7 +789,7 @@ def dictConfig(config):
     dictConfigClass(config).configure()
 
 
-def listen(port=DEFAULT_LOGGING_CONFIG_PORT):
+def listen(port=DEFAULT_LOGGING_CONFIG_PORT, verify=None):
     """
     Start up a socket server on the specified port, and listen for new
     configurations.
@@ -786,8 +798,17 @@ def listen(port=DEFAULT_LOGGING_CONFIG_PORT):
     Returns a Thread object on which you can call start() to start the server,
     and which you can join() when appropriate. To stop the server, call
     stopListening().
+
+    Use the ``verify`` argument to verify any bytes received across the wire
+    from a client. If specified, it should be a callable which receives a
+    single argument - the bytes of configuration data received across the
+    network - and it should return either ``None``, to indicate that the
+    passed in bytes could not be verified and should be discarded, or a
+    byte string which is then passed to the configuration machinery as
+    normal. Note that you can return transformed bytes, e.g. by decrypting
+    the bytes passed in.
     """
-    if not thread:
+    if not thread: #pragma: no cover
         raise NotImplementedError("listen() needs threading to work")
 
     class ConfigStreamHandler(StreamRequestHandler):
@@ -805,7 +826,6 @@ def listen(port=DEFAULT_LOGGING_CONFIG_PORT):
             struct.pack(">L", n), followed by the config file.
             Uses fileConfig() to do the grunt work.
             """
-            import tempfile
             try:
                 conn = self.connection
                 chunk = conn.recv(4)
@@ -814,30 +834,28 @@ def listen(port=DEFAULT_LOGGING_CONFIG_PORT):
                     chunk = self.connection.recv(slen)
                     while len(chunk) < slen:
                         chunk = chunk + conn.recv(slen - len(chunk))
-                    try:
-                        import json
-                        d =json.loads(chunk)
-                        assert isinstance(d, dict)
-                        dictConfig(d)
-                    except:
-                        #Apply new configuration.
-
-                        file = cStringIO.StringIO(chunk)
+                    if self.server.verify is not None:
+                        chunk = self.server.verify(chunk)
+                    if chunk is not None:   # verified, can process
+                        chunk = chunk.decode("utf-8")
                         try:
-                            fileConfig(file)
-                        except (KeyboardInterrupt, SystemExit):
-                            raise
-                        except:
-                            traceback.print_exc()
+                            import json
+                            d =json.loads(chunk)
+                            assert isinstance(d, dict)
+                            dictConfig(d)
+                        except Exception:
+                            #Apply new configuration.
+
+                            file = io.StringIO(chunk)
+                            try:
+                                fileConfig(file)
+                            except Exception:
+                                traceback.print_exc()
                     if self.server.ready:
                         self.server.ready.set()
-            except socket.error, e:
-                if not isinstance(e.args, tuple):
+            except OSError as e:
+                if e.errno != RESET_ERROR:
                     raise
-                else:
-                    errcode = e.args[0]
-                    if errcode != RESET_ERROR:
-                        raise
 
     class ConfigSocketReceiver(ThreadingTCPServer):
         """
@@ -847,13 +865,14 @@ def listen(port=DEFAULT_LOGGING_CONFIG_PORT):
         allow_reuse_address = 1
 
         def __init__(self, host='localhost', port=DEFAULT_LOGGING_CONFIG_PORT,
-                     handler=None, ready=None):
+                     handler=None, ready=None, verify=None):
             ThreadingTCPServer.__init__(self, (host, port), handler)
             logging._acquireLock()
             self.abort = 0
             logging._releaseLock()
             self.timeout = 1
             self.ready = ready
+            self.verify = verify
 
         def serve_until_stopped(self):
             import select
@@ -871,16 +890,18 @@ def listen(port=DEFAULT_LOGGING_CONFIG_PORT):
 
     class Server(threading.Thread):
 
-        def __init__(self, rcvr, hdlr, port):
+        def __init__(self, rcvr, hdlr, port, verify):
             super(Server, self).__init__()
             self.rcvr = rcvr
             self.hdlr = hdlr
             self.port = port
+            self.verify = verify
             self.ready = threading.Event()
 
         def run(self):
             server = self.rcvr(port=self.port, handler=self.hdlr,
-                               ready=self.ready)
+                               ready=self.ready,
+                               verify=self.verify)
             if self.port == 0:
                 self.port = server.server_address[1]
             self.ready.set()
@@ -890,7 +911,7 @@ def listen(port=DEFAULT_LOGGING_CONFIG_PORT):
             logging._releaseLock()
             server.serve_until_stopped()
 
-    return Server(ConfigSocketReceiver, ConfigStreamHandler, port)
+    return Server(ConfigSocketReceiver, ConfigStreamHandler, port, verify)
 
 def stopListening():
     """

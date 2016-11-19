@@ -5,7 +5,7 @@ import os
 
 from distutils.errors import DistutilsPlatformError
 from distutils.tests import support
-from test.test_support import run_unittest
+from test.support import run_unittest
 
 # A manifest with the only assembly reference being the msvcrt assembly, so
 # should have the assembly completely stripped.  Note that although the
@@ -104,7 +104,7 @@ class msvc9compilerTestCase(support.TempdirManager,
                             unittest.TestCase):
 
     def test_no_compiler(self):
-        # makes sure query_vcvarsall throws
+        # makes sure query_vcvarsall raises
         # a DistutilsPlatformError if the compiler
         # is not found
         from distutils.msvc9compiler import query_vcvarsall
@@ -127,16 +127,16 @@ class msvc9compilerTestCase(support.TempdirManager,
         # looking for values that should exist on all
         # windows registeries versions.
         path = r'Control Panel\Desktop'
-        v = Reg.get_value(path, u'dragfullwindows')
-        self.assertTrue(v in (u'0', u'1', u'2'))
+        v = Reg.get_value(path, 'dragfullwindows')
+        self.assertIn(v, ('0', '1', '2'))
 
-        import _winreg
-        HKCU = _winreg.HKEY_CURRENT_USER
+        import winreg
+        HKCU = winreg.HKEY_CURRENT_USER
         keys = Reg.read_keys(HKCU, 'xxxx')
         self.assertEqual(keys, None)
 
         keys = Reg.read_keys(HKCU, r'Control Panel')
-        self.assertTrue('Desktop' in keys)
+        self.assertIn('Desktop', keys)
 
     def test_remove_visual_c_ref(self):
         from distutils.msvc9compiler import MSVCCompiler
@@ -174,7 +174,7 @@ class msvc9compilerTestCase(support.TempdirManager,
 
         compiler = MSVCCompiler()
         got = compiler._remove_visual_c_ref(manifest)
-        self.assertIs(got, None)
+        self.assertIsNone(got)
 
 
 def test_suite():

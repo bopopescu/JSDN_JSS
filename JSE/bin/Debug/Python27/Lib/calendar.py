@@ -142,7 +142,7 @@ class Calendar(object):
 
     def iterweekdays(self):
         """
-        Return a iterator for one week of weekday numbers starting with the
+        Return an iterator for one week of weekday numbers starting with the
         configured first one.
         """
         for i in range(self.firstweekday, self.firstweekday + 7):
@@ -161,7 +161,11 @@ class Calendar(object):
         oneday = datetime.timedelta(days=1)
         while True:
             yield date
-            date += oneday
+            try:
+                date += oneday
+            except OverflowError:
+                # Adding one day could fail after datetime.MAXYEAR
+                break
             if date.month != month and date.weekday() == self.firstweekday:
                 break
 
@@ -216,7 +220,7 @@ class Calendar(object):
     def yeardatescalendar(self, year, width=3):
         """
         Return the data for the specified year ready for formatting. The return
-        value is a list of month rows. Each month row contains upto width months.
+        value is a list of month rows. Each month row contains up to width months.
         Each month contains between 4 and 6 weeks and each week contains 1-7
         days. Days are datetime.date objects.
         """
@@ -262,7 +266,7 @@ class TextCalendar(Calendar):
         """
         Print a single week (no newline).
         """
-        print self.formatweek(theweek, width),
+        print(self.formatweek(theweek, width), end=' ')
 
     def formatday(self, day, weekday, width):
         """
@@ -309,7 +313,7 @@ class TextCalendar(Calendar):
         """
         Print a month's calendar.
         """
-        print self.formatmonth(theyear, themonth, w, l),
+        print(self.formatmonth(theyear, themonth, w, l), end=' ')
 
     def formatmonth(self, theyear, themonth, w=0, l=0):
         """
@@ -366,7 +370,7 @@ class TextCalendar(Calendar):
 
     def pryear(self, theyear, w=0, l=0, c=6, m=3):
         """Print a year's calendar."""
-        print self.formatyear(theyear, w, l, c, m)
+        print(self.formatyear(theyear, w, l, c, m))
 
 
 class HTMLCalendar(Calendar):
@@ -481,7 +485,7 @@ class HTMLCalendar(Calendar):
         return ''.join(v).encode(encoding, "xmlcharrefreplace")
 
 
-class TimeEncoding:
+class different_locale:
     def __init__(self, locale):
         self.locale = locale
 
@@ -508,21 +512,17 @@ class LocaleTextCalendar(TextCalendar):
         self.locale = locale
 
     def formatweekday(self, day, width):
-        with TimeEncoding(self.locale) as encoding:
+        with different_locale(self.locale):
             if width >= 9:
                 names = day_name
             else:
                 names = day_abbr
             name = names[day]
-            if encoding is not None:
-                name = name.decode(encoding)
             return name[:width].center(width)
 
     def formatmonthname(self, theyear, themonth, width, withyear=True):
-        with TimeEncoding(self.locale) as encoding:
+        with different_locale(self.locale):
             s = month_name[themonth]
-            if encoding is not None:
-                s = s.decode(encoding)
             if withyear:
                 s = "%s %r" % (s, theyear)
             return s.center(width)
@@ -542,17 +542,13 @@ class LocaleHTMLCalendar(HTMLCalendar):
         self.locale = locale
 
     def formatweekday(self, day):
-        with TimeEncoding(self.locale) as encoding:
+        with different_locale(self.locale):
             s = day_abbr[day]
-            if encoding is not None:
-                s = s.decode(encoding)
             return '<th class="%s">%s</th>' % (self.cssclasses[day], s)
 
     def formatmonthname(self, theyear, themonth, withyear=True):
-        with TimeEncoding(self.locale) as encoding:
+        with different_locale(self.locale):
             s = month_name[themonth]
-            if encoding is not None:
-                s = s.decode(encoding)
             if withyear:
                 s = '%s %s' % (s, theyear)
             return '<tr><th colspan="7" class="month">%s</th></tr>' % s
@@ -564,10 +560,6 @@ c = TextCalendar()
 firstweekday = c.getfirstweekday
 
 def setfirstweekday(firstweekday):
-    try:
-        firstweekday.__index__
-    except AttributeError:
-        raise IllegalWeekdayError(firstweekday)
     if not MONDAY <= firstweekday <= SUNDAY:
         raise IllegalWeekdayError(firstweekday)
     c.firstweekday = firstweekday
@@ -589,7 +581,7 @@ _spacing = 6                # Number of spaces between columns
 
 def format(cols, colwidth=_colwidth, spacing=_spacing):
     """Prints multi-column formatting for year calendars"""
-    print formatstring(cols, colwidth, spacing)
+    print(formatstring(cols, colwidth, spacing))
 
 
 def formatstring(cols, colwidth=_colwidth, spacing=_spacing):
@@ -648,7 +640,7 @@ def main(args):
     parser.add_option(
         "-e", "--encoding",
         dest="encoding", default=None,
-        help="Encoding to use for output"
+        help="Encoding to use for output."
     )
     parser.add_option(
         "-t", "--type",
@@ -674,10 +666,11 @@ def main(args):
         if encoding is None:
             encoding = sys.getdefaultencoding()
         optdict = dict(encoding=encoding, css=options.css)
+        write = sys.stdout.buffer.write
         if len(args) == 1:
-            print cal.formatyearpage(datetime.date.today().year, **optdict)
+            write(cal.formatyearpage(datetime.date.today().year, **optdict))
         elif len(args) == 2:
-            print cal.formatyearpage(int(args[1]), **optdict)
+            write(cal.formatyearpage(int(args[1]), **optdict))
         else:
             parser.error("incorrect number of arguments")
             sys.exit(1)
@@ -699,9 +692,11 @@ def main(args):
         else:
             parser.error("incorrect number of arguments")
             sys.exit(1)
+        write = sys.stdout.write
         if options.encoding:
             result = result.encode(options.encoding)
-        print result
+            write = sys.stdout.buffer.write
+        write(result)
 
 
 if __name__ == "__main__":

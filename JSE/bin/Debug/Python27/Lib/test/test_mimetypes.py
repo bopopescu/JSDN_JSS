@@ -1,9 +1,10 @@
+import io
+import locale
 import mimetypes
-import StringIO
-import unittest
 import sys
+import unittest
 
-from test import test_support
+from test import support
 
 # Tell it we don't know about external files:
 mimetypes.knownfiles = []
@@ -21,6 +22,8 @@ class MimeTypesTestCase(unittest.TestCase):
         eq(self.db.guess_type("foo.tgz"), ("application/x-tar", "gzip"))
         eq(self.db.guess_type("foo.tar.gz"), ("application/x-tar", "gzip"))
         eq(self.db.guess_type("foo.tar.Z"), ("application/x-tar", "compress"))
+        eq(self.db.guess_type("foo.tar.bz2"), ("application/x-tar", "bzip2"))
+        eq(self.db.guess_type("foo.tar.xz"), ("application/x-tar", "xz"))
 
     def test_data_urls(self):
         eq = self.assertEqual
@@ -31,7 +34,7 @@ class MimeTypesTestCase(unittest.TestCase):
 
     def test_file_parsing(self):
         eq = self.assertEqual
-        sio = StringIO.StringIO("x-application/x-unittest pyunit\n")
+        sio = io.StringIO("x-application/x-unittest pyunit\n")
         self.db.readfp(sio)
         eq(self.db.guess_type("foo.pyunit"),
            ("x-application/x-unittest", None))
@@ -62,6 +65,18 @@ class MimeTypesTestCase(unittest.TestCase):
         all = self.db.guess_all_extensions('image/jpg', strict=True)
         eq(all, [])
 
+    def test_encoding(self):
+        getpreferredencoding = locale.getpreferredencoding
+        self.addCleanup(setattr, locale, 'getpreferredencoding',
+                                 getpreferredencoding)
+        locale.getpreferredencoding = lambda: 'ascii'
+
+        filename = support.findfile("mime.types")
+        mimes = mimetypes.MimeTypes([filename])
+        exts = mimes.guess_all_extensions('application/vnd.geocube+xml',
+                                          strict=True)
+        self.assertEqual(exts, ['.g3', '.g\xb3'])
+
 
 @unittest.skipUnless(sys.platform.startswith("win"), "Windows only")
 class Win32MimeTypesTestCase(unittest.TestCase):
@@ -83,9 +98,11 @@ class Win32MimeTypesTestCase(unittest.TestCase):
         # Use file types that should *always* exist:
         eq = self.assertEqual
         eq(self.db.guess_type("foo.txt"), ("text/plain", None))
+        eq(self.db.guess_type("image.jpg"), ("image/jpeg", None))
+        eq(self.db.guess_type("image.png"), ("image/png", None))
 
 def test_main():
-    test_support.run_unittest(MimeTypesTestCase,
+    support.run_unittest(MimeTypesTestCase,
         Win32MimeTypesTestCase
         )
 

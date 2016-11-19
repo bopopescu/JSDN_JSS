@@ -6,13 +6,13 @@ import warnings
 import zipfile
 from os.path import join
 from textwrap import dedent
+from test.support import captured_stdout, check_warnings, run_unittest
 
-# zlib is not used here, but if it's not available
-# the tests that use zipfile may fail
 try:
     import zlib
+    ZLIB_SUPPORT = True
 except ImportError:
-    zlib = None
+    ZLIB_SUPPORT = False
 
 try:
     import grp
@@ -20,8 +20,6 @@ try:
     UID_GID_SUPPORT = True
 except ImportError:
     UID_GID_SUPPORT = False
-
-from test.test_support import captured_stdout, check_warnings, run_unittest
 
 from distutils.command.sdist import sdist, show_formats
 from distutils.core import Distribution
@@ -89,11 +87,10 @@ class SDistTestCase(PyPIRCCommandTestCase):
         cmd.dist_dir = 'dist'
         return dist, cmd
 
-    @unittest.skipUnless(zlib, "requires zlib")
+    @unittest.skipUnless(ZLIB_SUPPORT, 'Need zlib support to run')
     def test_prune_file_list(self):
-        # this test creates a package with some vcs dirs in it
-        # and launch sdist to make sure they get pruned
-        # on all systems
+        # this test creates a project with some VCS dirs and an NFS rename
+        # file, then launches sdist to check they get pruned on all systems
 
         # creating VCS directories with some files in them
         os.mkdir(join(self.tmp_dir, 'somecode', '.svn'))
@@ -106,6 +103,8 @@ class SDistTestCase(PyPIRCCommandTestCase):
         os.mkdir(join(self.tmp_dir, 'somecode', '.git'))
         self.write_file((self.tmp_dir, 'somecode', '.git',
                          'ok'), 'xxx')
+
+        self.write_file((self.tmp_dir, 'somecode', '.nfs0001'), 'xxx')
 
         # now building a sdist
         dist, cmd = self.get_cmd()
@@ -131,14 +130,12 @@ class SDistTestCase(PyPIRCCommandTestCase):
         # making sure everything has been pruned correctly
         self.assertEqual(len(content), 4)
 
-    @unittest.skipUnless(zlib, "requires zlib")
+    @unittest.skipUnless(ZLIB_SUPPORT, 'Need zlib support to run')
+    @unittest.skipIf(find_executable('tar') is None,
+                     "The tar command is not found")
+    @unittest.skipIf(find_executable('gzip') is None,
+                     "The gzip command is not found")
     def test_make_distribution(self):
-
-        # check if tar and gzip are installed
-        if (find_executable('tar') is None or
-            find_executable('gzip') is None):
-            return
-
         # now building a sdist
         dist, cmd = self.get_cmd()
 
@@ -166,29 +163,7 @@ class SDistTestCase(PyPIRCCommandTestCase):
         result.sort()
         self.assertEqual(result, ['fake-1.0.tar', 'fake-1.0.tar.gz'])
 
-    @unittest.skipUnless(zlib, "requires zlib")
-    def test_unicode_metadata_tgz(self):
-        """
-        Unicode name or version should not break building to tar.gz format.
-        Reference issue #11638.
-        """
-
-        # create the sdist command with unicode parameters
-        dist, cmd = self.get_cmd({'name': u'fake', 'version': u'1.0'})
-
-        # create the sdist as gztar and run the command
-        cmd.formats = ['gztar']
-        cmd.ensure_finalized()
-        cmd.run()
-
-        # The command should have created the .tar.gz file
-        dist_folder = join(self.tmp_dir, 'dist')
-        result = os.listdir(dist_folder)
-        self.assertEqual(result, ['fake-1.0.tar.gz'])
-
-        os.remove(join(dist_folder, 'fake-1.0.tar.gz'))
-
-    @unittest.skipUnless(zlib, "requires zlib")
+    @unittest.skipUnless(ZLIB_SUPPORT, 'Need zlib support to run')
     def test_add_defaults(self):
 
         # http://bugs.python.org/issue2279
@@ -261,7 +236,7 @@ class SDistTestCase(PyPIRCCommandTestCase):
             f.close()
         self.assertEqual(manifest, MANIFEST % {'sep': os.sep})
 
-    @unittest.skipUnless(zlib, "requires zlib")
+    @unittest.skipUnless(ZLIB_SUPPORT, 'Need zlib support to run')
     def test_metadata_check_option(self):
         # testing the `medata-check` option
         dist, cmd = self.get_cmd(metadata={})
@@ -322,60 +297,10 @@ class SDistTestCase(PyPIRCCommandTestCase):
         cmd.formats = 'supazipa'
         self.assertRaises(DistutilsOptionError, cmd.finalize_options)
 
-    @unittest.skipUnless(zlib, "requires zlib")
-    @unittest.skipUnless(UID_GID_SUPPORT, "Requires grp and pwd support")
-    def test_make_distribution_owner_group(self):
-
-        # check if tar and gzip are installed
-        if (find_executable('tar') is None or
-            find_executable('gzip') is None):
-            return
-
-        # now building a sdist
-        dist, cmd = self.get_cmd()
-
-        # creating a gztar and specifying the owner+group
-        cmd.formats = ['gztar']
-        cmd.owner = pwd.getpwuid(0)[0]
-        cmd.group = grp.getgrgid(0)[0]
-        cmd.ensure_finalized()
-        cmd.run()
-
-        # making sure we have the good rights
-        archive_name = join(self.tmp_dir, 'dist', 'fake-1.0.tar.gz')
-        archive = tarfile.open(archive_name)
-        try:
-            for member in archive.getmembers():
-                self.assertEqual(member.uid, 0)
-                self.assertEqual(member.gid, 0)
-        finally:
-            archive.close()
-
-        # building a sdist again
-        dist, cmd = self.get_cmd()
-
-        # creating a gztar
-        cmd.formats = ['gztar']
-        cmd.ensure_finalized()
-        cmd.run()
-
-        # making sure we have the good rights
-        archive_name = join(self.tmp_dir, 'dist', 'fake-1.0.tar.gz')
-        archive = tarfile.open(archive_name)
-
-        # note that we are not testing the group ownership here
-        # because, depending on the platforms and the container
-        # rights (see #7408)
-        try:
-            for member in archive.getmembers():
-                self.assertEqual(member.uid, os.getuid())
-        finally:
-            archive.close()
-
     # the following tests make sure there is a nice error message instead
     # of a traceback when parsing an invalid manifest template
 
-    def _test_template(self, content):
+    def _check_template(self, content):
         dist, cmd = self.get_cmd()
         os.chdir(self.tmp_dir)
         self.write_file('MANIFEST.in', content)
@@ -386,19 +311,19 @@ class SDistTestCase(PyPIRCCommandTestCase):
         self.assertEqual(len(warnings), 1)
 
     def test_invalid_template_unknown_command(self):
-        self._test_template('taunt knights *')
+        self._check_template('taunt knights *')
 
     def test_invalid_template_wrong_arguments(self):
         # this manifest command takes one argument
-        self._test_template('prune')
+        self._check_template('prune')
 
     @unittest.skipIf(os.name != 'nt', 'test relevant for Windows only')
     def test_invalid_template_wrong_path(self):
         # on Windows, trailing slashes are not allowed
         # this used to crash instead of raising a warning: #8286
-        self._test_template('include examples/')
+        self._check_template('include examples/')
 
-    @unittest.skipUnless(zlib, "requires zlib")
+    @unittest.skipUnless(ZLIB_SUPPORT, 'Need zlib support to run')
     def test_get_file_list(self):
         # make sure MANIFEST is recalculated
         dist, cmd = self.get_cmd()
@@ -440,7 +365,7 @@ class SDistTestCase(PyPIRCCommandTestCase):
         self.assertEqual(len(manifest2), 6)
         self.assertIn('doc2.txt', manifest2[-1])
 
-    @unittest.skipUnless(zlib, "requires zlib")
+    @unittest.skipUnless(ZLIB_SUPPORT, 'Need zlib support to run')
     def test_manifest_marker(self):
         # check that autogenerated MANIFESTs have a marker
         dist, cmd = self.get_cmd()
@@ -457,7 +382,7 @@ class SDistTestCase(PyPIRCCommandTestCase):
         self.assertEqual(manifest[0],
                          '# file GENERATED by distutils, do NOT edit')
 
-    @unittest.skipUnless(zlib, 'requires zlib')
+    @unittest.skipUnless(ZLIB_SUPPORT, "Need zlib support to run")
     def test_manifest_comments(self):
         # make sure comments don't cause exceptions or wrong includes
         contents = dedent("""\
@@ -474,7 +399,7 @@ class SDistTestCase(PyPIRCCommandTestCase):
         cmd.run()
         self.assertEqual(cmd.filelist.files, ['good.py'])
 
-    @unittest.skipUnless(zlib, "requires zlib")
+    @unittest.skipUnless(ZLIB_SUPPORT, 'Need zlib support to run')
     def test_manual_manifest(self):
         # check that a MANIFEST without a marker is left alone
         dist, cmd = self.get_cmd()
@@ -503,6 +428,54 @@ class SDistTestCase(PyPIRCCommandTestCase):
             archive.close()
         self.assertEqual(sorted(filenames), ['fake-1.0', 'fake-1.0/PKG-INFO',
                                              'fake-1.0/README.manual'])
+
+    @unittest.skipUnless(ZLIB_SUPPORT, "requires zlib")
+    @unittest.skipUnless(UID_GID_SUPPORT, "Requires grp and pwd support")
+    @unittest.skipIf(find_executable('tar') is None,
+                     "The tar command is not found")
+    @unittest.skipIf(find_executable('gzip') is None,
+                     "The gzip command is not found")
+    def test_make_distribution_owner_group(self):
+        # now building a sdist
+        dist, cmd = self.get_cmd()
+
+        # creating a gztar and specifying the owner+group
+        cmd.formats = ['gztar']
+        cmd.owner = pwd.getpwuid(0)[0]
+        cmd.group = grp.getgrgid(0)[0]
+        cmd.ensure_finalized()
+        cmd.run()
+
+        # making sure we have the good rights
+        archive_name = join(self.tmp_dir, 'dist', 'fake-1.0.tar.gz')
+        archive = tarfile.open(archive_name)
+        try:
+            for member in archive.getmembers():
+                self.assertEqual(member.uid, 0)
+                self.assertEqual(member.gid, 0)
+        finally:
+            archive.close()
+
+        # building a sdist again
+        dist, cmd = self.get_cmd()
+
+        # creating a gztar
+        cmd.formats = ['gztar']
+        cmd.ensure_finalized()
+        cmd.run()
+
+        # making sure we have the good rights
+        archive_name = join(self.tmp_dir, 'dist', 'fake-1.0.tar.gz')
+        archive = tarfile.open(archive_name)
+
+        # note that we are not testing the group ownership here
+        # because, depending on the platforms and the container
+        # rights (see #7408)
+        try:
+            for member in archive.getmembers():
+                self.assertEqual(member.uid, os.getuid())
+        finally:
+            archive.close()
 
 def test_suite():
     return unittest.makeSuite(SDistTestCase)

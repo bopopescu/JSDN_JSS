@@ -46,30 +46,18 @@ internationalized, to the local language and cultural habits.
 #   find this format documented anywhere.
 
 
-import locale, copy, os, re, struct, sys
+import locale, copy, io, os, re, struct, sys
 from errno import ENOENT
 
 
 __all__ = ['NullTranslations', 'GNUTranslations', 'Catalog',
            'find', 'translation', 'install', 'textdomain', 'bindtextdomain',
-           'dgettext', 'dngettext', 'gettext', 'ngettext',
+           'bind_textdomain_codeset',
+           'dgettext', 'dngettext', 'gettext', 'lgettext', 'ldgettext',
+           'ldngettext', 'lngettext', 'ngettext',
            ]
 
-_default_localedir = os.path.join(sys.prefix, 'share', 'locale')
-
-
-def test(condition, true, false):
-    """
-    Implements the C expression:
-
-      condition ? true : false
-
-    Required to correctly interpret plural forms.
-    """
-    if condition:
-        return true
-    else:
-        return false
+_default_localedir = os.path.join(sys.base_prefix, 'share', 'locale')
 
 
 def c2py(plural):
@@ -77,20 +65,15 @@ def c2py(plural):
     Python lambda function that implements an equivalent expression.
     """
     # Security check, allow only the "n" identifier
-    try:
-        from cStringIO import StringIO
-    except ImportError:
-        from StringIO import StringIO
     import token, tokenize
-    tokens = tokenize.generate_tokens(StringIO(plural).readline)
+    tokens = tokenize.generate_tokens(io.StringIO(plural).readline)
     try:
         danger = [x for x in tokens if x[0] == token.NAME and x[1] != 'n']
     except tokenize.TokenError:
-        raise ValueError, \
-              'plural forms expression error, maybe unbalanced parenthesis'
+        raise ValueError('plural forms expression error, maybe unbalanced parenthesis')
     else:
         if danger:
-            raise ValueError, 'plural forms expression could be dangerous'
+            raise ValueError('plural forms expression could be dangerous')
 
     # Replace some C operators by their Python equivalents
     plural = plural.replace('&&', ' and ')
@@ -100,11 +83,11 @@ def c2py(plural):
     plural = expr.sub(' not \\1', plural)
 
     # Regular expression and replacement function used to transform
-    # "a?b:c" to "test(a,b,c)".
+    # "a?b:c" to "b if a else c".
     expr = re.compile(r'(.*?)\?(.*?):(.*)')
     def repl(x):
-        return "test(%s, %s, %s)" % (x.group(1), x.group(2),
-                                     expr.sub(repl, x.group(3)))
+        return "(%s if %s else %s)" % (x.group(2), x.group(1),
+                                       expr.sub(repl, x.group(3)))
 
     # Code to transform the plural expression, taking care of parentheses
     stack = ['']
@@ -116,7 +99,7 @@ def c2py(plural):
                 # Actually, we never reach this code, because unbalanced
                 # parentheses get caught in the security check at the
                 # beginning.
-                raise ValueError, 'unbalanced parenthesis in plural form'
+                raise ValueError('unbalanced parenthesis in plural form')
             s = expr.sub(repl, stack.pop())
             stack[-1] += '(%s)' % s
         else:
@@ -127,36 +110,35 @@ def c2py(plural):
 
 
 
-def _expand_lang(locale):
-    from locale import normalize
-    locale = normalize(locale)
+def _expand_lang(loc):
+    loc = locale.normalize(loc)
     COMPONENT_CODESET   = 1 << 0
     COMPONENT_TERRITORY = 1 << 1
     COMPONENT_MODIFIER  = 1 << 2
     # split up the locale into its base components
     mask = 0
-    pos = locale.find('@')
+    pos = loc.find('@')
     if pos >= 0:
-        modifier = locale[pos:]
-        locale = locale[:pos]
+        modifier = loc[pos:]
+        loc = loc[:pos]
         mask |= COMPONENT_MODIFIER
     else:
         modifier = ''
-    pos = locale.find('.')
+    pos = loc.find('.')
     if pos >= 0:
-        codeset = locale[pos:]
-        locale = locale[:pos]
+        codeset = loc[pos:]
+        loc = loc[:pos]
         mask |= COMPONENT_CODESET
     else:
         codeset = ''
-    pos = locale.find('_')
+    pos = loc.find('_')
     if pos >= 0:
-        territory = locale[pos:]
-        locale = locale[:pos]
+        territory = loc[pos:]
+        loc = loc[:pos]
         mask |= COMPONENT_TERRITORY
     else:
         territory = ''
-    language = locale
+    language = loc
     ret = []
     for i in range(mask+1):
         if not (i & ~mask):  # if all components for this combo exist ...
@@ -214,19 +196,6 @@ class NullTranslations:
         else:
             return msgid2
 
-    def ugettext(self, message):
-        if self._fallback:
-            return self._fallback.ugettext(message)
-        return unicode(message)
-
-    def ungettext(self, msgid1, msgid2, n):
-        if self._fallback:
-            return self._fallback.ungettext(msgid1, msgid2, n)
-        if n == 1:
-            return unicode(msgid1)
-        else:
-            return unicode(msgid2)
-
     def info(self):
         return self._info
 
@@ -239,25 +208,24 @@ class NullTranslations:
     def set_output_charset(self, charset):
         self._output_charset = charset
 
-    def install(self, unicode=False, names=None):
-        import __builtin__
-        __builtin__.__dict__['_'] = unicode and self.ugettext or self.gettext
+    def install(self, names=None):
+        import builtins
+        builtins.__dict__['_'] = self.gettext
         if hasattr(names, "__contains__"):
             if "gettext" in names:
-                __builtin__.__dict__['gettext'] = __builtin__.__dict__['_']
+                builtins.__dict__['gettext'] = builtins.__dict__['_']
             if "ngettext" in names:
-                __builtin__.__dict__['ngettext'] = (unicode and self.ungettext
-                                                             or self.ngettext)
+                builtins.__dict__['ngettext'] = self.ngettext
             if "lgettext" in names:
-                __builtin__.__dict__['lgettext'] = self.lgettext
+                builtins.__dict__['lgettext'] = self.lgettext
             if "lngettext" in names:
-                __builtin__.__dict__['lngettext'] = self.lngettext
+                builtins.__dict__['lngettext'] = self.lngettext
 
 
 class GNUTranslations(NullTranslations):
     # Magic number of .mo files
-    LE_MAGIC = 0x950412deL
-    BE_MAGIC = 0xde120495L
+    LE_MAGIC = 0x950412de
+    BE_MAGIC = 0xde120495
 
     def _parse(self, fp):
         """Override this method to support alternative .mo formats."""
@@ -278,10 +246,10 @@ class GNUTranslations(NullTranslations):
             version, msgcount, masteridx, transidx = unpack('>4I', buf[4:20])
             ii = '>II'
         else:
-            raise IOError(0, 'Bad magic number', filename)
+            raise OSError(0, 'Bad magic number', filename)
         # Now put all messages from the .mo file buffer into the catalog
         # dictionary.
-        for i in xrange(0, msgcount):
+        for i in range(0, msgcount):
             mlen, moff = unpack(ii, buf[masteridx:masteridx+8])
             mend = moff + mlen
             tlen, toff = unpack(ii, buf[transidx:transidx+8])
@@ -290,15 +258,16 @@ class GNUTranslations(NullTranslations):
                 msg = buf[moff:mend]
                 tmsg = buf[toff:tend]
             else:
-                raise IOError(0, 'File is corrupt', filename)
+                raise OSError(0, 'File is corrupt', filename)
             # See if we're looking at GNU .mo conventions for metadata
             if mlen == 0:
                 # Catalog description
-                lastk = k = None
-                for item in tmsg.splitlines():
-                    item = item.strip()
+                lastk = None
+                for b_item in tmsg.split('\n'.encode("ascii")):
+                    item = b_item.decode().strip()
                     if not item:
                         continue
+                    k = v = None
                     if ':' in item:
                         k, v = item.split(':', 1)
                         k = k.strip().lower()
@@ -322,37 +291,19 @@ class GNUTranslations(NullTranslations):
             # cause no problems since us-ascii should always be a subset of
             # the charset encoding.  We may want to fall back to 8-bit msgids
             # if the Unicode conversion fails.
-            if '\x00' in msg:
+            charset = self._charset or 'ascii'
+            if b'\x00' in msg:
                 # Plural forms
-                msgid1, msgid2 = msg.split('\x00')
-                tmsg = tmsg.split('\x00')
-                if self._charset:
-                    msgid1 = unicode(msgid1, self._charset)
-                    tmsg = [unicode(x, self._charset) for x in tmsg]
-                for i in range(len(tmsg)):
-                    catalog[(msgid1, i)] = tmsg[i]
+                msgid1, msgid2 = msg.split(b'\x00')
+                tmsg = tmsg.split(b'\x00')
+                msgid1 = str(msgid1, charset)
+                for i, x in enumerate(tmsg):
+                    catalog[(msgid1, i)] = str(x, charset)
             else:
-                if self._charset:
-                    msg = unicode(msg, self._charset)
-                    tmsg = unicode(tmsg, self._charset)
-                catalog[msg] = tmsg
+                catalog[str(msg, charset)] = str(tmsg, charset)
             # advance to next entry in the seek tables
             masteridx += 8
             transidx += 8
-
-    def gettext(self, message):
-        missing = object()
-        tmsg = self._catalog.get(message, missing)
-        if tmsg is missing:
-            if self._fallback:
-                return self._fallback.gettext(message)
-            return message
-        # Encode the Unicode tmsg back to an 8-bit string, if possible
-        if self._output_charset:
-            return tmsg.encode(self._output_charset)
-        elif self._charset:
-            return tmsg.encode(self._charset)
-        return tmsg
 
     def lgettext(self, message):
         missing = object()
@@ -364,22 +315,6 @@ class GNUTranslations(NullTranslations):
         if self._output_charset:
             return tmsg.encode(self._output_charset)
         return tmsg.encode(locale.getpreferredencoding())
-
-    def ngettext(self, msgid1, msgid2, n):
-        try:
-            tmsg = self._catalog[(msgid1, self.plural(n))]
-            if self._output_charset:
-                return tmsg.encode(self._output_charset)
-            elif self._charset:
-                return tmsg.encode(self._charset)
-            return tmsg
-        except KeyError:
-            if self._fallback:
-                return self._fallback.ngettext(msgid1, msgid2, n)
-            if n == 1:
-                return msgid1
-            else:
-                return msgid2
 
     def lngettext(self, msgid1, msgid2, n):
         try:
@@ -395,30 +330,30 @@ class GNUTranslations(NullTranslations):
             else:
                 return msgid2
 
-    def ugettext(self, message):
+    def gettext(self, message):
         missing = object()
         tmsg = self._catalog.get(message, missing)
         if tmsg is missing:
             if self._fallback:
-                return self._fallback.ugettext(message)
-            return unicode(message)
+                return self._fallback.gettext(message)
+            return message
         return tmsg
 
-    def ungettext(self, msgid1, msgid2, n):
+    def ngettext(self, msgid1, msgid2, n):
         try:
             tmsg = self._catalog[(msgid1, self.plural(n))]
         except KeyError:
             if self._fallback:
-                return self._fallback.ungettext(msgid1, msgid2, n)
+                return self._fallback.ngettext(msgid1, msgid2, n)
             if n == 1:
-                tmsg = unicode(msgid1)
+                tmsg = msgid1
             else:
-                tmsg = unicode(msgid2)
+                tmsg = msgid2
         return tmsg
 
 
 # Locate a .mo file using the gettext strategy
-def find(domain, localedir=None, languages=None, all=0):
+def find(domain, localedir=None, languages=None, all=False):
     # Get some reasonable defaults for arguments that were not supplied
     if localedir is None:
         localedir = _default_localedir
@@ -462,11 +397,11 @@ def translation(domain, localedir=None, languages=None,
                 class_=None, fallback=False, codeset=None):
     if class_ is None:
         class_ = GNUTranslations
-    mofiles = find(domain, localedir, languages, all=1)
+    mofiles = find(domain, localedir, languages, all=True)
     if not mofiles:
         if fallback:
             return NullTranslations()
-        raise IOError(ENOENT, 'No translation file found for domain', domain)
+        raise OSError(ENOENT, 'No translation file found for domain', domain)
     # Avoid opening, reading, and parsing the .mo file after it's been done
     # once.
     result = None
@@ -489,9 +424,9 @@ def translation(domain, localedir=None, languages=None,
     return result
 
 
-def install(domain, localedir=None, unicode=False, codeset=None, names=None):
+def install(domain, localedir=None, codeset=None, names=None):
     t = translation(domain, localedir, fallback=True, codeset=codeset)
-    t.install(unicode, names)
+    t.install(names)
 
 
 
@@ -528,7 +463,7 @@ def dgettext(domain, message):
     try:
         t = translation(domain, _localedirs.get(domain, None),
                         codeset=_localecodesets.get(domain))
-    except IOError:
+    except OSError:
         return message
     return t.gettext(message)
 
@@ -536,7 +471,7 @@ def ldgettext(domain, message):
     try:
         t = translation(domain, _localedirs.get(domain, None),
                         codeset=_localecodesets.get(domain))
-    except IOError:
+    except OSError:
         return message
     return t.lgettext(message)
 
@@ -544,7 +479,7 @@ def dngettext(domain, msgid1, msgid2, n):
     try:
         t = translation(domain, _localedirs.get(domain, None),
                         codeset=_localecodesets.get(domain))
-    except IOError:
+    except OSError:
         if n == 1:
             return msgid1
         else:
@@ -555,7 +490,7 @@ def ldngettext(domain, msgid1, msgid2, n):
     try:
         t = translation(domain, _localedirs.get(domain, None),
                         codeset=_localecodesets.get(domain))
-    except IOError:
+    except OSError:
         if n == 1:
             return msgid1
         else:

@@ -1,65 +1,26 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 """Python interface for the 'lsprof' profiler.
    Compatible with the 'profile' module.
 """
 
-__all__ = ["run", "runctx", "help", "Profile"]
+__all__ = ["run", "runctx", "Profile"]
 
 import _lsprof
+import profile as _pyprofile
 
 # ____________________________________________________________
 # Simple interface
 
 def run(statement, filename=None, sort=-1):
-    """Run statement under profiler optionally saving results in filename
-
-    This function takes a single argument that can be passed to the
-    "exec" statement, and an optional file name.  In all cases this
-    routine attempts to "exec" its first argument and gather profiling
-    statistics from the execution. If no file name is present, then this
-    function automatically prints a simple profiling report, sorted by the
-    standard name string (file/line/function-name) that is presented in
-    each line.
-    """
-    prof = Profile()
-    result = None
-    try:
-        try:
-            prof = prof.run(statement)
-        except SystemExit:
-            pass
-    finally:
-        if filename is not None:
-            prof.dump_stats(filename)
-        else:
-            result = prof.print_stats(sort)
-    return result
+    return _pyprofile._Utils(Profile).run(statement, filename, sort)
 
 def runctx(statement, globals, locals, filename=None, sort=-1):
-    """Run statement under profiler, supplying your own globals and locals,
-    optionally saving results in filename.
+    return _pyprofile._Utils(Profile).runctx(statement, globals, locals,
+                                             filename, sort)
 
-    statement and filename have the same semantics as profile.run
-    """
-    prof = Profile()
-    result = None
-    try:
-        try:
-            prof = prof.runctx(statement, globals, locals)
-        except SystemExit:
-            pass
-    finally:
-        if filename is not None:
-            prof.dump_stats(filename)
-        else:
-            result = prof.print_stats(sort)
-    return result
-
-# Backwards compatibility.
-def help():
-    print "Documentation for the profile/cProfile modules can be found "
-    print "in the Python Library Reference, section 'The Python Profiler'."
+run.__doc__ = _pyprofile.run.__doc__
+runctx.__doc__ = _pyprofile.runctx.__doc__
 
 # ____________________________________________________________
 
@@ -82,10 +43,9 @@ class Profile(_lsprof.Profiler):
 
     def dump_stats(self, file):
         import marshal
-        f = open(file, 'wb')
-        self.create_stats()
-        marshal.dump(self.stats, f)
-        f.close()
+        with open(file, 'wb') as f:
+            self.create_stats()
+            marshal.dump(self.stats, f)
 
     def create_stats(self):
         self.disable()
@@ -137,7 +97,7 @@ class Profile(_lsprof.Profiler):
     def runctx(self, cmd, globals, locals):
         self.enable()
         try:
-            exec cmd in globals, locals
+            exec(cmd, globals, locals)
         finally:
             self.disable()
         return self
@@ -188,6 +148,7 @@ def main():
             '__file__': progname,
             '__name__': '__main__',
             '__package__': None,
+            '__cached__': None,
         }
         runctx(code, globs, None, options.outfile, options.sort)
     else:

@@ -1,6 +1,8 @@
 import unittest
 from ctypes import *
+from ctypes.test import need_symbol
 from struct import calcsize
+import _testcapi
 
 class SubclassesTest(unittest.TestCase):
     def test_subclass(self):
@@ -82,7 +84,7 @@ class StructureTestCase(unittest.TestCase):
         class Y(Structure):
             _fields_ = [("x", c_char * 3),
                         ("y", c_int)]
-        self.assertEqual(alignment(Y), calcsize("i"))
+        self.assertEqual(alignment(Y), alignment(c_int))
         self.assertEqual(sizeof(Y), calcsize("3si"))
 
         class SI(Structure):
@@ -107,7 +109,7 @@ class StructureTestCase(unittest.TestCase):
     def test_emtpy(self):
         # I had problems with these
         #
-        # Although these are patological cases: Empty Structures!
+        # Although these are pathological cases: Empty Structures!
         class X(Structure):
             _fields_ = []
 
@@ -174,13 +176,6 @@ class StructureTestCase(unittest.TestCase):
         self.assertEqual(sizeof(X), 10)
         self.assertEqual(X.b.offset, 2)
 
-        class X(Structure):
-            _fields_ = [("a", c_byte),
-                        ("b", c_longlong)]
-            _pack_ = 4
-        self.assertEqual(sizeof(X), 12)
-        self.assertEqual(X.b.offset, 4)
-
         import struct
         longlong_size = struct.calcsize("q")
         longlong_align = struct.calcsize("bq") - longlong_size
@@ -188,9 +183,16 @@ class StructureTestCase(unittest.TestCase):
         class X(Structure):
             _fields_ = [("a", c_byte),
                         ("b", c_longlong)]
+            _pack_ = 4
+        self.assertEqual(sizeof(X), min(4, longlong_align) + longlong_size)
+        self.assertEqual(X.b.offset, min(4, longlong_align))
+
+        class X(Structure):
+            _fields_ = [("a", c_byte),
+                        ("b", c_longlong)]
             _pack_ = 8
 
-        self.assertEqual(sizeof(X), longlong_align + longlong_size)
+        self.assertEqual(sizeof(X), min(8, longlong_align) + longlong_size)
         self.assertEqual(X.b.offset, min(8, longlong_align))
 
 
@@ -199,21 +201,29 @@ class StructureTestCase(unittest.TestCase):
              "_pack_": -1}
         self.assertRaises(ValueError, type(Structure), "X", (Structure,), d)
 
+        # Issue 15989
+        d = {"_fields_": [("a", c_byte)],
+             "_pack_": _testcapi.INT_MAX + 1}
+        self.assertRaises(ValueError, type(Structure), "X", (Structure,), d)
+        d = {"_fields_": [("a", c_byte)],
+             "_pack_": _testcapi.UINT_MAX + 2}
+        self.assertRaises(ValueError, type(Structure), "X", (Structure,), d)
+
     def test_initializers(self):
         class Person(Structure):
             _fields_ = [("name", c_char*6),
                         ("age", c_int)]
 
         self.assertRaises(TypeError, Person, 42)
-        self.assertRaises(ValueError, Person, "asldkjaslkdjaslkdj")
+        self.assertRaises(ValueError, Person, b"asldkjaslkdjaslkdj")
         self.assertRaises(TypeError, Person, "Name", "HI")
 
         # short enough
-        self.assertEqual(Person("12345", 5).name, "12345")
+        self.assertEqual(Person(b"12345", 5).name, b"12345")
         # exact fit
-        self.assertEqual(Person("123456", 5).name, "123456")
+        self.assertEqual(Person(b"123456", 5).name, b"123456")
         # too long
-        self.assertRaises(ValueError, Person, "1234567", 5)
+        self.assertRaises(ValueError, Person, b"1234567", 5)
 
     def test_conflicting_initializers(self):
         class POINT(Structure):
@@ -245,7 +255,7 @@ class StructureTestCase(unittest.TestCase):
             class S(Structure):
                 _fields_ = [(name, c_int)]
 
-        self.assertRaises(TypeError, declare_with_name, u"x\xe9")
+        self.assertRaises(TypeError, declare_with_name, b"x")
 
     def test_intarray_fields(self):
         class SomeInts(Structure):
@@ -275,32 +285,28 @@ class StructureTestCase(unittest.TestCase):
                         ("phone", Phone),
                         ("age", c_int)]
 
-        p = Person("Someone", ("1234", "5678"), 5)
+        p = Person(b"Someone", (b"1234", b"5678"), 5)
 
-        self.assertEqual(p.name, "Someone")
-        self.assertEqual(p.phone.areacode, "1234")
-        self.assertEqual(p.phone.number, "5678")
+        self.assertEqual(p.name, b"Someone")
+        self.assertEqual(p.phone.areacode, b"1234")
+        self.assertEqual(p.phone.number, b"5678")
         self.assertEqual(p.age, 5)
 
+    @need_symbol('c_wchar')
     def test_structures_with_wchar(self):
-        try:
-            c_wchar
-        except NameError:
-            return # no unicode
-
         class PersonW(Structure):
             _fields_ = [("name", c_wchar * 12),
                         ("age", c_int)]
 
-        p = PersonW(u"Someone")
-        self.assertEqual(p.name, "Someone")
+        p = PersonW("Someone \xe9")
+        self.assertEqual(p.name, "Someone \xe9")
 
-        self.assertEqual(PersonW(u"1234567890").name, u"1234567890")
-        self.assertEqual(PersonW(u"12345678901").name, u"12345678901")
+        self.assertEqual(PersonW("1234567890").name, "1234567890")
+        self.assertEqual(PersonW("12345678901").name, "12345678901")
         # exact fit
-        self.assertEqual(PersonW(u"123456789012").name, u"123456789012")
+        self.assertEqual(PersonW("123456789012").name, "123456789012")
         #too long
-        self.assertRaises(ValueError, PersonW, u"1234567890123")
+        self.assertRaises(ValueError, PersonW, "1234567890123")
 
     def test_init_errors(self):
         class Phone(Structure):
@@ -312,25 +318,19 @@ class StructureTestCase(unittest.TestCase):
                         ("phone", Phone),
                         ("age", c_int)]
 
-        cls, msg = self.get_except(Person, "Someone", (1, 2))
+        cls, msg = self.get_except(Person, b"Someone", (1, 2))
         self.assertEqual(cls, RuntimeError)
-        # In Python 2.5, Exception is a new-style class, and the repr changed
-        if issubclass(Exception, object):
-            self.assertEqual(msg,
-                                 "(Phone) <type 'exceptions.TypeError'>: "
-                                 "expected string or Unicode object, int found")
-        else:
-            self.assertEqual(msg,
-                                 "(Phone) exceptions.TypeError: "
-                                 "expected string or Unicode object, int found")
+        self.assertEqual(msg,
+                             "(Phone) <class 'TypeError'>: "
+                             "expected bytes, int found")
 
-        cls, msg = self.get_except(Person, "Someone", ("a", "b", "c"))
+        cls, msg = self.get_except(Person, b"Someone", (b"a", b"b", b"c"))
         self.assertEqual(cls, RuntimeError)
         if issubclass(Exception, object):
             self.assertEqual(msg,
-                                 "(Phone) <type 'exceptions.TypeError'>: too many initializers")
+                                 "(Phone) <class 'TypeError'>: too many initializers")
         else:
-            self.assertEqual(msg, "(Phone) exceptions.TypeError: too many initializers")
+            self.assertEqual(msg, "(Phone) TypeError: too many initializers")
 
     def test_huge_field_name(self):
         # issue12881: segfault with large structure field names
@@ -348,17 +348,17 @@ class StructureTestCase(unittest.TestCase):
     def get_except(self, func, *args):
         try:
             func(*args)
-        except Exception, detail:
+        except Exception as detail:
             return detail.__class__, str(detail)
 
-
-##    def test_subclass_creation(self):
-##        meta = type(Structure)
-##        # same as 'class X(Structure): pass'
-##        # fails, since we need either a _fields_ or a _abstract_ attribute
-##        cls, msg = self.get_except(meta, "X", (Structure,), {})
-##        self.assertEqual((cls, msg),
-##                             (AttributeError, "class must define a '_fields_' attribute"))
+    @unittest.skip('test disabled')
+    def test_subclass_creation(self):
+        meta = type(Structure)
+        # same as 'class X(Structure): pass'
+        # fails, since we need either a _fields_ or a _abstract_ attribute
+        cls, msg = self.get_except(meta, "X", (Structure,), {})
+        self.assertEqual((cls, msg),
+                (AttributeError, "class must define a '_fields_' attribute"))
 
     def test_abstract_class(self):
         class X(Structure):
@@ -371,9 +371,9 @@ class StructureTestCase(unittest.TestCase):
 ##        class X(Structure):
 ##            _fields_ = []
 
-        self.assertTrue("in_dll" in dir(type(Structure)))
-        self.assertTrue("from_address" in dir(type(Structure)))
-        self.assertTrue("in_dll" in dir(type(Structure)))
+        self.assertIn("in_dll", dir(type(Structure)))
+        self.assertIn("from_address", dir(type(Structure)))
+        self.assertIn("in_dll", dir(type(Structure)))
 
     def test_positional_args(self):
         # see also http://bugs.python.org/issue5042
@@ -442,9 +442,9 @@ class TestRecursiveStructure(unittest.TestCase):
 
         try:
             Recursive._fields_ = [("next", Recursive)]
-        except AttributeError, details:
-            self.assertTrue("Structure or union cannot contain itself" in
-                            str(details))
+        except AttributeError as details:
+            self.assertIn("Structure or union cannot contain itself",
+                          str(details))
         else:
             self.fail("Structure or union cannot contain itself")
 
@@ -459,9 +459,8 @@ class TestRecursiveStructure(unittest.TestCase):
 
         try:
             Second._fields_ = [("first", First)]
-        except AttributeError, details:
-            self.assertTrue("_fields_ is final" in
-                            str(details))
+        except AttributeError as details:
+            self.assertIn("_fields_ is final", str(details))
         else:
             self.fail("AttributeError not raised")
 

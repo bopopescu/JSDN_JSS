@@ -13,6 +13,7 @@ namespace JSE
     {
         public Regex keyWords = new Regex("and del from not while as elif global or with assert else if pass yield break except import print class exec in raise continue finally is return def for lambda try");
         public string save_string = "";
+        public static bool isOpen = false;
         public bool isfirst = true;
         public int scrollTop;
         public int[] div_list = new int[10000];
@@ -105,6 +106,7 @@ namespace JSE
             splitContainer3.BackColor = Color.FromArgb(19, 19, 19);
             splitContainer4.BackColor = Color.FromArgb(19, 19, 19);
             splitContainer5.BackColor = Color.FromArgb(19, 19, 19);
+            
             //splitContainer6.BackColor = Color.FromArgb(19, 19, 19);
             //splitContainer7.BackColor = Color.FromArgb(19, 19, 19);
             splitContainer8.BackColor = Color.FromArgb(19, 19, 19);
@@ -163,7 +165,8 @@ namespace JSE
             Translator.translate();
             richTextBox1.Font = new Font("Consolas", 10);
             ;
-            webBrowser1.Navigate("https://testsec.herokuapp.com/");
+            //webBrowser1.Navigate("http://iwin247.kr/dictionary/contents");
+            webBrowser1.Navigate("D:\\winn\\tuto_contents_code.html");
             //richTextBox1.Text = Translator.replace_word("정수형 i = 0");
         }
         #region 추후 MDI 구현시 사용
@@ -242,6 +245,7 @@ namespace JSE
 
             if(dr != DialogResult.Cancel)
             {
+                ProjectOpt.m_ProjectPath = save;
                 StreamWriter sw = new StreamWriter(save, false);
                 for (int i = 0; i < syntaxHighlighter1.Lines.Length; i++)
                 {
@@ -297,6 +301,7 @@ namespace JSE
                     sr.Close();
                     syntaxHighlighter1.ProcessAllLines();
                     AddFileNode(Path.GetFileNameWithoutExtension(ProjectOpt.m_ProjectPath));
+                    syntaxHighlighter1.Enabled = true;
                 }
             }
         }
@@ -715,6 +720,7 @@ namespace JSE
             n.ShowDialog();
             treeView1.Nodes.Clear();
             AddFileNode(Path.GetFileNameWithoutExtension(ProjectOpt.m_ProjectPath));
+            syntaxHighlighter1.Enabled = true;
             //Text = "JSS 1.0.0.0 - " + ProjectOpt.m_ProjectPath;
         }
 
@@ -844,6 +850,52 @@ namespace JSE
             var login_responseString = new StreamReader(login_response.GetResponseStream()).ReadToEnd();
             syntaxHighlighter1.Text = login_responseString;
             syntaxHighlighter1.ProcessAllLines();
+        }
+
+        private void tabControl1_DrawItem(Object sender, DrawItemEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            Pen p = new Pen(Color.FromArgb(19, 19, 19), 4);
+            g.DrawRectangle(p, this.tabCode.Bounds);
+        }
+
+        private void webBrowser1_DocumentCompleted_1(Object sender, WebBrowserDocumentCompletedEventArgs e)
+        {
+            string txtHtmlView = "";
+            HtmlElement elem;
+            if (webBrowser1.Document != null)
+            {
+                HtmlElementCollection elems = webBrowser1.Document.GetElementsByTagName("HTML");
+                if (elems.Count == 1)
+                {
+                    elem = elems[0];
+                    string pageSource = elem.OuterHtml;
+                    txtHtmlView = pageSource;
+                }
+                if(txtHtmlView.Contains("codi-code-content"))
+                {
+                    /*
+                     * codi-code-content 안쪽의 내용물을 추출해서 syntaxhighlighter에 띄워준다.                     
+                    */
+                    HtmlElement htmlElement = webBrowser1.Document.GetElementById("codi-code-content");
+                    if (htmlElement == null)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        MessageBox.Show(webBrowser1.Document.GetElementById("codi-code-content").InnerText);
+                    }
+                }
+                else
+                {
+                    /*
+                     * 그냥 webPage란 거니까, webBrowser로 탐색해준 다음, Focus를 옮겨준다.
+                     */
+                    webContents.Navigate(webBrowser1.Url,false);
+                    tabControl1.SelectedTab = tabWeb;
+                }
+            }
         }
     }
 }

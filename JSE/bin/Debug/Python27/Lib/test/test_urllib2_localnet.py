@@ -1,32 +1,46 @@
-#!/usr/bin/env python
-
-import urlparse
-import urllib2
-import BaseHTTPServer
+import base64
+import os
+import email
+import urllib.parse
+import urllib.request
+import http.server
 import unittest
 import hashlib
-from test import test_support
-mimetools = test_support.import_module('mimetools', deprecated=True)
-threading = test_support.import_module('threading')
+
+from test import support
+
+threading = support.import_module('threading')
+
+try:
+    import ssl
+except ImportError:
+    ssl = None
+
+here = os.path.dirname(__file__)
+# Self-signed cert file for 'localhost'
+CERT_localhost = os.path.join(here, 'keycert.pem')
+# Self-signed cert file for 'fakehostname'
+CERT_fakehostname = os.path.join(here, 'keycert2.pem')
+
 
 # Loopback http server infrastructure
 
-class LoopbackHttpServer(BaseHTTPServer.HTTPServer):
+class LoopbackHttpServer(http.server.HTTPServer):
     """HTTP server w/ a few modifications that make it useful for
     loopback testing purposes.
     """
 
     def __init__(self, server_address, RequestHandlerClass):
-        BaseHTTPServer.HTTPServer.__init__(self,
-                                           server_address,
-                                           RequestHandlerClass)
+        http.server.HTTPServer.__init__(self,
+                                        server_address,
+                                        RequestHandlerClass)
 
         # Set the timeout of our listening socket really low so
         # that we can stop the server easily.
-        self.socket.settimeout(1.0)
+        self.socket.settimeout(0.1)
 
     def get_request(self):
-        """BaseHTTPServer method, overridden."""
+        """HTTPServer method, overridden."""
 
         request, client_address = self.socket.accept()
 
@@ -42,26 +56,24 @@ class LoopbackHttpServerThread(threading.Thread):
 
     def __init__(self, request_handler):
         threading.Thread.__init__(self)
-        self._stop = False
+        self._stop_server = False
         self.ready = threading.Event()
         request_handler.protocol_version = "HTTP/1.0"
-        self.httpd = LoopbackHttpServer(('127.0.0.1', 0),
+        self.httpd = LoopbackHttpServer(("127.0.0.1", 0),
                                         request_handler)
-        #print "Serving HTTP on %s port %s" % (self.httpd.server_name,
-        #                                      self.httpd.server_port)
         self.port = self.httpd.server_port
 
     def stop(self):
         """Stops the webserver if it's currently running."""
 
-        # Set the stop flag.
-        self._stop = True
+        self._stop_server = True
 
         self.join()
+        self.httpd.server_close()
 
     def run(self):
         self.ready.set()
-        while not self._stop:
+        while not self._stop_server:
             self.httpd.handle_request()
 
 # Authentication infrastructure
@@ -88,7 +100,7 @@ class DigestAuthHandler:
 
     def _generate_nonce(self):
         self._request_num += 1
-        nonce = hashlib.md5(str(self._request_num)).hexdigest()
+        nonce = hashlib.md5(str(self._request_num).encode("ascii")).hexdigest()
         self._nonces.append(nonce)
         return nonce
 
@@ -116,14 +128,14 @@ class DigestAuthHandler:
         final_dict["method"] = method
         final_dict["uri"] = uri
         HA1_str = "%(username)s:%(realm)s:%(password)s" % final_dict
-        HA1 = hashlib.md5(HA1_str).hexdigest()
+        HA1 = hashlib.md5(HA1_str.encode("ascii")).hexdigest()
         HA2_str = "%(method)s:%(uri)s" % final_dict
-        HA2 = hashlib.md5(HA2_str).hexdigest()
+        HA2 = hashlib.md5(HA2_str.encode("ascii")).hexdigest()
         final_dict["HA1"] = HA1
         final_dict["HA2"] = HA2
         response_str = "%(HA1)s:%(nonce)s:%(nc)s:" \
                        "%(cnonce)s:%(qop)s:%(HA2)s" % final_dict
-        response = hashlib.md5(response_str).hexdigest()
+        response = hashlib.md5(response_str.encode("ascii")).hexdigest()
 
         return response == auth_dict["response"]
 
@@ -139,7 +151,7 @@ class DigestAuthHandler:
         # not.
         #request_handler.send_header('Connection', 'close')
         request_handler.end_headers()
-        request_handler.wfile.write("Proxy Authentication Required.")
+        request_handler.wfile.write(b"Proxy Authentication Required.")
         return False
 
     def handle_request(self, request_handler):
@@ -154,11 +166,11 @@ class DigestAuthHandler:
         if len(self._users) == 0:
             return True
 
-        if 'Proxy-Authorization' not in request_handler.headers:
+        if "Proxy-Authorization" not in request_handler.headers:
             return self._return_auth_challenge(request_handler)
         else:
             auth_dict = self._create_auth_dict(
-                request_handler.headers['Proxy-Authorization']
+                request_handler.headers["Proxy-Authorization"]
                 )
             if auth_dict["username"] in self._users:
                 password = self._users[ auth_dict["username"] ]
@@ -172,7 +184,7 @@ class DigestAuthHandler:
             auth_validated = False
 
             # MSIE uses short_path in its validation, but Python's
-            # urllib2 uses the full path, so we're going to see if
+            # urllib.request uses the full path, so we're going to see if
             # either of them works here.
 
             for path in [request_handler.path, request_handler.short_path]:
@@ -186,9 +198,52 @@ class DigestAuthHandler:
                 return self._return_auth_challenge(request_handler)
             return True
 
+
+class BasicAuthHandler(http.server.BaseHTTPRequestHandler):
+    """Handler for performing basic authentication."""
+    # Server side values
+    USER = 'testUser'
+    PASSWD = 'testPass'
+    REALM = 'Test'
+    USER_PASSWD = "%s:%s" % (USER, PASSWD)
+    ENCODED_AUTH = base64.b64encode(USER_PASSWD.encode('ascii')).decode('ascii')
+
+    def __init__(self, *args, **kwargs):
+        http.server.BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
+
+    def log_message(self, format, *args):
+        # Suppress console log message
+        pass
+
+    def do_HEAD(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+
+    def do_AUTHHEAD(self):
+        self.send_response(401)
+        self.send_header("WWW-Authenticate", "Basic realm=\"%s\"" % self.REALM)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+
+    def do_GET(self):
+        if not self.headers.get("Authorization", ""):
+            self.do_AUTHHEAD()
+            self.wfile.write(b"No Auth header received")
+        elif self.headers.get(
+                "Authorization", "") == "Basic " + self.ENCODED_AUTH:
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b"It works")
+        else:
+            # Request Unauthorized
+            self.do_AUTHHEAD()
+
+
+
 # Proxy test infrastructure
 
-class FakeProxyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+class FakeProxyHandler(http.server.BaseHTTPRequestHandler):
     """This is a 'fake proxy' that makes it look like the entire
     internet has gone down due to a sudden zombie invasion.  It main
     utility is in providing us with authentication support for
@@ -199,36 +254,67 @@ class FakeProxyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         # This has to be set before calling our parent's __init__(), which will
         # try to call do_GET().
         self.digest_auth_handler = digest_auth_handler
-        BaseHTTPServer.BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
+        http.server.BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
 
     def log_message(self, format, *args):
         # Uncomment the next line for debugging.
-        #sys.stderr.write(format % args)
+        # sys.stderr.write(format % args)
         pass
 
     def do_GET(self):
-        (scm, netloc, path, params, query, fragment) = urlparse.urlparse(
-            self.path, 'http')
+        (scm, netloc, path, params, query, fragment) = urllib.parse.urlparse(
+            self.path, "http")
         self.short_path = path
         if self.digest_auth_handler.handle_request(self):
             self.send_response(200, "OK")
             self.send_header("Content-Type", "text/html")
             self.end_headers()
-            self.wfile.write("You've reached %s!<BR>" % self.path)
-            self.wfile.write("Our apologies, but our server is down due to "
-                              "a sudden zombie invasion.")
+            self.wfile.write(bytes("You've reached %s!<BR>" % self.path,
+                                   "ascii"))
+            self.wfile.write(b"Our apologies, but our server is down due to "
+                             b"a sudden zombie invasion.")
 
 # Test cases
 
-class BaseTestCase(unittest.TestCase):
+@unittest.skipUnless(threading, "Threading required for this test.")
+class BasicAuthTests(unittest.TestCase):
+    USER = "testUser"
+    PASSWD = "testPass"
+    INCORRECT_PASSWD = "Incorrect"
+    REALM = "Test"
+
     def setUp(self):
-        self._threads = test_support.threading_setup()
+        super(BasicAuthTests, self).setUp()
+        # With Basic Authentication
+        def http_server_with_basic_auth_handler(*args, **kwargs):
+            return BasicAuthHandler(*args, **kwargs)
+        self.server = LoopbackHttpServerThread(http_server_with_basic_auth_handler)
+        self.server_url = 'http://127.0.0.1:%s' % self.server.port
+        self.server.start()
+        self.server.ready.wait()
 
     def tearDown(self):
-        test_support.threading_cleanup(*self._threads)
+        self.server.stop()
+        super(BasicAuthTests, self).tearDown()
+
+    def test_basic_auth_success(self):
+        ah = urllib.request.HTTPBasicAuthHandler()
+        ah.add_password(self.REALM, self.server_url, self.USER, self.PASSWD)
+        urllib.request.install_opener(urllib.request.build_opener(ah))
+        try:
+            self.assertTrue(urllib.request.urlopen(self.server_url))
+        except urllib.error.HTTPError:
+            self.fail("Basic auth failed for the url: %s", self.server_url)
+
+    def test_basic_auth_httperror(self):
+        ah = urllib.request.HTTPBasicAuthHandler()
+        ah.add_password(self.REALM, self.server_url, self.USER, self.INCORRECT_PASSWD)
+        urllib.request.install_opener(urllib.request.build_opener(ah))
+        self.assertRaises(urllib.error.HTTPError, urllib.request.urlopen, self.server_url)
 
 
-class ProxyAuthTests(BaseTestCase):
+@unittest.skipUnless(threading, "Threading required for this test.")
+class ProxyAuthTests(unittest.TestCase):
     URL = "http://localhost"
 
     USER = "tester"
@@ -240,6 +326,7 @@ class ProxyAuthTests(BaseTestCase):
         self.digest_auth_handler = DigestAuthHandler()
         self.digest_auth_handler.set_users({self.USER: self.PASSWD})
         self.digest_auth_handler.set_realm(self.REALM)
+        # With Digest Authentication.
         def create_fake_proxy_handler(*args, **kwargs):
             return FakeProxyHandler(self.digest_auth_handler, *args, **kwargs)
 
@@ -247,9 +334,10 @@ class ProxyAuthTests(BaseTestCase):
         self.server.start()
         self.server.ready.wait()
         proxy_url = "http://127.0.0.1:%d" % self.server.port
-        handler = urllib2.ProxyHandler({"http" : proxy_url})
-        self.proxy_digest_handler = urllib2.ProxyDigestAuthHandler()
-        self.opener = urllib2.build_opener(handler, self.proxy_digest_handler)
+        handler = urllib.request.ProxyHandler({"http" : proxy_url})
+        self.proxy_digest_handler = urllib.request.ProxyDigestAuthHandler()
+        self.opener = urllib.request.build_opener(
+            handler, self.proxy_digest_handler)
 
     def tearDown(self):
         self.server.stop()
@@ -259,13 +347,13 @@ class ProxyAuthTests(BaseTestCase):
         self.proxy_digest_handler.add_password(self.REALM, self.URL,
                                                self.USER, self.PASSWD+"bad")
         self.digest_auth_handler.set_qop("auth")
-        self.assertRaises(urllib2.HTTPError,
+        self.assertRaises(urllib.error.HTTPError,
                           self.opener.open,
                           self.URL)
 
     def test_proxy_with_no_password_raises_httperror(self):
         self.digest_auth_handler.set_qop("auth")
-        self.assertRaises(urllib2.HTTPError,
+        self.assertRaises(urllib.error.HTTPError,
                           self.opener.open,
                           self.URL)
 
@@ -284,7 +372,7 @@ class ProxyAuthTests(BaseTestCase):
         self.digest_auth_handler.set_qop("auth-int")
         try:
             result = self.opener.open(self.URL)
-        except urllib2.URLError:
+        except urllib.error.URLError:
             # It's okay if we don't support auth-int, but we certainly
             # shouldn't receive any kind of exception here other than
             # a URLError.
@@ -297,7 +385,7 @@ class ProxyAuthTests(BaseTestCase):
 
 def GetRequestHandler(responses):
 
-    class FakeHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+    class FakeHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
         server_version = "TestHTTP/"
         requests = []
@@ -306,11 +394,12 @@ def GetRequestHandler(responses):
 
         def do_GET(self):
             body = self.send_head()
-            if body:
-                self.wfile.write(body)
+            while body:
+                done = self.wfile.write(body)
+                body = body[done:]
 
         def do_POST(self):
-            content_length = self.headers['Content-Length']
+            content_length = self.headers["Content-Length"]
             post_data = self.rfile.read(int(content_length))
             self.do_GET()
             self.requests.append(post_data)
@@ -323,9 +412,9 @@ def GetRequestHandler(responses):
             self.send_response(response_code)
 
             for (header, value) in headers:
-                self.send_header(header, value % self.port)
+                self.send_header(header, value % {'port':self.port})
             if body:
-                self.send_header('Content-type', 'text/plain')
+                self.send_header("Content-type", "text/plain")
                 self.end_headers()
                 return body
             self.end_headers()
@@ -337,8 +426,9 @@ def GetRequestHandler(responses):
     return FakeHTTPRequestHandler
 
 
-class TestUrlopen(BaseTestCase):
-    """Tests urllib2.urlopen using the network.
+@unittest.skipUnless(threading, "Threading required for this test.")
+class TestUrlopen(unittest.TestCase):
+    """Tests urllib.request.urlopen using the network.
 
     These tests are not exhaustive.  Assuming that testing using files does a
     good job overall of some of the basic interface features.  There are no
@@ -346,7 +436,36 @@ class TestUrlopen(BaseTestCase):
     for transparent redirection have been written.
     """
 
-    def start_server(self, responses):
+    def setUp(self):
+        super(TestUrlopen, self).setUp()
+        # Ignore proxies for localhost tests.
+        self.old_environ = os.environ.copy()
+        os.environ['NO_PROXY'] = '*'
+        self.server = None
+
+    def tearDown(self):
+        if self.server is not None:
+            self.server.stop()
+        os.environ.clear()
+        os.environ.update(self.old_environ)
+        super(TestUrlopen, self).tearDown()
+
+    def urlopen(self, url, data=None, **kwargs):
+        l = []
+        f = urllib.request.urlopen(url, data, **kwargs)
+        try:
+            # Exercise various methods
+            l.extend(f.readlines(200))
+            l.append(f.readline())
+            l.append(f.read(1024))
+            l.append(f.read())
+        finally:
+            f.close()
+        return b"".join(l)
+
+    def start_server(self, responses=None):
+        if responses is None:
+            responses = [(200, [], b"we don't care")]
         handler = GetRequestHandler(responses)
 
         self.server = LoopbackHttpServerThread(handler)
@@ -356,132 +475,166 @@ class TestUrlopen(BaseTestCase):
         handler.port = port
         return handler
 
+    def start_https_server(self, responses=None, **kwargs):
+        if not hasattr(urllib.request, 'HTTPSHandler'):
+            self.skipTest('ssl support required')
+        from test.ssl_servers import make_https_server
+        if responses is None:
+            responses = [(200, [], b"we care a bit")]
+        handler = GetRequestHandler(responses)
+        server = make_https_server(self, handler_class=handler, **kwargs)
+        handler.port = server.port
+        return handler
 
     def test_redirection(self):
-        expected_response = 'We got here...'
+        expected_response = b"We got here..."
         responses = [
-            (302, [('Location', 'http://localhost:%s/somewhere_else')], ''),
+            (302, [("Location", "http://localhost:%(port)s/somewhere_else")],
+             ""),
             (200, [], expected_response)
         ]
 
         handler = self.start_server(responses)
+        data = self.urlopen("http://localhost:%s/" % handler.port)
+        self.assertEqual(data, expected_response)
+        self.assertEqual(handler.requests, ["/", "/somewhere_else"])
 
-        try:
-            f = urllib2.urlopen('http://localhost:%s/' % handler.port)
-            data = f.read()
-            f.close()
-
-            self.assertEqual(data, expected_response)
-            self.assertEqual(handler.requests, ['/', '/somewhere_else'])
-        finally:
-            self.server.stop()
-
+    def test_chunked(self):
+        expected_response = b"hello world"
+        chunked_start = (
+                        b'a\r\n'
+                        b'hello worl\r\n'
+                        b'1\r\n'
+                        b'd\r\n'
+                        b'0\r\n'
+                        )
+        response = [(200, [("Transfer-Encoding", "chunked")], chunked_start)]
+        handler = self.start_server(response)
+        data = self.urlopen("http://localhost:%s/" % handler.port)
+        self.assertEqual(data, expected_response)
 
     def test_404(self):
-        expected_response = 'Bad bad bad...'
+        expected_response = b"Bad bad bad..."
         handler = self.start_server([(404, [], expected_response)])
 
         try:
-            try:
-                urllib2.urlopen('http://localhost:%s/weeble' % handler.port)
-            except urllib2.URLError, f:
-                pass
-            else:
-                self.fail('404 should raise URLError')
-
+            self.urlopen("http://localhost:%s/weeble" % handler.port)
+        except urllib.error.URLError as f:
             data = f.read()
             f.close()
+        else:
+            self.fail("404 should raise URLError")
 
-            self.assertEqual(data, expected_response)
-            self.assertEqual(handler.requests, ['/weeble'])
-        finally:
-            self.server.stop()
-
+        self.assertEqual(data, expected_response)
+        self.assertEqual(handler.requests, ["/weeble"])
 
     def test_200(self):
-        expected_response = 'pycon 2008...'
+        expected_response = b"pycon 2008..."
         handler = self.start_server([(200, [], expected_response)])
-
-        try:
-            f = urllib2.urlopen('http://localhost:%s/bizarre' % handler.port)
-            data = f.read()
-            f.close()
-
-            self.assertEqual(data, expected_response)
-            self.assertEqual(handler.requests, ['/bizarre'])
-        finally:
-            self.server.stop()
+        data = self.urlopen("http://localhost:%s/bizarre" % handler.port)
+        self.assertEqual(data, expected_response)
+        self.assertEqual(handler.requests, ["/bizarre"])
 
     def test_200_with_parameters(self):
-        expected_response = 'pycon 2008...'
+        expected_response = b"pycon 2008..."
         handler = self.start_server([(200, [], expected_response)])
+        data = self.urlopen("http://localhost:%s/bizarre" % handler.port,
+                             b"get=with_feeling")
+        self.assertEqual(data, expected_response)
+        self.assertEqual(handler.requests, ["/bizarre", b"get=with_feeling"])
 
-        try:
-            f = urllib2.urlopen('http://localhost:%s/bizarre' % handler.port, 'get=with_feeling')
-            data = f.read()
-            f.close()
+    def test_https(self):
+        handler = self.start_https_server()
+        context = ssl.create_default_context(cafile=CERT_localhost)
+        data = self.urlopen("https://localhost:%s/bizarre" % handler.port, context=context)
+        self.assertEqual(data, b"we care a bit")
 
-            self.assertEqual(data, expected_response)
-            self.assertEqual(handler.requests, ['/bizarre', 'get=with_feeling'])
-        finally:
-            self.server.stop()
+    def test_https_with_cafile(self):
+        handler = self.start_https_server(certfile=CERT_localhost)
+        # Good cert
+        data = self.urlopen("https://localhost:%s/bizarre" % handler.port,
+                            cafile=CERT_localhost)
+        self.assertEqual(data, b"we care a bit")
+        # Bad cert
+        with self.assertRaises(urllib.error.URLError) as cm:
+            self.urlopen("https://localhost:%s/bizarre" % handler.port,
+                         cafile=CERT_fakehostname)
+        # Good cert, but mismatching hostname
+        handler = self.start_https_server(certfile=CERT_fakehostname)
+        with self.assertRaises(ssl.CertificateError) as cm:
+            self.urlopen("https://localhost:%s/bizarre" % handler.port,
+                         cafile=CERT_fakehostname)
 
+    def test_https_with_cadefault(self):
+        handler = self.start_https_server(certfile=CERT_localhost)
+        # Self-signed cert should fail verification with system certificate store
+        with self.assertRaises(urllib.error.URLError) as cm:
+            self.urlopen("https://localhost:%s/bizarre" % handler.port,
+                         cadefault=True)
+
+    def test_https_sni(self):
+        if ssl is None:
+            self.skipTest("ssl module required")
+        if not ssl.HAS_SNI:
+            self.skipTest("SNI support required in OpenSSL")
+        sni_name = None
+        def cb_sni(ssl_sock, server_name, initial_context):
+            nonlocal sni_name
+            sni_name = server_name
+        context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+        context.set_servername_callback(cb_sni)
+        handler = self.start_https_server(context=context, certfile=CERT_localhost)
+        context = ssl.create_default_context(cafile=CERT_localhost)
+        self.urlopen("https://localhost:%s" % handler.port, context=context)
+        self.assertEqual(sni_name, "localhost")
 
     def test_sending_headers(self):
-        handler = self.start_server([(200, [], "we don't care")])
-
-        try:
-            req = urllib2.Request("http://localhost:%s/" % handler.port,
-                                  headers={'Range': 'bytes=20-39'})
-            urllib2.urlopen(req)
-            self.assertEqual(handler.headers_received['Range'], 'bytes=20-39')
-        finally:
-            self.server.stop()
+        handler = self.start_server()
+        req = urllib.request.Request("http://localhost:%s/" % handler.port,
+                                     headers={"Range": "bytes=20-39"})
+        urllib.request.urlopen(req)
+        self.assertEqual(handler.headers_received["Range"], "bytes=20-39")
 
     def test_basic(self):
-        handler = self.start_server([(200, [], "we don't care")])
-
+        handler = self.start_server()
+        open_url = urllib.request.urlopen("http://localhost:%s" % handler.port)
+        for attr in ("read", "close", "info", "geturl"):
+            self.assertTrue(hasattr(open_url, attr), "object returned from "
+                         "urlopen lacks the %s attribute" % attr)
         try:
-            open_url = urllib2.urlopen("http://localhost:%s" % handler.port)
-            for attr in ("read", "close", "info", "geturl"):
-                self.assertTrue(hasattr(open_url, attr), "object returned from "
-                             "urlopen lacks the %s attribute" % attr)
-            try:
-                self.assertTrue(open_url.read(), "calling 'read' failed")
-            finally:
-                open_url.close()
+            self.assertTrue(open_url.read(), "calling 'read' failed")
         finally:
-            self.server.stop()
+            open_url.close()
 
     def test_info(self):
-        handler = self.start_server([(200, [], "we don't care")])
-
+        handler = self.start_server()
         try:
-            open_url = urllib2.urlopen("http://localhost:%s" % handler.port)
+            open_url = urllib.request.urlopen(
+                "http://localhost:%s" % handler.port)
             info_obj = open_url.info()
-            self.assertIsInstance(info_obj, mimetools.Message,
+            self.assertIsInstance(info_obj, email.message.Message,
                                   "object returned by 'info' is not an "
-                                  "instance of mimetools.Message")
-            self.assertEqual(info_obj.getsubtype(), "plain")
+                                  "instance of email.message.Message")
+            self.assertEqual(info_obj.get_content_subtype(), "plain")
         finally:
             self.server.stop()
 
     def test_geturl(self):
         # Make sure same URL as opened is returned by geturl.
-        handler = self.start_server([(200, [], "we don't care")])
-
-        try:
-            open_url = urllib2.urlopen("http://localhost:%s" % handler.port)
-            url = open_url.geturl()
-            self.assertEqual(url, "http://localhost:%s" % handler.port)
-        finally:
-            self.server.stop()
-
+        handler = self.start_server()
+        open_url = urllib.request.urlopen("http://localhost:%s" % handler.port)
+        url = open_url.geturl()
+        self.assertEqual(url, "http://localhost:%s" % handler.port)
 
     def test_bad_address(self):
         # Make sure proper exception is raised when connecting to a bogus
         # address.
-        self.assertRaises(IOError,
+
+        # as indicated by the comment below, this might fail with some ISP,
+        # so we run the test only when -unetwork/-uall is specified to
+        # mitigate the problem a bit (see #17564)
+        support.requires('network')
+        self.assertRaises(OSError,
                           # Given that both VeriSign and various ISPs have in
                           # the past or are presently hijacking various invalid
                           # domain name requests in an attempt to boost traffic
@@ -499,41 +652,40 @@ class TestUrlopen(BaseTestCase):
                           # failing if the ISP hijacks all invalid domain
                           # requests.  The real solution would be to be able to
                           # parameterize the framework with a mock resolver.
-                          urllib2.urlopen, "http://sadflkjsasf.i.nvali.d./")
+                          urllib.request.urlopen,
+                          "http://sadflkjsasf.i.nvali.d./")
 
     def test_iteration(self):
-        expected_response = "pycon 2008..."
+        expected_response = b"pycon 2008..."
         handler = self.start_server([(200, [], expected_response)])
-        try:
-            data = urllib2.urlopen("http://localhost:%s" % handler.port)
-            for line in data:
-                self.assertEqual(line, expected_response)
-        finally:
-            self.server.stop()
+        data = urllib.request.urlopen("http://localhost:%s" % handler.port)
+        for line in data:
+            self.assertEqual(line, expected_response)
 
-    def ztest_line_iteration(self):
-        lines = ["We\n", "got\n", "here\n", "verylong " * 8192 + "\n"]
-        expected_response = "".join(lines)
+    def test_line_iteration(self):
+        lines = [b"We\n", b"got\n", b"here\n", b"verylong " * 8192 + b"\n"]
+        expected_response = b"".join(lines)
         handler = self.start_server([(200, [], expected_response)])
-        try:
-            data = urllib2.urlopen("http://localhost:%s" % handler.port)
-            for index, line in enumerate(data):
-                self.assertEqual(line, lines[index],
-                                 "Fetched line number %s doesn't match expected:\n"
-                                 "    Expected length was %s, got %s" %
-                                 (index, len(lines[index]), len(line)))
-        finally:
-            self.server.stop()
+        data = urllib.request.urlopen("http://localhost:%s" % handler.port)
+        for index, line in enumerate(data):
+            self.assertEqual(line, lines[index],
+                             "Fetched line number %s doesn't match expected:\n"
+                             "    Expected length was %s, got %s" %
+                             (index, len(lines[index]), len(line)))
         self.assertEqual(index + 1, len(lines))
 
-def test_main():
-    # We will NOT depend on the network resource flag
-    # (Lib/test/regrtest.py -u network) since all tests here are only
-    # localhost.  However, if this is a bad rationale, then uncomment
-    # the next line.
-    #test_support.requires("network")
 
-    test_support.run_unittest(ProxyAuthTests, TestUrlopen)
+threads_key = None
+
+def setUpModule():
+    # Store the threading_setup in a key and ensure that it is cleaned up
+    # in the tearDown
+    global threads_key
+    threads_key = support.threading_setup()
+
+def tearDownModule():
+    if threads_key:
+        support.threading_cleanup(threads_key)
 
 if __name__ == "__main__":
-    test_main()
+    unittest.main()

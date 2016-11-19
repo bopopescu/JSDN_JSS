@@ -1,6 +1,6 @@
 # Testing the line trace facility.
 
-from test import test_support
+from test import support
 import unittest
 import sys
 import difflib
@@ -98,7 +98,7 @@ def raises():
 def test_raise():
     try:
         raises()
-    except Exception, exc:
+    except Exception as exc:
         x = 1
 
 test_raise.events = [(0, 'call'),
@@ -128,7 +128,7 @@ def _settrace_and_raise(tracefunc):
 def settrace_and_raise(tracefunc):
     try:
         _settrace_and_raise(tracefunc)
-    except RuntimeError, exc:
+    except RuntimeError as exc:
         pass
 
 settrace_and_raise.events = [(2, 'exception'),
@@ -251,6 +251,7 @@ class TraceTestCase(unittest.TestCase):
     def setUp(self):
         self.using_gc = gc.isenabled()
         gc.disable()
+        self.addCleanup(sys.settrace, sys.gettrace())
 
     def tearDown(self):
         if self.using_gc:
@@ -269,7 +270,7 @@ class TraceTestCase(unittest.TestCase):
         sys.settrace(tracer.trace)
         func()
         sys.settrace(None)
-        self.compare_events(func.func_code.co_firstlineno,
+        self.compare_events(func.__code__.co_firstlineno,
                             tracer.events, events)
 
     def run_test(self, func):
@@ -279,7 +280,7 @@ class TraceTestCase(unittest.TestCase):
         tracer = Tracer()
         func(tracer.trace)
         sys.settrace(None)
-        self.compare_events(func.func_code.co_firstlineno,
+        self.compare_events(func.__code__.co_firstlineno,
                             tracer.events, func.events)
 
     def test_set_and_retrieve_none(self):
@@ -379,15 +380,19 @@ class TraceTestCase(unittest.TestCase):
              (3, 'return')])
 
     def test_16_blank_lines(self):
-        exec("def f():\n" + "\n" * 256 + "    pass")
+        namespace = {}
+        exec("def f():\n" + "\n" * 256 + "    pass", namespace)
         self.run_and_compare(
-            f,
+            namespace["f"],
             [(0, 'call'),
              (257, 'line'),
              (257, 'return')])
 
 
 class RaisingTraceFuncTestCase(unittest.TestCase):
+    def setUp(self):
+        self.addCleanup(sys.settrace, sys.gettrace())
+
     def trace(self, frame, event, arg):
         """A trace function that raises an exception in response to a
         specific trace event."""
@@ -401,7 +406,7 @@ class RaisingTraceFuncTestCase(unittest.TestCase):
         we're testing, so that the 'exception' trace event fires."""
         if self.raiseOnEvent == 'exception':
             x = 0
-            y = 1 // x
+            y = 1/x
         else:
             return 1
 
@@ -410,14 +415,14 @@ class RaisingTraceFuncTestCase(unittest.TestCase):
         handled OK."""
         self.raiseOnEvent = event
         try:
-            for i in xrange(sys.getrecursionlimit() + 1):
+            for i in range(sys.getrecursionlimit() + 1):
                 sys.settrace(self.trace)
                 try:
                     self.f()
                 except ValueError:
                     pass
                 else:
-                    self.fail("exception not thrown!")
+                    self.fail("exception not raised!")
         except RuntimeError:
             self.fail("recursion counter not reset")
 
@@ -434,12 +439,12 @@ class RaisingTraceFuncTestCase(unittest.TestCase):
     def test_trash_stack(self):
         def f():
             for i in range(5):
-                print i  # line tracing will raise an exception at this line
+                print(i)  # line tracing will raise an exception at this line
 
         def g(frame, why, extra):
             if (why == 'line' and
-                frame.f_lineno == f.func_code.co_firstlineno + 2):
-                raise RuntimeError, "i am crashing"
+                frame.f_lineno == f.__code__.co_firstlineno + 2):
+                raise RuntimeError("i am crashing")
             return g
 
         sys.settrace(g)
@@ -451,6 +456,29 @@ class RaisingTraceFuncTestCase(unittest.TestCase):
             gc.collect()
         else:
             self.fail("exception not propagated")
+
+
+    def test_exception_arguments(self):
+        def f():
+            x = 0
+            # this should raise an error
+            x.no_such_attr
+        def g(frame, event, arg):
+            if (event == 'exception'):
+                type, exception, trace = arg
+                self.assertIsInstance(exception, Exception)
+            return g
+
+        existing = sys.gettrace()
+        try:
+            sys.settrace(g)
+            try:
+                f()
+            except AttributeError:
+                # this is expected
+                pass
+        finally:
+            sys.settrace(existing)
 
 
 # 'Jump' tests: assigning to frame.f_lineno within a trace function
@@ -469,7 +497,7 @@ class JumpTracer:
         self.done = False
 
     def trace(self, frame, event, arg):
-        if not self.done and frame.f_code == self.function.func_code:
+        if not self.done and frame.f_code == self.function.__code__:
             firstLine = frame.f_code.co_firstlineno
             if event == 'line' and frame.f_lineno == firstLine + self.jumpFrom:
                 # Cope with non-integer self.jumpTo (because of
@@ -551,13 +579,22 @@ def jump_in_nested_finally(output):
 jump_in_nested_finally.jump = (4, 9)
 jump_in_nested_finally.output = [2, 9]
 
+def jump_infinite_while_loop(output):
+    output.append(1)
+    while 1:
+        output.append(2)
+    output.append(3)
+
+jump_infinite_while_loop.jump = (3, 4)
+jump_infinite_while_loop.output = [1, 3]
+
 # The second set of 'jump' tests are for things that are not allowed:
 
 def no_jump_too_far_forwards(output):
     try:
         output.append(2)
         output.append(3)
-    except ValueError, e:
+    except ValueError as e:
         output.append('after' in str(e))
 
 no_jump_too_far_forwards.jump = (3, 6)
@@ -567,7 +604,7 @@ def no_jump_too_far_backwards(output):
     try:
         output.append(2)
         output.append(3)
-    except ValueError, e:
+    except ValueError as e:
         output.append('before' in str(e))
 
 no_jump_too_far_backwards.jump = (3, -1)
@@ -597,7 +634,7 @@ no_jump_to_except_2.output = [True]
 def no_jump_to_except_3(output):
     try:
         output.append(2)
-    except ValueError, e:
+    except ValueError as e:
         output.append('except' in str(e))
 
 no_jump_to_except_3.jump = (2, 3)
@@ -606,7 +643,7 @@ no_jump_to_except_3.output = [True]
 def no_jump_to_except_4(output):
     try:
         output.append(2)
-    except (ValueError, RuntimeError), e:
+    except (ValueError, RuntimeError) as e:
         output.append('except' in str(e))
 
 no_jump_to_except_4.jump = (2, 3)
@@ -617,7 +654,7 @@ def no_jump_forwards_into_block(output):
         output.append(2)
         for i in 1, 2:
             output.append(4)
-    except ValueError, e:
+    except ValueError as e:
         output.append('into' in str(e))
 
 no_jump_forwards_into_block.jump = (2, 4)
@@ -628,7 +665,7 @@ def no_jump_backwards_into_block(output):
         for i in 1, 2:
             output.append(3)
         output.append(4)
-    except ValueError, e:
+    except ValueError as e:
         output.append('into' in str(e))
 
 no_jump_backwards_into_block.jump = (4, 3)
@@ -641,7 +678,7 @@ def no_jump_into_finally_block(output):
             x = 1
         finally:
             output.append(6)
-    except ValueError, e:
+    except ValueError as e:
         output.append('finally' in str(e))
 
 no_jump_into_finally_block.jump = (4, 6)
@@ -654,7 +691,7 @@ def no_jump_out_of_finally_block(output):
         finally:
             output.append(5)
             output.append(6)
-    except ValueError, e:
+    except ValueError as e:
         output.append('finally' in str(e))
 
 no_jump_out_of_finally_block.jump = (5, 1)
@@ -664,11 +701,19 @@ no_jump_out_of_finally_block.output = [3, True]
 def no_jump_to_non_integers(output):
     try:
         output.append(2)
-    except ValueError, e:
+    except ValueError as e:
         output.append('integer' in str(e))
 
 no_jump_to_non_integers.jump = (2, "Spam")
 no_jump_to_non_integers.output = [True]
+
+def jump_across_with(output):
+    with open(support.TESTFN, "wb") as fp:
+        pass
+    with open(support.TESTFN, "wb") as fp:
+        pass
+jump_across_with.jump = (1, 3)
+jump_across_with.output = []
 
 # This verifies that you can't set f_lineno via _getframe or similar
 # trickery.
@@ -676,17 +721,21 @@ def no_jump_without_trace_function():
     try:
         previous_frame = sys._getframe().f_back
         previous_frame.f_lineno = previous_frame.f_lineno
-    except ValueError, e:
+    except ValueError as e:
         # This is the exception we wanted; make sure the error message
         # talks about trace functions.
         if 'trace' not in str(e):
             raise
     else:
         # Something's wrong - the expected exception wasn't raised.
-        raise RuntimeError, "Trace-function-less jump failed to fail"
+        raise RuntimeError("Trace-function-less jump failed to fail")
 
 
 class JumpTestCase(unittest.TestCase):
+    def setUp(self):
+        self.addCleanup(sys.settrace, sys.gettrace())
+        sys.settrace(None)
+
     def compare_jump_output(self, expected, received):
         if received != expected:
             self.fail( "Outputs don't match:\n" +
@@ -715,6 +764,8 @@ class JumpTestCase(unittest.TestCase):
         self.run_test(jump_to_same_line)
     def test_07_jump_in_nested_finally(self):
         self.run_test(jump_in_nested_finally)
+    def test_jump_infinite_while_loop(self):
+        self.run_test(jump_infinite_while_loop)
     def test_08_no_jump_too_far_forwards(self):
         self.run_test(no_jump_too_far_forwards)
     def test_09_no_jump_too_far_backwards(self):
@@ -738,7 +789,12 @@ class JumpTestCase(unittest.TestCase):
     def test_18_no_jump_to_non_integers(self):
         self.run_test(no_jump_to_non_integers)
     def test_19_no_jump_without_trace_function(self):
+        # Must set sys.settrace(None) in setUp(), else condition is not
+        # triggered.
         no_jump_without_trace_function()
+    def test_jump_across_with(self):
+        self.addCleanup(support.unlink, support.TESTFN)
+        self.run_test(jump_across_with)
 
     def test_20_large_function(self):
         d = {}
@@ -768,18 +824,18 @@ output.append(3)
 output.append(4)
 """, "<fake module>", "exec")
         class fake_function:
-            func_code = code
+            __code__ = code
             jump = (2, 0)
         tracer = JumpTracer(fake_function)
         sys.settrace(tracer.trace)
         namespace = {"output": []}
-        exec code in namespace
+        exec(code, namespace)
         sys.settrace(None)
         self.compare_jump_output([2, 3, 2, 3, 4], namespace["output"])
 
 
 def test_main():
-    test_support.run_unittest(
+    support.run_unittest(
         TraceTestCase,
         RaisingTraceFuncTestCase,
         JumpTestCase

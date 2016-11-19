@@ -71,15 +71,19 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.treeView1 = new System.Windows.Forms.TreeView();
+            this.splitContainer8 = new System.Windows.Forms.SplitContainer();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.syntaxHighlighter1 = new JSE.SyntaxHighlighter();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabCode = new System.Windows.Forms.TabPage();
+            this.tabWeb = new System.Windows.Forms.TabPage();
+            this.webContents = new System.Windows.Forms.WebBrowser();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.button1 = new System.Windows.Forms.Button();
             this.webBrowser1 = new System.Windows.Forms.WebBrowser();
-            this.splitContainer8 = new System.Windows.Forms.SplitContainer();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.syntaxHighlighter1 = new JSE.SyntaxHighlighter();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -90,10 +94,17 @@
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer8)).BeginInit();
+            this.splitContainer8.Panel1.SuspendLayout();
+            this.splitContainer8.Panel2.SuspendLayout();
+            this.splitContainer8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabCode.SuspendLayout();
+            this.tabWeb.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).BeginInit();
             this.splitContainer4.Panel2.SuspendLayout();
             this.splitContainer4.SuspendLayout();
@@ -101,10 +112,6 @@
             this.splitContainer5.Panel1.SuspendLayout();
             this.splitContainer5.Panel2.SuspendLayout();
             this.splitContainer5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer8)).BeginInit();
-            this.splitContainer8.Panel1.SuspendLayout();
-            this.splitContainer8.Panel2.SuspendLayout();
-            this.splitContainer8.SuspendLayout();
             this.SuspendLayout();
             // 
             // contextMenuStrip1
@@ -380,6 +387,33 @@
             resources.ApplyResources(this.treeView1, "treeView1");
             this.treeView1.Name = "treeView1";
             // 
+            // splitContainer8
+            // 
+            this.splitContainer8.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            resources.ApplyResources(this.splitContainer8, "splitContainer8");
+            this.splitContainer8.Name = "splitContainer8";
+            // 
+            // splitContainer8.Panel1
+            // 
+            this.splitContainer8.Panel1.Controls.Add(this.richTextBox1);
+            // 
+            // splitContainer8.Panel2
+            // 
+            this.splitContainer8.Panel2.Controls.Add(this.textBox1);
+            this.splitContainer8.Panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.splitContainer8_Panel2_Paint);
+            // 
+            // richTextBox1
+            // 
+            this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            resources.ApplyResources(this.richTextBox1, "richTextBox1");
+            this.richTextBox1.Name = "richTextBox1";
+            // 
+            // textBox1
+            // 
+            resources.ApplyResources(this.textBox1, "textBox1");
+            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox1.Name = "textBox1";
+            // 
             // splitContainer3
             // 
             resources.ApplyResources(this.splitContainer3, "splitContainer3");
@@ -387,22 +421,39 @@
             // 
             // splitContainer3.Panel1
             // 
-            this.splitContainer3.Panel1.Controls.Add(this.syntaxHighlighter1);
+            this.splitContainer3.Panel1.Controls.Add(this.tabControl1);
             // 
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.splitContainer4);
             // 
-            // syntaxHighlighter1
+            // tabControl1
             // 
-            this.syntaxHighlighter1.AcceptsTab = true;
-            this.syntaxHighlighter1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.syntaxHighlighter1.ContextMenuStrip = this.contextMenuStrip1;
-            resources.ApplyResources(this.syntaxHighlighter1, "syntaxHighlighter1");
-            this.syntaxHighlighter1.Name = "syntaxHighlighter1";
-            this.syntaxHighlighter1.TextChanged += new System.EventHandler(this.syntaxHighlighter1_TextChanged_1);
-            this.syntaxHighlighter1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.syntaxHighlighter1_KeyDown_1);
-            this.syntaxHighlighter1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.syntaxHighlighter1_KeyPress_1);
+            this.tabControl1.Controls.Add(this.tabCode);
+            this.tabControl1.Controls.Add(this.tabWeb);
+            resources.ApplyResources(this.tabControl1, "tabControl1");
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.tabControl1_DrawItem);
+            // 
+            // tabCode
+            // 
+            this.tabCode.Controls.Add(this.syntaxHighlighter1);
+            resources.ApplyResources(this.tabCode, "tabCode");
+            this.tabCode.Name = "tabCode";
+            this.tabCode.UseVisualStyleBackColor = true;
+            // 
+            // tabWeb
+            // 
+            this.tabWeb.Controls.Add(this.webContents);
+            resources.ApplyResources(this.tabWeb, "tabWeb");
+            this.tabWeb.Name = "tabWeb";
+            this.tabWeb.UseVisualStyleBackColor = true;
+            // 
+            // webContents
+            // 
+            resources.ApplyResources(this.webContents, "webContents");
+            this.webContents.Name = "webContents";
             // 
             // splitContainer4
             // 
@@ -445,33 +496,18 @@
             // 
             resources.ApplyResources(this.webBrowser1, "webBrowser1");
             this.webBrowser1.Name = "webBrowser1";
+            this.webBrowser1.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.webBrowser1_DocumentCompleted_1);
             // 
-            // splitContainer8
+            // syntaxHighlighter1
             // 
-            this.splitContainer8.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            resources.ApplyResources(this.splitContainer8, "splitContainer8");
-            this.splitContainer8.Name = "splitContainer8";
-            // 
-            // splitContainer8.Panel1
-            // 
-            this.splitContainer8.Panel1.Controls.Add(this.richTextBox1);
-            // 
-            // splitContainer8.Panel2
-            // 
-            this.splitContainer8.Panel2.Controls.Add(this.textBox1);
-            this.splitContainer8.Panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.splitContainer8_Panel2_Paint);
-            // 
-            // richTextBox1
-            // 
-            this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            resources.ApplyResources(this.richTextBox1, "richTextBox1");
-            this.richTextBox1.Name = "richTextBox1";
-            // 
-            // textBox1
-            // 
-            resources.ApplyResources(this.textBox1, "textBox1");
-            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox1.Name = "textBox1";
+            this.syntaxHighlighter1.AcceptsTab = true;
+            this.syntaxHighlighter1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.syntaxHighlighter1.ContextMenuStrip = this.contextMenuStrip1;
+            resources.ApplyResources(this.syntaxHighlighter1, "syntaxHighlighter1");
+            this.syntaxHighlighter1.Name = "syntaxHighlighter1";
+            this.syntaxHighlighter1.TextChanged += new System.EventHandler(this.syntaxHighlighter1_TextChanged_1);
+            this.syntaxHighlighter1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.syntaxHighlighter1_KeyDown_1);
+            this.syntaxHighlighter1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.syntaxHighlighter1_KeyPress_1);
             // 
             // MainForm
             // 
@@ -496,10 +532,18 @@
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
+            this.splitContainer8.Panel1.ResumeLayout(false);
+            this.splitContainer8.Panel2.ResumeLayout(false);
+            this.splitContainer8.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer8)).EndInit();
+            this.splitContainer8.ResumeLayout(false);
             this.splitContainer3.Panel1.ResumeLayout(false);
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
+            this.tabControl1.ResumeLayout(false);
+            this.tabCode.ResumeLayout(false);
+            this.tabWeb.ResumeLayout(false);
             this.splitContainer4.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).EndInit();
             this.splitContainer4.ResumeLayout(false);
@@ -507,11 +551,6 @@
             this.splitContainer5.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer5)).EndInit();
             this.splitContainer5.ResumeLayout(false);
-            this.splitContainer8.Panel1.ResumeLayout(false);
-            this.splitContainer8.Panel2.ResumeLayout(false);
-            this.splitContainer8.Panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer8)).EndInit();
-            this.splitContainer8.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -568,6 +607,10 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.ToolStripMenuItem 코드정리ToolStripMenuItem;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabCode;
+        private System.Windows.Forms.TabPage tabWeb;
+        private System.Windows.Forms.WebBrowser webContents;
     }
 }
 

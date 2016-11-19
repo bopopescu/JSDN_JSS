@@ -1,7 +1,6 @@
 import os
 import bdb
-import types
-from Tkinter import *
+from tkinter import *
 from idlelib.WindowList import ListedToplevel
 from idlelib.ScrolledList import ScrolledList
 from idlelib import macosxSupport
@@ -18,7 +17,10 @@ class Idb(bdb.Bdb):
             self.set_step()
             return
         message = self.__frame2message(frame)
-        self.gui.interaction(message, frame)
+        try:
+            self.gui.interaction(message, frame)
+        except TclError:  # When closing debugger window with [x] in 3.x
+            pass
 
     def user_exception(self, frame, info):
         if self.in_rpc_code(frame):
@@ -60,8 +62,42 @@ class Debugger:
         self.frame = None
         self.make_gui()
         self.interacting = 0
+        self.nesting_level = 0
 
     def run(self, *args):
+        # Deal with the scenario where we've already got a program running
+        # in the debugger and we want to start another. If that is the case,
+        # our second 'run' was invoked from an event dispatched not from
+        # the main event loop, but from the nested event loop in 'interaction'
+        # below. So our stack looks something like this:
+        #       outer main event loop
+        #         run()
+        #           <running program with traces>
+        #             callback to debugger's interaction()
+        #               nested event loop
+        #                 run() for second command
+        #
+        # This kind of nesting of event loops causes all kinds of problems
+        # (see e.g. issue #24455) especially when dealing with running as a
+        # subprocess, where there's all kinds of extra stuff happening in
+        # there - insert a traceback.print_stack() to check it out.
+        #
+        # By this point, we've already called restart_subprocess() in
+        # ScriptBinding. However, we also need to unwind the stack back to
+        # that outer event loop.  To accomplish this, we:
+        #   - return immediately from the nested run()
+        #   - abort_loop ensures the nested event loop will terminate
+        #   - the debugger's interaction routine completes normally
+        #   - the restart_subprocess() will have taken care of stopping
+        #     the running program, which will also let the outer run complete
+        #
+        # That leaves us back at the outer main event loop, at which point our
+        # after event can fire, and we'll come back to this routine with a
+        # clean stack.
+        if self.nesting_level > 0:
+            self.abort_loop()
+            self.root.after(100, lambda: self.run(*args))
+            return
         try:
             self.interacting = 1
             return self.idb.run(*args)
@@ -69,6 +105,10 @@ class Debugger:
             self.interacting = 0
 
     def close(self, event=None):
+        try:
+            self.quit()
+        except Exception:
+            pass
         if self.interacting:
             self.top.bell()
             return
@@ -192,7 +232,12 @@ class Debugger:
             b.configure(state="normal")
         #
         self.top.wakeup()
-        self.root.mainloop()
+        # Nested main loop: Tkinter's main loop is not reentrant, so use
+        # Tcl's vwait facility, which reenters the event loop until an
+        # event handler sets the variable we're waiting on
+        self.nesting_level += 1
+        self.root.tk.call('vwait', '::idledebugwait')
+        self.nesting_level -= 1
         #
         for b in self.buttons:
             b.configure(state="disabled")
@@ -216,23 +261,26 @@ class Debugger:
 
     def cont(self):
         self.idb.set_continue()
-        self.root.quit()
+        self.abort_loop()
 
     def step(self):
         self.idb.set_step()
-        self.root.quit()
+        self.abort_loop()
 
     def next(self):
         self.idb.set_next(self.frame)
-        self.root.quit()
+        self.abort_loop()
 
     def ret(self):
         self.idb.set_return(self.frame)
-        self.root.quit()
+        self.abort_loop()
 
     def quit(self):
         self.idb.set_quit()
-        self.root.quit()
+        self.abort_loop()
+
+    def abort_loop(self):
+        self.root.tk.call('set', '::idledebugwait', '1')
 
     stackviewer = None
 
@@ -253,8 +301,8 @@ class Debugger:
         if self.vsource.get():
             self.sync_source_line()
 
-    def show_frame(self, (frame, lineno)):
-        self.frame = frame
+    def show_frame(self, stackitem):
+        self.frame = stackitem[0]  # lineno is stackitem[1]
         self.show_variables()
 
     localsviewer = None
@@ -311,8 +359,7 @@ class Debugger:
 
     def load_breakpoints(self):
         "Load PyShellEditorWindow breakpoints into subprocess debugger"
-        pyshell_edit_windows = self.pyshell.flist.inversedict.keys()
-        for editwin in pyshell_edit_windows:
+        for editwin in self.pyshell.flist.inversedict:
             filename = editwin.io.filename
             try:
                 for lineno in editwin.breakpoints:
@@ -323,7 +370,7 @@ class Debugger:
 class StackViewer(ScrolledList):
 
     def __init__(self, master, flist, gui):
-        if macosxSupport.runningAsOSXApp():
+        if macosxSupport.isAquaTk():
             # At least on with the stock AquaTk version on OSX 10.4 you'll
             # get an shaking GUI that eventually kills IDLE if the width
             # argument is specified.
@@ -348,8 +395,7 @@ class StackViewer(ScrolledList):
             funcname = code.co_name
             import linecache
             sourceline = linecache.getline(filename, lineno)
-            import string
-            sourceline = string.strip(sourceline)
+            sourceline = sourceline.strip()
             if funcname in ("?", "", None):
                 item = "%s, line %d: %s" % (modname, lineno, sourceline)
             else:
@@ -413,8 +459,8 @@ class NamespaceViewer:
             height = 20*len(dict) # XXX 20 == observed height of Entry widget
         self.master = master
         self.title = title
-        import repr
-        self.repr = repr.Repr()
+        import reprlib
+        self.repr = reprlib.Repr()
         self.repr.maxstring = 60
         self.repr.maxother = 60
         self.frame = frame = Frame(master)
@@ -440,15 +486,27 @@ class NamespaceViewer:
             return
         subframe = self.subframe
         frame = self.frame
-        for c in subframe.children.values():
+        for c in list(subframe.children.values()):
             c.destroy()
         self.dict = None
         if not dict:
             l = Label(subframe, text="None")
             l.grid(row=0, column=0)
         else:
-            names = dict.keys()
-            names.sort()
+            #names = sorted(dict)
+            ###
+            # Because of (temporary) limitations on the dict_keys type (not yet
+            # public or pickleable), have the subprocess to send a list of
+            # keys, not a dict_keys object.  sorted() will take a dict_keys
+            # (no subprocess) or a list.
+            #
+            # There is also an obscure bug in sorted(dict) where the
+            # interpreter gets into a loop requesting non-existing dict[0],
+            # dict[1], dict[2], etc from the RemoteDebugger.DictProxy.
+            ###
+            keys_list = dict.keys()
+            names = sorted(keys_list)
+            ###
             row = 0
             for name in names:
                 value = dict[name]
