@@ -39,10 +39,21 @@ namespace JSE
                     textBox2.Text += ".c";
                     ProjectOpt.Type = "C";
                     break;
+                case 2:
+                    textBox2.Text += ".html";
+                    ProjectOpt.Type = "HTML";
+                    break;
+                case 3:
+                    textBox2.Text += ".js";
+                    ProjectOpt.Type = "JS";
+                    break;
+                case 4:
+                    textBox2.Text += ".css";
+                    ProjectOpt.Type = "CSS";
+                    break;
                 default:
                     break;
             }
-
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -73,8 +84,8 @@ namespace JSE
             DialogResult r = folderBrowserDialog1.ShowDialog();
             if(r != DialogResult.Cancel)
             {
-                folderpath= folderBrowserDialog1.SelectedPath;
-                textBox2.Text = folderpath + textBox1.Text;
+                folderpath = folderBrowserDialog1.SelectedPath;
+                textBox2.Text = folderpath + "\\" +textBox1.Text;
                 int idx = 9999;
                 switch (idx)
                 {
@@ -83,6 +94,18 @@ namespace JSE
                         break;
                     case 1:
                         textBox2.Text += ".c";
+                        break;
+                    case 2:
+                        textBox2.Text += ".html";
+                        ProjectOpt.Type = "HTML";
+                        break;
+                    case 3:
+                        textBox2.Text += ".js";
+                        ProjectOpt.Type = "JS";
+                        break;
+                    case 4:
+                        textBox2.Text += ".css";
+                        ProjectOpt.Type = "CSS";
                         break;
                     default:
                         break;

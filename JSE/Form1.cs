@@ -106,7 +106,7 @@ namespace JSE
             splitContainer3.BackColor = Color.FromArgb(19, 19, 19);
             splitContainer4.BackColor = Color.FromArgb(19, 19, 19);
             splitContainer5.BackColor = Color.FromArgb(19, 19, 19);
-            
+
             //splitContainer6.BackColor = Color.FromArgb(19, 19, 19);
             //splitContainer7.BackColor = Color.FromArgb(19, 19, 19);
             splitContainer8.BackColor = Color.FromArgb(19, 19, 19);
@@ -222,65 +222,158 @@ namespace JSE
         {
 
         }
+
+        private void Python_Build()
+        {
+
+        }
+
+
+
+
+
+
         #region 메뉴클릭 이벤트
         private void 코드빌드ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DialogResult dr;
             string save;
-            saveFileDialog1.Filter = "*.py|*.py";
-
-            if (ProjectOpt.m_ProjectPath == "" || ProjectOpt.m_ProjectPath == null)
+            if(syntaxHighlighter1.Enabled == false)
             {
-                saveFileDialog1.DefaultExt = Path.GetExtension(ProjectOpt.m_ProjectPath);
-                saveFileDialog1.Title = "Choose Save Place";
-                saveFileDialog1.FileName = ProjectOpt.m_ProjectPath;
-                dr = saveFileDialog1.ShowDialog();
-                save = saveFileDialog1.FileName;
-            }
-            else
-            {
-                save = ProjectOpt.m_ProjectPath;
-                dr = DialogResult.OK;
+                //아직 아무 프로젝트도 안생긴 것.
+                return;
             }
 
-            if(dr != DialogResult.Cancel)
+            switch (ProjectOpt.Type)
             {
-                ProjectOpt.m_ProjectPath = save;
-                StreamWriter sw = new StreamWriter(save, false);
-                for (int i = 0; i < syntaxHighlighter1.Lines.Length; i++)
-                {
-                    sw.WriteLine(syntaxHighlighter1.Lines[i]);
-                }
-                sw.Flush();
-                sw.Close();
+                case "Python":
+                    saveFileDialog1.Filter = "*.py|*.py";
+                    #region Python_Build
+                    if (ProjectOpt.m_ProjectPath == "" || ProjectOpt.m_ProjectPath == null)
+                    {
+                        saveFileDialog1.DefaultExt = Path.GetExtension(ProjectOpt.m_ProjectPath);
+                        saveFileDialog1.Title = "Choose Save Place";
+                        saveFileDialog1.FileName = ProjectOpt.m_ProjectPath;
+                        dr = saveFileDialog1.ShowDialog();
+                        save = saveFileDialog1.FileName;
+                    }
+                    else
+                    {
+                        save = ProjectOpt.m_ProjectPath;
+                        dr = DialogResult.OK;
+                    }
+
+                    if (dr != DialogResult.Cancel)
+                    {
+                        ProjectOpt.m_ProjectPath = save;
+                        StreamWriter sw = new StreamWriter(save, false);
+                        for (int i = 0; i < syntaxHighlighter1.Lines.Length; i++)
+                        {
+                            sw.WriteLine(syntaxHighlighter1.Lines[i]);
+                        }
+                        sw.Flush();
+                        sw.Close();
+                    }
+
+                    isChanged = false;
+                    // if(ProjectOpt.Type == "Python")
+                    // {
+                    ProcessStartInfo proInfo = new ProcessStartInfo();
+                    Process pro = new Process();
+                    proInfo.FileName = @"cmd";
+                    proInfo.CreateNoWindow = false;
+                    proInfo.WorkingDirectory = Application.StartupPath + @"\Python27";
+                    proInfo.UseShellExecute = false;
+                    proInfo.RedirectStandardOutput = true;
+                    proInfo.RedirectStandardInput = true;
+                    proInfo.RedirectStandardError = true;
+                    pro.StartInfo = proInfo;
+                    pro.Start();
+                    File.Copy(ProjectOpt.m_ProjectPath, Application.StartupPath + @"\Python27\a.py", true);
+                    pro.StandardInput.Write("python a.py" + Environment.NewLine);//ex> D:\Desktop\Python27\python test1.py
+                    pro.StandardInput.WriteLine("exit");
+                    StringBuilder returnVal = new StringBuilder();
+                    while (!pro.HasExited)
+                    {
+                        returnVal.Append(pro.StandardOutput.ReadToEnd());
+                    }
+                    pro.Close();
+                    richTextBox1.Text = returnVal.ToString();
+                    #endregion
+                    break;
+                case "C":
+                    saveFileDialog1.Filter = "*.c|*.c";
+                    #region C_Build
+                    if (ProjectOpt.m_ProjectPath == "" || ProjectOpt.m_ProjectPath == null)
+                    {
+                        saveFileDialog1.DefaultExt = Path.GetExtension(ProjectOpt.m_ProjectPath);
+                        saveFileDialog1.Title = "Choose Save Place";
+                        saveFileDialog1.FileName = ProjectOpt.m_ProjectPath;
+                        dr = saveFileDialog1.ShowDialog();
+                        save = saveFileDialog1.FileName;
+                    }
+                    else
+                    {
+                        save = ProjectOpt.m_ProjectPath;
+                        dr = DialogResult.OK;
+                    }
+
+                    if (dr != DialogResult.Cancel)
+                    {
+                        ProjectOpt.m_ProjectPath = save;
+                        StreamWriter sw = new StreamWriter(save, false);
+                        for (int i = 0; i < syntaxHighlighter1.Lines.Length; i++)
+                        {
+                            sw.WriteLine(syntaxHighlighter1.Lines[i]);
+                        }
+                        sw.Flush();
+                        sw.Close();
+                    }
+
+                    isChanged = false;
+                    // if(ProjectOpt.Type == "Python")
+                    // {
+                    ProcessStartInfo C_proInfo = new ProcessStartInfo();
+                    Process C_pro = new Process();
+                    C_proInfo.FileName = @"cmd";
+                    C_proInfo.CreateNoWindow = false;
+                    C_proInfo.WorkingDirectory = Application.StartupPath + @"\MinGW\bin";
+                    C_proInfo.UseShellExecute = false;
+                    C_proInfo.RedirectStandardOutput = true;
+                    C_proInfo.RedirectStandardInput = true;
+                    C_proInfo.RedirectStandardError = true;
+                    C_pro.StartInfo = C_proInfo;
+                    C_pro.Start();
+                    File.Copy(ProjectOpt.m_ProjectPath, Application.StartupPath + @"\MinGW\bin\a.c", true);
+                    C_pro.StandardInput.Write("gcc a.c" + Environment.NewLine);//ex> D:\Desktop\Python27\python test1.py
+                    C_pro.StandardInput.Write("a.exe" + Environment.NewLine);
+                    C_pro.StandardInput.WriteLine("exit" + Environment.NewLine);
+                    StringBuilder C_returnVal = new StringBuilder();
+                    while (!C_pro.HasExited)
+                    {
+                        C_returnVal.Append(C_pro.StandardOutput.ReadToEnd());
+                    }
+                    C_pro.Close();
+                    richTextBox1.Text = C_returnVal.ToString();
+                    #endregion
+                    break;
+                case "HTML":
+                    saveFileDialog1.Filter = "*.html|*.html";
+                    Process.Start(ProjectOpt.m_ProjectPath);
+                    break;
+                case "JS":
+                    saveFileDialog1.Filter = "*.js|*.js";
+                    MessageBox.Show(".js 파일은 실행을 지원하지 않습니다.","JSE");
+                    break;
+                case "CSS":
+                    saveFileDialog1.Filter = "*.css|*.css";
+                    MessageBox.Show(".css 파일은 실행을 지원하지 않습니다.", "JSE");
+                    break;
+                default:
+                    break;
             }
-            
-            isChanged = false;
-            // if(ProjectOpt.Type == "Python")
-            // {
-            ProcessStartInfo proInfo = new ProcessStartInfo();
-            Process pro = new Process();
-            proInfo.FileName = @"cmd";
-            proInfo.CreateNoWindow = false;
-            proInfo.WorkingDirectory = Application.StartupPath + @"\Python27";
-            proInfo.UseShellExecute = false;
-            proInfo.RedirectStandardOutput = true;
-            proInfo.RedirectStandardInput = true;
-            proInfo.RedirectStandardError = true;
-            pro.StartInfo = proInfo;
-            pro.Start();
-            File.Copy(ProjectOpt.m_ProjectPath, Application.StartupPath + @"\Python27\a.py", true);
-            pro.StandardInput.Write("python a.py"+ Environment.NewLine);//ex> D:\Desktop\Python27\python test1.py
-            pro.StandardInput.WriteLine("exit");
-            StringBuilder returnVal = new StringBuilder();
-            while (!pro.HasExited)
-            {
-                returnVal.Append(pro.StandardOutput.ReadToEnd());
-            }
-            pro.Close();
-            richTextBox1.Text = returnVal.ToString();
-            //string filename = source;
-            //  }
+
+
         }
 
         private void 열기ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -301,6 +394,27 @@ namespace JSE
                     sr.Close();
                     syntaxHighlighter1.ProcessAllLines();
                     AddFileNode(Path.GetFileNameWithoutExtension(ProjectOpt.m_ProjectPath));
+                    string ext = Path.GetExtension(ProjectOpt.m_ProjectPath);
+                    if(ext.Contains("py"))
+                    {
+                        ProjectOpt.Type = "Python";
+                    }
+                    else if (ext.Contains("c"))
+                    {
+                        ProjectOpt.Type = "C";
+                    }
+                    else if (ext.Contains("html"))
+                    {
+                        ProjectOpt.Type = "HTML";
+                    }
+                    else if (ext.Contains("js"))
+                    {
+                        ProjectOpt.Type = "JS";
+                    }
+                    else if (ext.Contains("css"))
+                    {
+                        ProjectOpt.Type = "CSS";
+                    }
                     syntaxHighlighter1.Enabled = true;
                 }
             }
@@ -311,18 +425,18 @@ namespace JSE
             DialogResult dr;
             string save;
             saveFileDialog1.Filter = "*.py|*.py";
-            
-            if (ProjectOpt.m_ProjectPath == ""||ProjectOpt.m_ProjectPath == null)
+
+            if (ProjectOpt.m_ProjectPath == "" || ProjectOpt.m_ProjectPath == null)
             {
-            saveFileDialog1.DefaultExt = Path.GetExtension(ProjectOpt.m_ProjectPath);
-            saveFileDialog1.Title = "Choose Save Place";
+                saveFileDialog1.DefaultExt = Path.GetExtension(ProjectOpt.m_ProjectPath);
+                saveFileDialog1.Title = "Choose Save Place";
                 saveFileDialog1.FileName = ProjectOpt.m_ProjectPath;
-            dr = saveFileDialog1.ShowDialog();
-            save = saveFileDialog1.FileName;
+                dr = saveFileDialog1.ShowDialog();
+                save = saveFileDialog1.FileName;
             }
             else
             {
-               save = ProjectOpt.m_ProjectPath;
+                save = ProjectOpt.m_ProjectPath;
                 dr = DialogResult.OK;
             }
             if (dr != DialogResult.Cancel)
@@ -345,7 +459,7 @@ namespace JSE
             saveFileDialog1.Title = "Choose Save Place";
             dr = saveFileDialog1.ShowDialog();
             string save = saveFileDialog1.FileName;
-            if(dr != DialogResult.Cancel)
+            if (dr != DialogResult.Cancel)
             {
                 StreamWriter sw = new StreamWriter(save, false);
                 for (int i = 0; i < syntaxHighlighter1.Lines.Length; i++)
@@ -741,9 +855,9 @@ namespace JSE
         private bool m_IsFlipped = true;
         private void button1_Click_1(object sender, EventArgs e)
         {
-            if(m_IsFlipped)
+            if (m_IsFlipped)
             {
-              
+
                 button1.Image = JSE.Properties.Resources.arrow;
                 m_IsFlipped = false;
                 splitContainer4.Panel1Collapsed = false;
@@ -835,7 +949,7 @@ namespace JSE
 
             HttpWebRequest login_request = (HttpWebRequest)WebRequest.Create("https://testsec.herokuapp.com/");
             string login_postData = "content=SEX";//JsonConvert.SerializeObject(u);
-                                                                                         //login_postData = "drop database;";
+                                                  //login_postData = "drop database;";
             var login_data = Encoding.ASCII.GetBytes(login_postData);
             login_request.Method = "POST";
             login_request.ContentType = "application/x-www-form-urlencoded";
@@ -872,7 +986,7 @@ namespace JSE
                     string pageSource = elem.OuterHtml;
                     txtHtmlView = pageSource;
                 }
-                if(txtHtmlView.Contains("codi-code-content"))
+                if (txtHtmlView.Contains("codi-code-content"))
                 {
                     /*
                      * codi-code-content 안쪽의 내용물을 추출해서 syntaxhighlighter에 띄워준다.                     
@@ -892,7 +1006,7 @@ namespace JSE
                     /*
                      * 그냥 webPage란 거니까, webBrowser로 탐색해준 다음, Focus를 옮겨준다.
                      */
-                    webContents.Navigate(webBrowser1.Url,false);
+                    webContents.Navigate(webBrowser1.Url, false);
                     tabControl1.SelectedTab = tabWeb;
                 }
             }
