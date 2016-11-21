@@ -166,7 +166,7 @@ namespace JSE
             richTextBox1.Font = new Font("Consolas", 10);
             ;
             //webBrowser1.Navigate("http://iwin247.kr/dictionary/contents");
-            webBrowser1.Navigate("D:\\winn\\tuto_contents_code.html");
+            webBrowser1.Navigate("http://iwin247.kr/");
             //richTextBox1.Text = Translator.replace_word("정수형 i = 0");
         }
         #region 추후 MDI 구현시 사용
@@ -222,14 +222,6 @@ namespace JSE
         {
 
         }
-
-        private void Python_Build()
-        {
-
-        }
-
-
-
 
 
 
@@ -977,6 +969,7 @@ namespace JSE
         {
             string txtHtmlView = "";
             HtmlElement elem;
+           
             if (webBrowser1.Document != null)
             {
                 HtmlElementCollection elems = webBrowser1.Document.GetElementsByTagName("HTML");
@@ -998,7 +991,39 @@ namespace JSE
                     }
                     else
                     {
-                        MessageBox.Show(webBrowser1.Document.GetElementById("codi-code-content").InnerText);
+                        DialogResult dr;
+                        string save;
+                        if (syntaxHighlighter1.Enabled == false)
+                        {
+                            //아직 아무 프로젝트도 안생긴 것.
+                            return;
+                        }
+                        if (ProjectOpt.m_ProjectPath == "" || ProjectOpt.m_ProjectPath == null)
+                        {
+                            saveFileDialog1.DefaultExt = Path.GetExtension(ProjectOpt.m_ProjectPath);
+                            saveFileDialog1.Title = "Choose Save Place";
+                            saveFileDialog1.FileName = ProjectOpt.m_ProjectPath;
+                            dr = saveFileDialog1.ShowDialog();
+                            save = saveFileDialog1.FileName;
+                        }
+                        else
+                        {
+                            save = ProjectOpt.m_ProjectPath;
+                            dr = DialogResult.OK;
+                        }
+
+                        if (dr != DialogResult.Cancel)
+                        {
+                            ProjectOpt.m_ProjectPath = save;
+                            StreamWriter sw = new StreamWriter(save, false);
+                            for (int i = 0; i < syntaxHighlighter1.Lines.Length; i++)
+                            {
+                                sw.WriteLine(syntaxHighlighter1.Lines[i]);
+                            }
+                            sw.Flush();
+                            sw.Close();
+                        }
+                        syntaxHighlighter1.Text = webBrowser1.Document.GetElementById("codi-code-content").InnerText;
                     }
                 }
                 else
@@ -1006,8 +1031,12 @@ namespace JSE
                     /*
                      * 그냥 webPage란 거니까, webBrowser로 탐색해준 다음, Focus를 옮겨준다.
                      */
-                    webContents.Navigate(webBrowser1.Url, false);
-                    tabControl1.SelectedTab = tabWeb;
+                    if (txtHtmlView.Contains("codi-web"))
+                    {
+                        webContents.Navigate(webBrowser1.Url, false);
+                        tabControl1.SelectedTab = tabWeb;
+                    }
+
                 }
             }
         }

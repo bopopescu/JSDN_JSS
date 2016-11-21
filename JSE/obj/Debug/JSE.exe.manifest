@@ -4,7 +4,7 @@
   <description asmv2:iconFile="Resources\로고시안5.ico" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <application />
   <entryPoint>
-    <assemblyIdentity name="JSE" version="1.0.6169.11774" language="neutral" processorArchitecture="msil" />
+    <assemblyIdentity name="JSE" version="1.0.6169.29829" language="neutral" processorArchitecture="msil" />
     <commandLine file="JSE.exe" parameters="" />
   </entryPoint>
   <trustInfo>
@@ -44,25 +44,25 @@
   </dependency>
   <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="JSE.exe" size="1827760">
-      <assemblyIdentity name="JSE" version="1.0.6169.11774" language="neutral" processorArchitecture="msil" />
+      <assemblyIdentity name="JSE" version="1.0.6169.29829" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>Wle3WKnnsejkENIihAboq8i6IQw=</dsig:DigestValue>
+        <dsig:DigestValue>FBMzpHXoGzSE22jTf+fjR0IiyAU=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="aa\JSE.resources.dll" size="374272">
-      <assemblyIdentity name="JSE.resources" version="1.0.6169.11774" language="aa" processorArchitecture="msil" />
+      <assemblyIdentity name="JSE.resources" version="1.0.6169.29829" language="aa" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>kc3lrUBeTWmtUyjAkbD5dfQQoiA=</dsig:DigestValue>
+        <dsig:DigestValue>g1ne40aN426BsrxYahallUTeZPY=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

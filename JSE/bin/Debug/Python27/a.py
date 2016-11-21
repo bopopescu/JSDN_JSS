@@ -1,2 +1,1 @@
-print("Hell")
-print("Hell")
+print ("Hello")
